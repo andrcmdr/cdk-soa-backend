@@ -1,0 +1,33 @@
+# Rust artifacts
+target/
+*/target/
+
+# Embedded Git repositories
+.git/
+*/.git/
+
+log/
+*pwd
+*seed
+
+# Visual Studio Code
+.vscode/
+*/.vscode/
+.run/
+
+# JetBrains IDEs
+.idea/
+*/.idea/
+.run/
+
+# Editor backup files
+*~
+
+# macOS
+.DS_Store
+
+
+
+# Added by cargo
+
+/target
