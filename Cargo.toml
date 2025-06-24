@@ -1,5 +1,5 @@
 [package]
-name = "cdk_indexer_rust"
+name = "cdk_indexer"
 version = "0.1.0"
 edition = "2021"
 
