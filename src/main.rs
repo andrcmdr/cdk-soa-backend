@@ -1,27 +1,45 @@
-use ethers::{providers::StreamExt, types::Log};
-use tokio;
+mod abi_loader;
+mod config;
+mod db;
+mod event_processor;
 
-const RPC: &str = "http://localhost:8545";
-const STREAM: &str = "ws://localhost:8000/stream";
+use ethers::{
+    providers::{Provider, StreamExt, Ws},
+    types::{Address, Log},
+};
+use std::collections::HashMap;
+use tokio;
+use dotenv::dotenv;
+use std::env;
 
 #[tokio::main]
 async fn main() -> eyre::Result<()> {
-    let ws = ethers::providers::Ws::connect(STREAM).await?;
-    let mut sub = ws.subscribe_blocks().await?;
+    dotenv().ok();
+    let db_url = env::var("DATABASE_URL")?;
+    let pool = db::init_db(&db_url).await;
 
-    while let Some(block) = sub.next().await {
-        for tx in block.transactions {
-            for log in tx.logs {
-                if log.topics.get(0)
-                       == Some(&"0x".to_owned() + &ethers::utils::keccak256("ValueSet(address,uint256)").to_hex::<String>())
-                {
-                    let setter = ethers::types::H160::from_slice(&log.topics[1][12..]);
-                    let value = ethers::types::U256::from_big_endian(&log.data.0);
-                    println!("ValueSet by {setter:?} = {value}");
-                    // insert into DB
-                }
+    let ws = Ws::connect("ws://localhost:8000/stream").await?;
+    let provider = Provider::new(ws);
+
+    let configs = config::load_contracts();
+    let mut abi_map = HashMap::new();
+    let mut address_map = HashMap::new();
+
+    for c in configs {
+        abi_map.insert(c.address, abi_loader::load_abi(c.abi_path)?);
+        address_map.insert(c.address, c.address);
+    }
+
+    let mut sub = provider.subscribe_logs(&Default::default()).await?;
+    println!("Listening for events...");
+
+    while let Some(log) = sub.next().await {
+        if let Some(contract) = address_map.get(&log.address) {
+            if let Some(abi) = abi_map.get(contract) {
+                event_processor::process_event(*contract, &log, abi, &pool).await;
             }
         }
     }
+
     Ok(())
 }
