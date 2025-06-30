@@ -3,6 +3,9 @@ mod config;
 mod db;
 mod event_processor;
 
+use crate::config::load_contracts_from_file;
+
+
 use ethers::{
     providers::{Provider, StreamExt, Ws},
     types::{Address, Log},
@@ -21,7 +24,8 @@ async fn main() -> eyre::Result<()> {
     let ws = Ws::connect("ws://localhost:8000/stream").await?;
     let provider = Provider::new(ws);
 
-    let configs = config::load_contracts();
+    let configs = load_contracts_from_file("contracts.toml")?;
+
     let mut abi_map = HashMap::new();
     let mut address_map = HashMap::new();
 
