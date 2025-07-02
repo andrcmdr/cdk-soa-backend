@@ -10,3 +10,21 @@
  - Oracle service (more generic), on-chain contracts data provider component from off-chain data sources.
  - Merkle tree generator (includes transaction producer), for generating Merkle tree, compute root hash, for storing off-chain data for on-chain contracts.
 
+## CDK Indexer
+
+### Output example:
+
+For an event:
+```solidity
+event DataPosted(address sender, uint256 id, string message);
+```
+
+We'll get output:
+```json
+{
+  "sender": "0xabc123abc123abc123abc123abc123abc123abc1",
+  "id": "42",
+  "message": "Data are posted!"
+}
+```
+

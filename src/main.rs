@@ -1,10 +1,8 @@
 mod abi_loader;
-mod config;
 mod db;
 mod event_processor;
 
 use crate::config::load_contracts_from_file;
-
 
 use ethers::{
     providers::{Provider, StreamExt, Ws},
