@@ -1,7 +1,7 @@
-[[contracts]]
+[SimpleEvent]
 address = "0x0123456789abcdef0123456789abcdef01234567"
 abi_path = "./abis/SimpleEvent.json"
 
-[[contracts]]
+[MyToken]
 address = "0x89abcdef0123456789abcdef0123456789abcdef"
-abi_path = "./abis/OtherEvent.json"
+abi_path = "./abis/MyToken.json"
