@@ -1,12 +1,9 @@
 mod abi_loader;
-mod db;
 mod config;
+mod db;
 mod event_processor;
 
-use ethers::{
-    providers::{Provider, StreamExt, Ws},
-    types::{Address, Log},
-};
+use ethers::providers::{Provider, StreamExt, Ws};
 use std::collections::HashMap;
 use tokio;
 use dotenv::dotenv;
@@ -21,23 +18,26 @@ async fn main() -> eyre::Result<()> {
     let ws = Ws::connect("ws://localhost:8000/stream").await?;
     let provider = Provider::new(ws);
 
+    let configs = config::load_named_contracts("contracts.toml")?;
+
     let mut abi_map = HashMap::new();
     let mut address_map = HashMap::new();
 
-    let contracts = config::load_named_contracts("contracts.toml")?;
-
-    for contract in &contracts {
-        abi_map.insert(contract.address, abi_loader::load_abi(contract.abi_path)?);
+    for contract in configs {
+        let abi = abi_loader::load_abi(&contract.abi_path)?;
+        abi_map.insert(contract.address, abi);
         address_map.insert(contract.address, contract.name);
     }
 
-    let mut sub = provider.subscribe_logs(&Default::default()).await?;
-    println!("Listening for events...");
+    let mut log_stream = provider.subscribe_logs(&Default::default()).await?;
+    println!("Listening for logs...");
 
-    while let Some(log) = sub.next().await {
-        if let Some(contract) = address_map.get(&log.address) {
+    while let Some(log) = log_stream.next().await {
+        if let Some(name) = address_map.get(&log.address) {
             if let Some(abi) = abi_map.get(&log.address) {
                 event_processor::process_event(log.address, &log, abi, &pool).await;
+            } else {
+                println!("No ABI found for address: {:?}", log.address);
             }
         }
     }

@@ -3,8 +3,7 @@ use ethers::{
     types::{Address, Log},
 };
 use sqlx::Pool;
-use serde_json::json;
-
+use serde_json::{Map, Value};
 use crate::db::insert_event;
 
 pub async fn process_event(
@@ -20,28 +19,26 @@ pub async fn process_event(
         };
 
         if let Ok(decoded) = event.parse_log(raw_log) {
-            let mut param_map = serde_json::Map::new();
+            let mut param_map = Map::new();
 
             for param in decoded.params {
-                let value = match serde_json::to_value(&param.value) {
-                    Ok(v) => v,
-                    Err(_) => json!(format!("{:?}", param.value)), // fallback
-                };
+                let value = serde_json::to_value(&param.value)
+                    .unwrap_or_else(|_| Value::String(format!("{:?}", param.value)));
                 param_map.insert(param.name.clone(), value);
             }
 
-            let json = serde_json::Value::Object(param_map);
+            let json_value = Value::Object(param_map);
 
             println!(
-                "Event: {} from {}\n{}",
-                event.name, contract_address, json
+                "Event '{}' from {}:\n{}",
+                event.name, contract_address, json_value
             );
 
             insert_event(
                 db,
                 &format!("{contract_address:?}"),
                 &event.name,
-                &json,
+                &json_value,
             )
             .await;
         }
