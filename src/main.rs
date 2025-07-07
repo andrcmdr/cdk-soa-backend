@@ -4,6 +4,8 @@ mod db;
 mod event_processor;
 
 use ethers::providers::{Provider, StreamExt, Ws};
+use ethers::types::Filter;
+use ethers::middleware::Middleware;
 use std::collections::HashMap;
 use tokio;
 use dotenv::dotenv;
@@ -29,11 +31,11 @@ async fn main() -> eyre::Result<()> {
         address_map.insert(contract.address, contract.name);
     }
 
-    let mut log_stream = provider.subscribe_logs(&Default::default()).await?;
+    let mut log_stream = provider.subscribe_logs(&Filter::new().select(0u64..)).await?;
     println!("Listening for logs...");
 
     while let Some(log) = log_stream.next().await {
-        if let Some(name) = address_map.get(&log.address) {
+        if let Some(_name) = address_map.get(&log.address) {
             if let Some(abi) = abi_map.get(&log.address) {
                 event_processor::process_event(log.address, &log, abi, &pool).await;
             } else {
