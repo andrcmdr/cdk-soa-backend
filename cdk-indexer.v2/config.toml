@@ -1,0 +1,10 @@
+ws_provider = "wss://polygon-cdk.example/ws"
+db_url = "postgresql://user:password@localhost/indexer"
+
+[MyContract]
+address = "0xabc123abc123abc123abc123abc123abc123abc1"
+abi_path = "abi/MyContract.json"
+
+[MySecondContract]
+address = "0xdef456def456def456def456def456def456def4"
+abi_path = "abi/MySecondContract.json"
