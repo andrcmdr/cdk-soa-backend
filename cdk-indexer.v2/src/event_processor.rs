@@ -69,8 +69,10 @@ impl EventProcessor {
         let contract_name = self.contract_names.get(&address).cloned().unwrap_or_default();
         let topics = log.topics.iter().map(|t| t.0).collect::<Vec<_>>();
 
+        // Try decoding the log to get event name and parameters
         let decoded = abi.decode_log(&topics, log.data.0.clone())?;
 
+        let event_name = decoded.event.name.clone();
         let mut params = HashMap::new();
         for (name, value) in decoded.params.iter() {
             params.insert(name.clone(), format!("{:?}", value));
@@ -79,6 +81,7 @@ impl EventProcessor {
         insert_event(
             &self.db_pool,
             &contract_name,
+            &event_name,
             address.to_string(),
             &log.transaction_hash.map(|h| format!("{:?}", h)).unwrap_or_default(),
             log.block_number.unwrap_or_default().as_u64() as i64,
@@ -86,7 +89,7 @@ impl EventProcessor {
         )
         .await?;
 
-        info!("Inserted event from {}", address);
+        tracing::info!("Inserted event '{}' from contract '{}'", event_name, contract_name);
         Ok(())
     }
 }

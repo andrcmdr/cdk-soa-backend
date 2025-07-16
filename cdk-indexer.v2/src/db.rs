@@ -4,6 +4,7 @@ use tokio_postgres::Client;
 pub async fn insert_event(
     client: &Client,
     contract_name: &str,
+    event_name: &str,
     contract_address: String,
     tx_hash: &str,
     block_number: i64,
@@ -12,17 +13,28 @@ pub async fn insert_event(
     let query = r#"
         INSERT INTO contract_events (
             contract_name,
+            event_name,
             contract_address,
             transaction_hash,
             block_number,
             params
-        ) VALUES ($1, $2, $3, $4, $5)
+        ) VALUES ($1, $2, $3, $4, $5, $6)
     "#;
 
     let params_json = serde_json::to_value(&params)?;
 
     client
-        .execute(query, &[&contract_name, &contract_address, &tx_hash, &block_number, &params_json])
+        .execute(
+            query,
+            &[
+                &contract_name,
+                &event_name,
+                &contract_address,
+                &tx_hash,
+                &block_number,
+                &params_json,
+            ],
+        )
         .await?;
 
     Ok(())
