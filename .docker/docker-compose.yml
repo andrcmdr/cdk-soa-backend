@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  indexer:
+    build: .
+    depends_on:
+      - db
+    environment:
+      RUST_LOG: debug
+    volumes:
+      - ./abi:/apps/abi
+      - ./config.toml:/apps/config.toml
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: indexer
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:
