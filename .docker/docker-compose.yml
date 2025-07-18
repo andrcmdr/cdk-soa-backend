@@ -1,6 +1,7 @@
 version: '3.9'
 
 services:
+
   indexer:
     build: .
     depends_on:
@@ -20,6 +21,7 @@ services:
       POSTGRES_DB: indexer
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "5432:5432"
 
