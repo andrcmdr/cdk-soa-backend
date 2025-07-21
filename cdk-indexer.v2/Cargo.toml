@@ -8,17 +8,21 @@ tokio = { version = "1", features = ["full"] }
 tokio-postgres = "0.7"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+serde_cbor = "0.11"
 serde_with = "3"
 toml = "0.8"
 futures = "0.3"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 
-# Alloy ecosystem
+# Alloy stack
 alloy = { version = "0.7", features = ["provider-ws", "rpc-types", "sol-types", "json-abi"] }
 alloy-json-abi = "0.7"
 alloy-provider = { version = "0.7", features = ["ws"] }
 alloy-transport-ws = "0.7"
+
+# NATS (JetStream + ObjectStore)
+async-nats = "0.42"
 
 [profile.release]
 strip = true
