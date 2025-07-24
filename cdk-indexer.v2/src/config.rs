@@ -15,6 +15,8 @@ pub struct AppConfig {
     pub contracts: HashMap<String, ContractConfig>,
     pub ws_provider: String,
     pub db_url: String,
+    pub nats_url: String,
+    pub nats_bucket: String,
 }
 
 impl AppConfig {
