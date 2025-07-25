@@ -6,10 +6,11 @@ services:
     build: .
     depends_on:
       - db
+      - nats
     environment:
       RUST_LOG: debug
     volumes:
-      - ./abi:/apps/abi
+      - ./abi/:/apps/abi/
       - ./config.toml:/apps/config.toml
     restart: unless-stopped
 
@@ -24,6 +25,13 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "5432:5432"
+
+  nats:
+    image: nats:2-scratch
+    command: ["-js"]
+    ports:
+      - "4222:4222"
+      - "8222:8222"
 
 volumes:
   pgdata:
