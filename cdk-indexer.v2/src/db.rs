@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use tokio_postgres::Client;
 
 use crate::types::EventPayload;
@@ -18,7 +17,7 @@ pub async fn insert_event(
         ) VALUES ($1, $2, $3, $4, $5, $6)
     "#;
 
-    let params_json = serde_json::to_value(&payload.params)?;
+    let params_json = serde_json::to_vec(&serde_json::to_value(&payload.params)?)?;
 
     client
         .execute(
