@@ -1,19 +1,36 @@
 use crate::types::EventPayload;
-use async_nats::jetstream::object_store::{ObjectStore, PutOptions};
-use async_nats::jetstream::JetStream;
-use async_nats::Client;
+
+use async_nats::jetstream::object_store::ObjectStore;
+
+use std::io::Cursor;
+use std::time::Duration;
+use tracing::{error, info};
 
 pub async fn init_nats(nats_url: &str, bucket: &str) -> anyhow::Result<ObjectStore> {
-    let client: Client = async_nats::connect(nats_url).await?;
-    let js = JetStream::new(client);
-    let store = match js.get_object_store(bucket).await {
+    // Create NATS Client with NATS connection, connect to NATS
+    let client = loop {
+        match async_nats::connect(nats_url).await {
+            Ok(conn) => break conn,
+            Err(e) => {
+                error!("[NATS] Connection failed: {}, retrying...", e);
+                tokio::time::sleep(Duration::from_secs(3)).await;
+            }
+        }
+    };
+    info!("[NATS] Connected to NATS at {}", nats_url);
+
+    let jetstream = async_nats::jetstream::new(client);
+
+    let store = match jetstream.get_object_store(bucket).await {
         Ok(store) => store,
-        Err(_) => js
-            .create_object_store(async_nats::jetstream::object_store::Config {
+        Err(_) => {
+            info!("[NATS] Creating object store bucket '{}'", bucket);
+            jetstream.create_object_store(async_nats::jetstream::object_store::Config {
                 bucket: bucket.to_string(),
                 ..Default::default()
             })
-            .await?,
+            .await?
+        },
     };
     Ok(store)
 }
@@ -32,6 +49,7 @@ pub async fn publish_event(
     );
 
     let payload_bin = serde_json::to_vec(&serde_json::to_value(payload)?)?;
-    store.put(&key, payload_bin.into(), PutOptions::default()).await?;
+    let mut cursor = Cursor::new(payload_bin);
+    store.put(key.as_str(), &mut cursor).await?;
     Ok(())
 }
