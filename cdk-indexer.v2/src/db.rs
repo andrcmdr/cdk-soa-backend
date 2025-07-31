@@ -13,11 +13,11 @@ pub async fn insert_event(
             block_number,
             transaction_hash,
             event_name,
-            params
+            event_data
         ) VALUES ($1, $2, $3, $4, $5, $6)
     "#;
 
-    let params_json = serde_json::to_vec(&serde_json::to_value(&payload.params)?)?;
+    let event_data_jsonb = serde_json::to_string_pretty(&payload.event_data)?;
 
     client
         .execute(
@@ -28,7 +28,7 @@ pub async fn insert_event(
                 &payload.block_number,
                 &payload.transaction_hash,
                 &payload.event_name,
-                &params_json,
+                &event_data_jsonb,
             ],
         )
         .await?;
