@@ -1,7 +1,8 @@
 mod config;
-mod db;
 mod event_processor;
+mod event_decoder;
 mod types;
+mod db;
 mod nats;
 
 use tokio_postgres::NoTls;

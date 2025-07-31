@@ -2,16 +2,18 @@ use alloy::providers::WsConnect;
 use alloy::providers::ProviderBuilder;
 use alloy::pubsub::PubSubFrontend;
 use alloy_provider::{Provider, RootProvider};
-use alloy::rpc::types::Log;
+use alloy::rpc::types::eth::Log;
 use alloy::primitives::Address;
-use alloy_json_abi::JsonAbi;
+use alloy::json_abi::JsonAbi;
 
 use std::collections::HashMap;
 use std::str::FromStr;
 use std::sync::Arc;
+
 use crate::config::AppConfig;
 use crate::types::EventPayload;
 use crate::{db, nats};
+use crate::event_decoder::EventDecoder;
 
 use tokio_postgres::Client as DbClient;
 use async_nats::jetstream::object_store::ObjectStore;
@@ -72,30 +74,26 @@ impl EventProcessor {
         };
 
         let contract_name = self.contract_names.get(&address).cloned().unwrap_or_default();
-        let topics = log.topics().iter().map(|t| t.0).collect::<Vec<_>>();
-        let data = log.data().data.0.clone();
+        let contract_name_str = contract_name.as_str();
 
-        let decoded = abi.decode_log(&topics, log.data().data.0.clone())?;
-        let event_name = decoded.event.name.clone();
-
-        let mut params = HashMap::new();
-        for (name, value) in decoded.params.iter() {
-            params.insert(name.clone(), format!("{:?}", value));
-        }
+        let decoder = EventDecoder::new(abi)?;
+        let parsed_event = decoder.decode_log(&log.inner)?;
+        let parsed_event_value = parsed_event.to_json()?;
+        let event_name = parsed_event.name.as_str();
 
         let payload = EventPayload {
-            contract_name: contract_name.clone(),
+            contract_name: contract_name_str.to_string(),
             contract_address: address.to_string(),
             block_number: log.block_number.unwrap_or_default().to_string(),
-            transaction_hash: log.transaction_hash.map(|h| format!("{:?}", h)).unwrap_or_default(),
-            event_name,
-            params,
+            transaction_hash: log.transaction_hash.unwrap_or_default().to_string(),
+            event_name: event_name.to_string(),
+            event_data: parsed_event_value,
         };
 
         db::insert_event(&self.db_pool, &payload).await?;
         nats::publish_event(&self.nats_store, &payload).await?;
 
-        tracing::info!("Inserted event '{}' from contract '{}'", event_name, contract_name);
+        tracing::info!("Inserted event '{}' from contract '{}'", event_name, contract_name_str);
 
         Ok(())
     }
