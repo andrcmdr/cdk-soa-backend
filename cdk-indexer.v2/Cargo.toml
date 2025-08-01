@@ -14,12 +14,15 @@ futures = "0.3"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 anyhow = "1.0"
+hex = "0.4"
 
 # Alloy stack
 alloy = { version = "0.7", features = ["provider-ws", "rpc-types", "sol-types", "json-abi"] }
 alloy-json-abi = "0.7"
+alloy-dyn-abi = "0.7"
 alloy-provider = { version = "0.7", features = ["ws"] }
 alloy-transport-ws = "0.7"
+alloy-primitives = "0.7"
 
 # NATS (JetStream + ObjectStore)
 async-nats = "0.42"
