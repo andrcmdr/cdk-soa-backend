@@ -43,9 +43,9 @@ pub async fn publish_event(
         "{}::{}::{}::{}::{}",
         payload.contract_name,
         payload.contract_address,
-        payload.block_number,
-        payload.transaction_hash,
-        payload.event_name
+        payload.event_name,
+        payload.event_signature,
+        payload.transaction_hash
     );
 
     let payload_bin = serde_json::to_vec(&serde_json::to_value(payload)?)?;

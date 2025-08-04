@@ -81,12 +81,23 @@ impl EventProcessor {
         let parsed_event_value = parsed_event.to_json()?;
         let event_name = parsed_event.name.as_str();
 
+        let block_hash = log.block_hash.unwrap_or_default().to_string();
+        let block_ts = log.block_timestamp.unwrap_or_default().to_string();
+        let tx_index = log.transaction_index.unwrap_or_default().to_string();
+        let log_index = log.log_index.unwrap_or_default().to_string();
+        let event_signature = parsed_event.signature.to_string();
+
         let payload = EventPayload {
             contract_name: contract_name_str.to_string(),
             contract_address: address.to_string(),
             block_number: log.block_number.unwrap_or_default().to_string(),
+            block_hash,
+            block_timestamp: block_ts,
             transaction_hash: log.transaction_hash.unwrap_or_default().to_string(),
+            transaction_index: tx_index,
+            log_index,
             event_name: event_name.to_string(),
+            event_signature,
             event_data: parsed_event_value,
         };
 
