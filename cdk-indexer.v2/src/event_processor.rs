@@ -1,14 +1,17 @@
 use alloy::providers::WsConnect;
 use alloy::providers::ProviderBuilder;
-use alloy::pubsub::PubSubFrontend;
 use alloy_provider::{Provider, RootProvider};
-use alloy::rpc::types::eth::Log;
+use alloy::pubsub::PubSubFrontend;
+use alloy::rpc::types::eth::{Log, Filter, FilterBlockOption};
+use alloy::eips::BlockNumberOrTag;
 use alloy::primitives::Address;
 use alloy::json_abi::JsonAbi;
 
 use std::collections::HashMap;
+use std::ops::{Range, RangeFrom};
 use std::str::FromStr;
 use std::sync::Arc;
+use futures::{Stream, StreamExt};
 
 use crate::config::AppConfig;
 use crate::types::EventPayload;
@@ -17,7 +20,6 @@ use crate::event_decoder::EventDecoder;
 
 use tokio_postgres::Client as DbClient;
 use async_nats::jetstream::object_store::ObjectStore;
-use futures::{Stream, StreamExt};
 
 pub struct EventProcessor {
     provider: RootProvider<PubSubFrontend>,
@@ -25,6 +27,7 @@ pub struct EventProcessor {
     contract_names: HashMap<Address, String>,
     db_pool: DbClient,
     nats_store: ObjectStore,
+    config: AppConfig,
 }
 
 impl EventProcessor {
@@ -48,11 +51,21 @@ impl EventProcessor {
             contract_names,
             db_pool,
             nats_store,
+            config: config.clone(),
         })
     }
 
     pub async fn process_logs(&self) -> anyhow::Result<()> {
-        let filter = alloy::rpc::types::Filter::new().select(0u64..);
+        let from_block = self.config.indexing.from_block.unwrap_or(0u64);
+        let to_block = self.config.indexing.to_block;
+
+        let mut filter = Filter::new().select(0u64..);
+        if let Some(to_block) = to_block {
+            filter = Filter::new().select(BlockRange(from_block..to_block));
+        } else {
+            filter = Filter::new().select(BlockRangeFrom(from_block..));
+        }
+
         let sub = self.provider.subscribe_logs(&filter).await?;
         let mut sub_stream = sub.into_stream();
 
@@ -107,5 +120,28 @@ impl EventProcessor {
         tracing::info!("Inserted event '{}' from contract '{}'", event_name, contract_name_str);
 
         Ok(())
+    }
+}
+
+/// Range from/to block type conversion helpers
+
+pub struct BlockRange(pub Range<u64>);
+impl From<BlockRange> for FilterBlockOption {
+    fn from(value: BlockRange) -> Self {
+        FilterBlockOption::Range {
+            from_block: Some(BlockNumberOrTag::Number(value.0.start)),
+            to_block: Some(BlockNumberOrTag::Number(value.0.end)),
+        }
+    }
+}
+
+pub struct BlockRangeFrom(pub RangeFrom<u64>);
+impl From<BlockRangeFrom> for FilterBlockOption {
+    fn from(value: BlockRangeFrom) -> Self {
+        FilterBlockOption::Range {
+            from_block: Some(BlockNumberOrTag::Number(value.0.start)),
+            to_block: None,
+//          to_block: Some(BlockNumberOrTag::Latest),
+        }
     }
 }

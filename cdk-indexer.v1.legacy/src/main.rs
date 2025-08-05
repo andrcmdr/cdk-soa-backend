@@ -31,17 +31,19 @@ async fn main() -> eyre::Result<()> {
         address_map.insert(contract.address, contract.name);
     }
 
-    let mut log_stream: SubscriptionStream<_, Log>;
-    let from_block = app_config.indexing.from_block.unwrap_or(0);
+    let from_block = app_config.indexing.from_block.unwrap_or(0u64);
     let to_block = app_config.indexing.to_block;
 
+    let mut filter = Filter::new().select(0u64..);
     if let Some(to_block) = to_block {
-        log_stream = provider.subscribe_logs(&Filter::new().select(from_block..to_block)).await?;
+        filter = Filter::new().select(from_block..to_block);
         println!("Listening for logs from block {} to block {}...", from_block, to_block);
     } else {
-        log_stream = provider.subscribe_logs(&Filter::new().select(from_block..)).await?;
+        filter = Filter::new().select(from_block..);
         println!("Listening for logs from block {}...", from_block);
     }
+
+    let mut log_stream = provider.subscribe_logs(&filter).await?;
 
     while let Some(log) = log_stream.next().await {
         if let Some(_name) = address_map.get(&log.address) {

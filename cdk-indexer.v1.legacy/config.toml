@@ -1,6 +1,6 @@
 ws_provider = "ws://localhost:8000/stream"
 db_url = "postgres://user:password@localhost/cdk_indexer"
 
-[index]
+[indexing]
 from_block=0
 to_block=

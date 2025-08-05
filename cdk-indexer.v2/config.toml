@@ -4,6 +4,10 @@ db_url = "postgresql://user:password@localhost/indexer"
 nats_url = "nats://localhost:4222"
 nats_bucket = "events_bucket"
 
+[indexing]
+from_block=0
+to_block=
+
 [MyContract]
 address = "0xabc123abc123abc123abc123abc123abc123abc1"
 abi_path = "abi/MyContract.json"

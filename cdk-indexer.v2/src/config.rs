@@ -3,13 +3,13 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct ContractConfig {
     pub address: String,
     pub abi_path: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct AppConfig {
     #[serde(flatten)]
     pub contracts: HashMap<String, ContractConfig>,
@@ -17,6 +17,13 @@ pub struct AppConfig {
     pub db_url: String,
     pub nats_url: String,
     pub nats_bucket: String,
+    pub indexing: IndexingConfig,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct IndexingConfig {
+    pub from_block: Option<u64>,
+    pub to_block: Option<u64>,
 }
 
 impl AppConfig {
