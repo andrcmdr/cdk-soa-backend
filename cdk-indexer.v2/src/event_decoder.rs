@@ -18,24 +18,35 @@ pub struct ParsedEventParam {
 #[derive(Debug, Clone)]
 pub struct ParsedEvent {
     pub name: String,
-    pub signature: B256,
+    pub signature: Option<B256>, // None for anonymous events
     pub params: Vec<ParsedEventParam>,
+    pub anonymous: bool,
 }
 
 pub struct EventDecoder {
     events: HashMap<B256, Event>,
+    anonymous_events: Vec<Event>,
 }
 
 impl EventDecoder {
     /// Create a new EventDecoder from a JSON ABI
     pub fn new(abi_json: Arc<JsonAbi>) -> Result<Self> {
         let mut events = HashMap::new();
+        let mut anonymous_events = Vec::new();
+
         for event in abi_json.events() {
-            let signature = event.selector();
-            events.insert(signature, event.clone());
+            if event.anonymous {
+                anonymous_events.push(event.clone());
+            } else {
+                let signature = event.selector();
+                events.insert(signature, event.clone());
+            }
         }
 
-        Ok(Self { events })
+        Ok(Self {
+            events,
+            anonymous_events,
+        })
     }
 
     /// Create a new EventDecoder from a JSON ABI string
@@ -43,12 +54,21 @@ impl EventDecoder {
         let abi: JsonAbi = serde_json::from_str(abi_json)?;
 
         let mut events = HashMap::new();
+        let mut anonymous_events = Vec::new();
+
         for event in abi.events() {
-            let signature = event.selector();
-            events.insert(signature, event.clone());
+            if event.anonymous {
+                anonymous_events.push(event.clone());
+            } else {
+                let signature = event.selector();
+                events.insert(signature, event.clone());
+            }
         }
 
-        Ok(Self { events })
+        Ok(Self {
+            events,
+            anonymous_events,
+        })
     }
 
     /// Create a new EventDecoder from a JSON ABI read from a file by its path
@@ -56,41 +76,80 @@ impl EventDecoder {
         let abi: JsonAbi = serde_json::from_str(&std::fs::read_to_string(abi_path)?)?;
 
         let mut events = HashMap::new();
+        let mut anonymous_events = Vec::new();
+
         for event in abi.events() {
-            let signature = event.selector();
-            events.insert(signature, event.clone());
+            if event.anonymous {
+                anonymous_events.push(event.clone());
+            } else {
+                let signature = event.selector();
+                events.insert(signature, event.clone());
+            }
         }
 
-        Ok(Self { events })
+        Ok(Self {
+            events,
+            anonymous_events,
+        })
     }
 
     /// Create EventDecoder from individual events
     pub fn from_events(events: Vec<Event>) -> Self {
         let mut event_map = HashMap::new();
+        let mut anonymous_events = Vec::new();
+
         for event in events {
-            let signature = event.selector();
-            event_map.insert(signature, event);
+            if event.anonymous {
+                anonymous_events.push(event);
+            } else {
+                let signature = event.selector();
+                event_map.insert(signature, event);
+            }
         }
 
-        Self { events: event_map }
+        Self {
+            events: event_map,
+            anonymous_events,
+        }
     }
 
     /// Decode a log entry into a ParsedEvent
     pub fn decode_log(&self, log: &Log) -> Result<ParsedEvent> {
-        // Get the event signature from the first topic
-        if log.topics().is_empty() {
-            return Err(anyhow!("Log has no topics"));
+        // First try to decode as a regular (non-anonymous) event
+        if !log.topics().is_empty() {
+            let event_signature = log.topics()[0];
+            if let Some(event) = self.events.get(&event_signature) {
+                return self.decode_log_with_event(log, event);
+            }
         }
 
-        let event_signature = log.topics()[0];
-        let event = self.events.get(&event_signature)
-            .ok_or_else(|| anyhow!("Event signature not found in ABI: {:#x}", event_signature))?;
+        // If no matching regular event found, try anonymous events
+        self.try_decode_anonymous_event(log)
+    }
 
-        self.decode_log_with_event(log, event)
+    /// Try to decode log as an anonymous event
+    pub fn try_decode_anonymous_event(&self, log: &Log) -> Result<ParsedEvent> {
+        let mut last_error = None;
+
+        for event in &self.anonymous_events {
+            match self.decode_anonymous_log_with_event(log, event) {
+                Ok(parsed) => return Ok(parsed),
+                Err(e) => last_error = Some(e),
+            }
+        }
+
+        match last_error {
+            Some(e) => Err(anyhow!("Failed to decode as any anonymous event: {}", e)),
+            None => Err(anyhow!("No anonymous events available for decoding")),
+        }
     }
 
     /// Decode a log entry using a specific event definition
     pub fn decode_log_with_event(&self, log: &Log, event: &Event) -> Result<ParsedEvent> {
+        if event.anonymous {
+            return self.decode_anonymous_log_with_event(log, event);
+        }
+
         let mut parsed_params = Vec::new();
         let mut topic_index = 1; // Skip the first topic (event signature)
 
@@ -138,9 +197,116 @@ impl EventDecoder {
 
         Ok(ParsedEvent {
             name: event.name.clone(),
-            signature: event.selector(),
+            signature: Some(event.selector()),
             params: parsed_params,
+            anonymous: false,
         })
+    }
+
+    /// Decode an anonymous event log using a specific event definition
+    pub fn decode_anonymous_log_with_event(&self, log: &Log, event: &Event) -> Result<ParsedEvent> {
+        if !event.anonymous {
+            return Err(anyhow!("Event {} is not anonymous", event.name));
+        }
+
+        let mut parsed_params = Vec::new();
+        let mut topic_index = 0; // Start from first topic for anonymous events
+
+        // Separate indexed and non-indexed parameters
+        let indexed_params: Vec<&EventParam> = event.inputs.iter().filter(|p| p.indexed).collect();
+        let non_indexed_params: Vec<&EventParam> = event.inputs.iter().filter(|p| !p.indexed).collect();
+
+        // Check if we have enough topics for all indexed parameters
+        if indexed_params.len() > log.topics().len() {
+            return Err(anyhow!(
+                "Not enough topics ({}) for indexed parameters ({}) in anonymous event {}",
+                log.topics().len(),
+                indexed_params.len(),
+                event.name
+            ));
+        }
+
+        // Decode indexed parameters from topics
+        for param in &indexed_params {
+            if topic_index >= log.topics().len() {
+                return Err(anyhow!("Not enough topics for indexed parameter: {}", param.name));
+            }
+
+            let topic = log.topics()[topic_index];
+            let value = self.decode_indexed_param(param, topic)?;
+
+            parsed_params.push(ParsedEventParam {
+                name: param.name.clone(),
+                param_type: param.ty.to_string(),
+                value,
+                indexed: true,
+            });
+
+            topic_index += 1;
+        }
+
+        // Decode non-indexed parameters from data
+        if !non_indexed_params.is_empty() {
+            let data_values = self.decode_data_params(&non_indexed_params, &log.data.data)?;
+
+            for (param, value) in non_indexed_params.iter().zip(data_values.iter()) {
+                parsed_params.push(ParsedEventParam {
+                    name: param.name.clone(),
+                    param_type: param.ty.to_string(),
+                    value: value.clone(),
+                    indexed: false,
+                });
+            }
+        }
+
+        // Sort parameters by their original order in the event definition
+        parsed_params.sort_by_key(|p| {
+            event.inputs.iter().position(|param| param.name == p.name).unwrap_or(usize::MAX)
+        });
+
+        Ok(ParsedEvent {
+            name: event.name.clone(),
+            signature: None, // Anonymous events don't have signatures
+            params: parsed_params,
+            anonymous: true,
+        })
+    }
+
+    /// Try to decode log with a specific anonymous event by name
+    pub fn try_decode_anonymous_event_by_name(&self, log: &Log, event_name: &str) -> Result<ParsedEvent> {
+        let event = self.anonymous_events
+            .iter()
+            .find(|e| e.name == event_name)
+            .ok_or_else(|| anyhow!("Anonymous event '{}' not found", event_name))?;
+
+        self.decode_anonymous_log_with_event(log, event)
+    }
+
+    /// Get all anonymous events
+    pub fn get_anonymous_events(&self) -> &[Event] {
+        &self.anonymous_events
+    }
+
+    /// Check if a log could potentially be an anonymous event based on topic count and data
+    pub fn could_be_anonymous_event(&self, log: &Log, event_name: &str) -> bool {
+        if let Some(event) = self.anonymous_events.iter().find(|e| e.name == event_name) {
+            let indexed_count = event.inputs.iter().filter(|p| p.indexed).count();
+            let non_indexed_count = event.inputs.iter().filter(|p| !p.indexed).count();
+
+            // Check topic count matches indexed parameters
+            if log.topics().len() != indexed_count {
+                return false;
+            }
+
+            // For non-indexed parameters, we can only do a basic check if data is present
+            if non_indexed_count > 0 && log.data.data.is_empty() {
+                return false;
+            }
+
+            true
+        } else {
+            false
+        }
     }
 
     /// Decode an indexed parameter from a topic
@@ -192,14 +358,29 @@ impl EventDecoder {
         }
     }
 
-    /// Get all available event signatures
+    /// Get all available event signatures (non-anonymous events only)
     pub fn get_event_signatures(&self) -> Vec<B256> {
         self.events.keys().copied().collect()
     }
 
-    /// Get event by signature
+    /// Get event by signature (non-anonymous events only)
     pub fn get_event(&self, signature: B256) -> Option<&Event> {
         self.events.get(&signature)
+    }
+
+    /// Get total count of events (both anonymous and non-anonymous)
+    pub fn total_events_count(&self) -> usize {
+        self.events.len() + self.anonymous_events.len()
+    }
+
+    /// Get count of anonymous events
+    pub fn anonymous_events_count(&self) -> usize {
+        self.anonymous_events.len()
+    }
+
+    /// Get count of non-anonymous events
+    pub fn regular_events_count(&self) -> usize {
+        self.events.len()
     }
 }
 
@@ -208,7 +389,12 @@ impl ParsedEvent {
     pub fn to_json(&self) -> Result<Value> {
         let mut event_json = serde_json::Map::new();
         event_json.insert("name".to_string(), Value::String(self.name.clone()));
-        event_json.insert("signature".to_string(), Value::String(format!("{:#x}", self.signature)));
+        event_json.insert("anonymous".to_string(), Value::Bool(self.anonymous));
+
+        match self.signature {
+            Some(sig) => event_json.insert("signature".to_string(), Value::String(format!("{:#x}", sig))),
+            None => event_json.insert("signature".to_string(), Value::Null),
+        };
 
         let mut params_json = Vec::new();
         for param in &self.params {
@@ -334,11 +520,116 @@ mod tests {
         assert_eq!(parsed.name, "Transfer");
         assert_eq!(parsed.params.len(), 3);
     }
+
+    #[test]
+    fn test_event_decoder_with_anonymous_events() {
+        let abi_json = r#"[
+            {
+                "type": "event",
+                "name": "Transfer",
+                "inputs": [
+                    {"name": "from", "type": "address", "indexed": true},
+                    {"name": "to", "type": "address", "indexed": true},
+                    {"name": "value", "type": "uint256", "indexed": false}
+                ]
+            },
+            {
+                "type": "event",
+                "name": "AnonymousTransfer",
+                "anonymous": true,
+                "inputs": [
+                    {"name": "from", "type": "address", "indexed": true},
+                    {"name": "to", "type": "address", "indexed": true},
+                    {"name": "amount", "type": "uint256", "indexed": false}
+                ]
+            }
+        ]"#;
+
+        let decoder = EventDecoder::from_str(abi_json).unwrap();
+        assert_eq!(decoder.regular_events_count(), 1);
+        assert_eq!(decoder.anonymous_events_count(), 1);
+        assert_eq!(decoder.total_events_count(), 2);
+    }
+
+    #[test]
+    fn test_anonymous_event_decoding() {
+        let abi_json = r#"[
+            {
+                "type": "event",
+                "name": "AnonymousTransfer",
+                "anonymous": true,
+                "inputs": [
+                    {"name": "from", "type": "address", "indexed": true},
+                    {"name": "to", "type": "address", "indexed": true},
+                    {"name": "amount", "type": "uint256", "indexed": false}
+                ]
+            }
+        ]"#;
+
+        let decoder = EventDecoder::from_str(abi_json).unwrap();
+
+        // Create a mock log for anonymous event (no event signature in first topic)
+        let from_addr = B256::from_slice(&hex::decode("000000000000000000000000742d35Cc6634C0532925a3b8BC342A5b6437AFCD").unwrap());
+        let to_addr = B256::from_slice(&hex::decode("000000000000000000000000742d35Cc6634C0532925a3b8BC342A5b6437AFCE").unwrap());
+
+        let topics = vec![from_addr, to_addr]; // No event signature for anonymous events
+        let data = Bytes::from(hex::decode("0000000000000000000000000000000000000000000000000de0b6b3a7640000").unwrap());
+
+        let log_data = LogData::new_unchecked(topics, data);
+        let log = Log {
+            address: Address::ZERO,
+            data: log_data,
+        };
+
+        let parsed = decoder.try_decode_anonymous_event_by_name(&log, "AnonymousTransfer").unwrap();
+        assert_eq!(parsed.name, "AnonymousTransfer");
+        assert!(parsed.anonymous);
+        assert!(parsed.signature.is_none());
+        assert_eq!(parsed.params.len(), 3);
+    }
+
+    #[test]
+    fn test_could_be_anonymous_event() {
+        let abi_json = r#"[
+            {
+                "type": "event",
+                "name": "AnonymousEvent",
+                "anonymous": true,
+                "inputs": [
+                    {"name": "param1", "type": "uint256", "indexed": true},
+                    {"name": "param2", "type": "string", "indexed": false}
+                ]
+            }
+        ]"#;
+
+        let decoder = EventDecoder::from_str(abi_json).unwrap();
+
+        // Create log with 1 topic and some data
+        let topics = vec![B256::ZERO];
+        let data = Bytes::from(vec![1, 2, 3, 4]);
+        let log_data = LogData::new_unchecked(topics, data.clone());
+        let log = Log {
+            address: Address::ZERO,
+            data: log_data,
+        };
+
+        assert!(decoder.could_be_anonymous_event(&log, "AnonymousEvent"));
+
+        // Test with wrong topic count
+        let topics = vec![B256::ZERO, B256::ZERO]; // Too many topics
+        let log_data = LogData::new_unchecked(topics, data);
+        let log = Log {
+            address: Address::ZERO,
+            data: log_data,
+        };
+
+        assert!(!decoder.could_be_anonymous_event(&log, "AnonymousEvent"));
+    }
 }
 
 /*
 
-// Event Decoder Library usage examples (for regular events):
+// Event Decoder Library usage examples (for regular non-anonymous events and anonymous events):
 
 use alloy::primitives::{Log, LogData, Address, B256, Bytes};
 
@@ -367,6 +658,47 @@ fn main() -> Result<()> {
     println!("JSON: {}", serde_json::to_string_pretty(&parsed_event.to_json()?)?);
 
     Ok(())
+}
+
+fn anonymous() -> Result<()> {
+    // Create decoder from ABI JSON
+    let abi_json = r#"[
+        {
+            "type": "event",
+            "name": "Transfer",
+            "inputs": [
+                {"name": "from", "type": "address", "indexed": true},
+                {"name": "to", "type": "address", "indexed": true},
+                {"name": "value", "type": "uint256", "indexed": false}
+            ]
+        },
+        {
+            "type": "event",
+            "name": "AnonymousTransfer",
+            "anonymous": true,
+            "inputs": [
+                {"name": "from", "type": "address", "indexed": true},
+                {"name": "to", "type": "address", "indexed": true},
+                {"name": "amount", "type": "uint256", "indexed": false}
+            ]
+        }
+    ]"#;
+
+    let decoder = EventDecoder::new(abi_json)?;
+
+    // Try to decode any log (will attempt both regular and anonymous)
+    let parsed_event = decoder.decode_log(&log)?;
+
+    // Specifically try anonymous events
+    let anonymous_parsed = decoder.try_decode_anonymous_event(&log)?;
+
+    // Try specific anonymous event by name
+    let specific_anonymous = decoder.try_decode_anonymous_event_by_name(&log, "AnonymousTransfer")?;
+
+    // Check if log could be a specific anonymous event
+    if decoder.could_be_anonymous_event(&log, "AnonymousTransfer") {
+        println!("This log could be an AnonymousTransfer event");
+    }
 }
 
 */
