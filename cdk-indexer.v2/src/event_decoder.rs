@@ -38,7 +38,7 @@ impl EventDecoder {
         Ok(Self { events })
     }
 
-    /// Create a new EventDecoder from a JSON ABI
+    /// Create a new EventDecoder from a JSON ABI string
     pub fn from_str(abi_json: &str) -> Result<Self> {
         let abi: JsonAbi = serde_json::from_str(abi_json)?;
 
