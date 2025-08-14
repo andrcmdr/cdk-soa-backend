@@ -1,0 +1,12 @@
+[dependencies]
+alloy = { version = "0.7", features = ["provider", "rpc-client", "signer-wallet", "ws"] }
+alloy-sol-types = "0.7"
+alloy-primitives = "0.7"
+trie-db = "0.24"
+rlp = "0.5"
+memory-db = "0.31"
+keccak-hasher = "0.15"
+csv = "1"
+serde = { version = "1", features = ["derive"] }
+tokio = { version = "1", features = ["full"] }
+anyhow = "1"

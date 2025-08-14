@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "cdk-indexer.v2",
+    "merkle-trie-generator",
 ]
 exclude = [
     "cdk-indexer.v1.legacy",
