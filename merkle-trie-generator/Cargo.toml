@@ -1,5 +1,12 @@
+[package]
+name = "merkle-trie-generator"
+version = "0.1.0"
+edition = "2021"
+
 [dependencies]
-alloy = { version = "0.7", features = ["provider", "rpc-client", "signer-wallet", "ws"] }
+alloy = { version = "0.7", features = ["provider-ws", "rpc-client", "rpc-client-ws", "transport-ws", "signer-local"] }
+alloy-provider = { version = "0.7", features = ["ws"] }
+alloy-transport-ws = "0.7"
 alloy-sol-types = "0.7"
 alloy-primitives = "0.7"
 trie-db = "0.24"
@@ -10,3 +17,9 @@ csv = "1"
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 anyhow = "1"
+
+[profile.release]
+strip = true
+lto = true
+panic = "abort"
+codegen-units = 1
