@@ -32,6 +32,7 @@ pub async fn init_nats(nats_url: &str, bucket: &str) -> anyhow::Result<ObjectSto
             .await?
         },
     };
+
     Ok(store)
 }
 

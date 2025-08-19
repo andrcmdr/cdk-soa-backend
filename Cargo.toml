@@ -1,10 +1,11 @@
 [workspace]
 members = [
-    "cdk-indexer.v2",
-    "merkle-trie-generator",
+    "cdk-indexer.v3",
 ]
 exclude = [
-    "cdk-indexer.v1.legacy",
+    "cdk-indexer.v1.ethers",
+    "cdk-indexer.v2.alloy",
+    "merkle-trie-generator",
 ]
 
 # edition = "2021"
@@ -16,3 +17,4 @@ strip = true
 lto = true
 panic = "abort"
 codegen-units = 1
+

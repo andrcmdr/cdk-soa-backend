@@ -124,7 +124,6 @@ impl EventProcessor {
 }
 
 /// Range from/to block type conversion helpers
-
 pub struct BlockRange(pub Range<u64>);
 impl From<BlockRange> for FilterBlockOption {
     fn from(value: BlockRange) -> Self {
@@ -135,6 +134,7 @@ impl From<BlockRange> for FilterBlockOption {
     }
 }
 
+/// Range from.. block type conversion helpers
 pub struct BlockRangeFrom(pub RangeFrom<u64>);
 impl From<BlockRangeFrom> for FilterBlockOption {
     fn from(value: BlockRangeFrom) -> Self {
