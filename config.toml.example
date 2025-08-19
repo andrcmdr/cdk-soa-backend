@@ -7,7 +7,6 @@ port = 5432
 name = "oracle_service"
 user = "oracle_user"
 password = "your_password_here"
-max_connections = 10
 
 [service]
 host = "0.0.0.0"

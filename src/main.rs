@@ -1,8 +1,14 @@
 mod config;
 mod db;
+mod models;
+mod mock_data;
+mod validators;
+
 
 use anyhow::Result;
-use tracing::info;
+use crate::mock_data::{load_mock_revenue_reports, load_mock_usage_reports};
+use crate::validators::{validate_revenue_report, validate_usage_report};
+use tracing::{info, debug};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -31,6 +37,49 @@ async fn main() -> Result<()> {
     info!("Database stats - Revenue reports: {}, Usage reports: {}", revenue_count, usage_count);
     
     info!("Oracle Service started successfully!");
+
+    info!("Loading mock data...");
+    let revenue_reports = load_mock_revenue_reports()?;
+    let usage_reports = load_mock_usage_reports()?;
+    info!("Mock data loaded successfully");
+    
+    debug!("Revenue reports: {:?}", revenue_reports);
+    debug!("Usage reports: {:?}", usage_reports);
+
+    info!("Inserting mock data into database...");
+
+    // validate revenue reports and insert into database
+    for (i, revenue_report) in revenue_reports.iter().enumerate() {
+        match validate_revenue_report(&revenue_report) {
+            Ok(valid) => {
+                if valid {
+                    match db.insert_revenue_report(&revenue_report).await {
+                        Ok(_) => info!("Inserted revenue report {}", i),
+                        Err(e) => eprintln!("Failed to insert revenue report {}: {}", i, e),
+                    }
+                }
+            }
+            Err(e) => info!("Validation of revenue report {} failed: {}", i, e),
+        }
+    }
+
+    // validate usage reports and insert into database
+    // for usage_report in usage_reports {
+    //     match validate_usage_report(&usage_report) {
+    //         Ok(valid) => {
+    //             if valid {
+    //                 db.insert_usage_report(&usage_report).await?;
+    //             }
+    //         }
+    //         Err(e) => info!("Validation of usage report failed: {}", e),
+    //     }
+    // }
+
+    info!("Mock data inserted into database successfully");
+
+    info!("Database stats - Revenue reports: {}, Usage reports: {}", db.get_revenue_reports_count().await?, db.get_usage_reports_count().await?);
+
+
     
     // Keep the service running indefinitely
     loop {
