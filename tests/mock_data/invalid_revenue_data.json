@@ -1,0 +1,27 @@
+[
+    {
+      "artifact_address": "0xinvalid_address_too_short",
+      "revenue": "1500000000000000000",
+      "timestamp": 1704067200
+    },
+    {
+      "artifact_address": "0x1234567890123456789012345678901234567890",
+      "revenue": "-1000000000000000000",
+      "timestamp": 1704067200
+    },
+    {
+      "artifact_address": "0x1234567890123456789012345678901234567890",
+      "revenue": "not_a_number",
+      "timestamp": 1704067200
+    },
+    {
+      "artifact_address": "0x1234567890123456789012345678901234567890",
+      "revenue": "1500000000000000000",
+      "timestamp": -1
+    },
+    {
+      "artifact_address": "",
+      "revenue": "1500000000000000000",
+      "timestamp": 1704067200
+    }
+  ]

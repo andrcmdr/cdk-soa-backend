@@ -24,5 +24,7 @@ COPY --from=builder /usr/src/app/target/release/oracle-service /usr/local/bin/or
 
 WORKDIR /app
 COPY config.toml ./config.toml
+# Add this line to copy mock data:
+COPY tests/mock_data ./tests/mock_data
 
 ENTRYPOINT ["/usr/local/bin/oracle-service"]
