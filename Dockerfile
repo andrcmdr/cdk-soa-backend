@@ -27,4 +27,6 @@ COPY config.toml ./config.toml
 # Add this line to copy mock data:
 COPY tests/mock_data ./tests/mock_data
 
+EXPOSE 8080
+
 ENTRYPOINT ["/usr/local/bin/oracle-service"]

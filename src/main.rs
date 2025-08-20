@@ -1,3 +1,4 @@
+mod api;
 mod config;
 mod db;
 mod models;
@@ -8,7 +9,9 @@ mod validators;
 use anyhow::Result;
 use crate::mock_data::{load_mock_revenue_reports, load_mock_usage_reports};
 use crate::validators::{validate_revenue_report, validate_usage_report};
-use tracing::{info, debug};
+use crate::api::create_router;
+use tracing::{info, debug, error};
+use std::net::SocketAddr;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -55,7 +58,7 @@ async fn main() -> Result<()> {
                 if valid {
                     match db.insert_revenue_report(&revenue_report).await {
                         Ok(_) => info!("Inserted revenue report {}", i),
-                        Err(e) => eprintln!("Failed to insert revenue report {}: {}", i, e),
+                        Err(e) => error!("Failed to insert revenue report {}: {}", i, e),
                     }
                 }
             }
@@ -63,27 +66,37 @@ async fn main() -> Result<()> {
         }
     }
 
-    // validate usage reports and insert into database
-    // for usage_report in usage_reports {
-    //     match validate_usage_report(&usage_report) {
-    //         Ok(valid) => {
-    //             if valid {
-    //                 db.insert_usage_report(&usage_report).await?;
-    //             }
-    //         }
-    //         Err(e) => info!("Validation of usage report failed: {}", e),
-    //     }
-    // }
+    for (i, usage_report) in usage_reports.iter().enumerate() {
+        match validate_usage_report(&usage_report) {
+            Ok(valid) => {
+                if valid {
+                    match db.insert_usage_report(&usage_report).await {
+                        Ok(_) => info!("Inserted usage report {}", i),
+                        Err(e) => error!("Failed to insert usage report {}: {}", i, e),
+                    }
+                }
+            }
+            Err(e) => info!("Validation of revenue report {} failed: {}", i, e),
+        }
+    }
 
     info!("Mock data inserted into database successfully");
 
     info!("Database stats - Revenue reports: {}, Usage reports: {}", db.get_revenue_reports_count().await?, db.get_usage_reports_count().await?);
 
-
+    // Create the API router
+    let app = create_router(db);
     
-    // Keep the service running indefinitely
-    loop {
-        tokio::time::sleep(tokio::time::Duration::from_secs(60)).await;
-        info!("Oracle Service is running...");
-    }
+    // Bind to the configured address
+    let addr = format!("{}:{}", config.service.host, config.service.port)
+        .parse::<SocketAddr>()
+        .expect("Failed to parse socket address");
+    
+    info!("Starting HTTP server on {}", addr);
+    
+    // Start the server
+    let listener = tokio::net::TcpListener::bind(addr).await?;
+    axum::serve(listener, app).await?;
+
+    Ok(())
 }
