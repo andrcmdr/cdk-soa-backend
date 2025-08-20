@@ -8,7 +8,8 @@
  - Transaction producer, library to include in other services. Includes wallet client functionality and KMS integration for storing private keys securely encrypted, for transaction signing.
  - Oracle service, for providing data from concrete API and DB.
  - Oracle service (more generic), on-chain contracts data provider component from off-chain data sources.
- - Merkle tree generator (includes transaction producer), for generating Merkle tree, compute root hash, for storing off-chain data for on-chain contracts.
+ - Merkle Trie generator (includes transaction producer), for generating Merkle tree, compute root hash, for storing off-chain data for on-chain contracts.
+ - Airdrop Eligibility service: fully-fledged service with Merkle Trie generator and transaction producer in its core.
 
 ## CDK Indexer
 
@@ -27,4 +28,3 @@ We'll get output:
   "message": "Data are posted!"
 }
 ```
-

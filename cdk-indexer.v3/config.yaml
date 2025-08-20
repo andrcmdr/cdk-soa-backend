@@ -1,0 +1,27 @@
+chain:
+  http_rpc_url: "https://rpc.polygon-cdk-chain.example"
+  ws_rpc_url:   "wss://rpc.polygon-cdk-chain.example/ws"
+  chain_id:  1101
+
+indexing:
+  from_block: 0
+  to_block:
+
+postgres:
+  # libpq connection string format
+  dsn: "host=localhost user=cdk_indexer password=secret dbname=cdk_indexer port=5432"
+  schema: "./init.sql"
+
+nats:
+  url: "nats://localhost:4222"
+  # existing JetStream object store bucket for persisted event payloads
+  object_store_bucket: "events_bucket"
+
+# contracts to monitor; ABI path is relative to the binary CWD
+contracts:
+  - name: "Bridge"
+    address: "0x1111111111111111111111111111111111111111"
+    abi_path: "./abi/Bridge.json"
+  - name: "ERC20USDC"
+    address: "0x2222222222222222222222222222222222222222"
+    abi_path: "./abi/ERC20.json"
