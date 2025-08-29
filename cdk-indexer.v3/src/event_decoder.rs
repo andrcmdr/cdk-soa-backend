@@ -6,6 +6,7 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;
 use serde_json::Value;
+use tracing::{info, warn};
 
 #[derive(Debug, Clone)]
 pub struct ParsedEventParam {
@@ -26,18 +27,65 @@ pub struct ParsedEvent {
 pub struct EventDecoder {
     events: HashMap<B256, Event>,
     anonymous_events: Vec<Event>,
+    anonymous_presence: HashMap<String, bool>,
 }
 
 impl EventDecoder {
+    /// Helper function to check if anonymous field is explicitly present in JSON, accepted as Serde JSON Value
+    pub fn check_anonymous_field_presence_from_val(raw_value: &Value) -> Result<HashMap<String, bool>> {
+        let mut anonymous_presence = HashMap::new();
+
+        if let Value::Array(events) = raw_value {
+            for event in events {
+                if let Value::Object(obj) = event {
+                    if let Some(Value::String(name)) = obj.get("name") {
+                        anonymous_presence.insert(name.clone(), obj.contains_key("anonymous"));
+                    }
+                }
+            }
+        }
+
+        Ok(anonymous_presence)
+    }
+
+    /// Helper function to check if anonymous field is explicitly present in JSON, accepted as str
+    pub fn check_anonymous_field_presence_from_str(abi_json: &str) -> Result<HashMap<String, bool>> {
+        // Parse as raw JSON first to check 'anonymous' field presence
+        let raw_value: Value = serde_json::from_str(abi_json)?;
+
+        EventDecoder::check_anonymous_field_presence_from_val(&raw_value)
+    }
+
+    /// Helper function to check if anonymous field is explicitly present in JSON, accepted as Vec<u8>
+    pub fn check_anonymous_field_presence_from_vec(abi_json: &[u8]) -> Result<HashMap<String, bool>> {
+        // Parse as raw JSON first to check 'anonymous' field presence
+        let raw_value: Value = serde_json::from_slice(abi_json)?;
+
+        EventDecoder::check_anonymous_field_presence_from_val(&raw_value)
+    }
+
     /// Create a new EventDecoder from a JSON ABI
-    pub fn new(abi_json: Arc<JsonAbi>) -> Result<Self> {
+    pub fn new(abi_json: Arc<JsonAbi>, anonymous_presence: HashMap<String, bool>) -> Result<Self> {
         let mut events = HashMap::new();
         let mut anonymous_events = Vec::new();
 
         for event in abi_json.events() {
-            if event.anonymous {
-                anonymous_events.push(event.clone());
+            let explicit_anonymous = anonymous_presence
+                .get(&event.name)
+                .copied()
+                .unwrap_or(false);
+
+            if explicit_anonymous {
+                // Field is explicitly present, use its value
+                if event.anonymous {
+                    anonymous_events.push(event.clone());
+                } else {
+                    let signature = event.selector();
+                    events.insert(signature, event.clone());
+                }
             } else {
+                // Field is not present, default to non-anonymous
+                warn!("Event {} has no explicit anonymous field, treating as non-anonymous", event.name);
                 let signature = event.selector();
                 events.insert(signature, event.clone());
             }
@@ -46,71 +94,77 @@ impl EventDecoder {
         Ok(Self {
             events,
             anonymous_events,
+            anonymous_presence,
         })
     }
 
     /// Create a new EventDecoder from a JSON ABI string
     pub fn from_str(abi_json: &str) -> Result<Self> {
+        // First check which events have explicit anonymous fields
+        let anonymous_presence = EventDecoder::check_anonymous_field_presence_from_str(abi_json)?;
+
+        // Then parse with JsonAbi
         let abi: JsonAbi = serde_json::from_str(abi_json)?;
 
-        let mut events = HashMap::new();
-        let mut anonymous_events = Vec::new();
+        EventDecoder::new(abi.into(), anonymous_presence)
+    }
 
-        for event in abi.events() {
-            if event.anonymous {
-                anonymous_events.push(event.clone());
-            } else {
-                let signature = event.selector();
-                events.insert(signature, event.clone());
-            }
-        }
+    /// Create a new EventDecoder from a JSON ABI vector/array
+    pub fn from_vec(abi_json: &[u8]) -> Result<Self> {
+        // First check which events have explicit anonymous fields
+        let anonymous_presence = EventDecoder::check_anonymous_field_presence_from_vec(abi_json)?;
 
-        Ok(Self {
-            events,
-            anonymous_events,
-        })
+        // Then parse with JsonAbi
+        let abi: JsonAbi = serde_json::from_slice(abi_json)?;
+
+        EventDecoder::new(abi.into(), anonymous_presence)
     }
 
     /// Create a new EventDecoder from a JSON ABI read from a file by its path
     pub fn from_file(abi_path: &Path) -> Result<Self> {
-        let abi: JsonAbi = serde_json::from_str(&std::fs::read_to_string(abi_path)?)?;
+        let abi_json = std::fs::read_to_string(abi_path)?;
 
-        let mut events = HashMap::new();
-        let mut anonymous_events = Vec::new();
+        // First check which events have explicit anonymous fields
+        let anonymous_presence = EventDecoder::check_anonymous_field_presence_from_str(&abi_json.clone())?;
 
-        for event in abi.events() {
-            if event.anonymous {
-                anonymous_events.push(event.clone());
-            } else {
-                let signature = event.selector();
-                events.insert(signature, event.clone());
-            }
-        }
+        // Then parse with JsonAbi
+        let abi: JsonAbi = serde_json::from_str(&abi_json)?;
 
-        Ok(Self {
-            events,
-            anonymous_events,
-        })
+        EventDecoder::new(abi.into(), anonymous_presence)
     }
 
     /// Create EventDecoder from individual events
-    pub fn from_events(events: Vec<Event>) -> Self {
+    pub fn from_events(events: Vec<Event>, anonymous_presence: HashMap<String, bool>) -> Result<Self> {
         let mut event_map = HashMap::new();
         let mut anonymous_events = Vec::new();
 
         for event in events {
-            if event.anonymous {
-                anonymous_events.push(event);
+            let explicit_anonymous = anonymous_presence
+                .get(&event.name)
+                .copied()
+                .unwrap_or(false);
+
+            if explicit_anonymous {
+                // Field is explicitly present, use its value
+                if event.anonymous {
+                    anonymous_events.push(event.clone());
+                } else {
+                    let signature = event.selector();
+                    event_map.insert(signature, event.clone());
+                }
             } else {
+                // Field is not present, default to non-anonymous
+                warn!("Event {} has no explicit anonymous field, treating as non-anonymous", event.name);
                 let signature = event.selector();
-                event_map.insert(signature, event);
+                event_map.insert(signature, event.clone());
             }
         }
 
-        Self {
+        Ok(Self {
             events: event_map,
             anonymous_events,
-        }
+            anonymous_presence,
+        })
     }
 
     /// Decode a log entry into a ParsedEvent
