@@ -5,6 +5,7 @@ use alloy::{
     providers::{Provider, ProviderBuilder, WsConnect},
     rpc::types::{Filter, FilterBlockOption, BlockNumberOrTag, Log as RpcLog},
     primitives::Address,
+    json_abi::JsonAbi,
 };
 
 use tokio_postgres::Client as DbClient;
@@ -96,9 +97,7 @@ impl EventProcessor {
         let Some(contract) = self.addr_abi_map.get(&addr) else { return Ok(()); };
 
         let abi = Arc::new(contract.abi.clone());
-        let anonymous_presence = EventDecoder::check_anonymous_field_presence_from_val(&contract.json_abi)?;
-
-        let decoder = EventDecoder::new(abi, anonymous_presence)?;
+        let decoder = EventDecoder::new(abi)?;
         let parsed_event = decoder.decode_log(&log.inner)?;
         let parsed_event_value = parsed_event.to_json()?;
 

@@ -11,17 +11,24 @@ pub struct ContractAbi {
     pub name: String,
     pub address: Address,
     pub abi: JsonAbi,
-    pub json_abi: Value,
 }
 
 impl ContractAbi {
     pub fn load(name: &str, address_hex: &str, abi_path: &str) -> anyhow::Result<Self> {
         let address = Address::from_str(address_hex)?;
+
         let path = PathBuf::from(abi_path);
         let json_abi_vec= fs::read(path)?;
-        let json_abi: Value = serde_json::from_slice(&json_abi_vec)?;
-        let abi: JsonAbi = serde_json::from_slice(&json_abi_vec)?;
 
-        Ok(Self { name: name.to_string(), address, abi, json_abi })
+        // Preprocess the JSON to add missing anonymous fields
+        let preprocessed_json = EventDecoder::preprocess_abi_json_from_vec(&json_abi_vec)?;
+        // Safely deserialize with JsonAbi
+        let json_abi: JsonAbi = serde_json::from_slice(&preprocessed_json)?;
+
+        Ok(Self {
+            name: name.to_string(),
+            address,
+            abi: json_abi
+        })
     }
 }
