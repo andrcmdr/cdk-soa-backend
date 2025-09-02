@@ -40,7 +40,11 @@ impl EventProcessor {
 
         for (name, c) in &config.contracts {
             let addr = Address::from_str(&c.address)?;
-            let abi: JsonAbi = serde_json::from_str(&std::fs::read_to_string(&c.abi_path)?)?;
+            let abi_json = std::fs::read_to_string(&c.abi_path)?;
+            // Preprocess the JSON to add missing anonymous fields
+            let preprocessed_json = EventDecoder::preprocess_abi_json_from_str(&abi_json)?;
+            // Safely deserialize with JsonAbi
+            let abi: JsonAbi = serde_json::from_str(&preprocessed_json)?;
             abi_map.insert(addr, Arc::new(abi));
             contract_names.insert(addr, name.clone());
         }
@@ -86,14 +90,13 @@ impl EventProcessor {
             None => return Ok(()),
         };
 
-        let contract_name = self.contract_names.get(&address).cloned().unwrap_or_default();
-        let contract_name_str = contract_name.as_str();
-
         let decoder = EventDecoder::new(abi)?;
         let parsed_event = decoder.decode_log(&log.inner)?;
         let parsed_event_value = parsed_event.to_json()?;
         let event_name = parsed_event.name.as_str();
 
+        let contract_name = self.contract_names.get(&address).cloned().unwrap_or_default();
+        let contract_name_str = contract_name.as_str();
         let block_hash = log.block_hash.unwrap_or_default().to_string();
         let block_ts = log.block_timestamp.unwrap_or_default().to_string();
         let tx_index = log.transaction_index.unwrap_or_default().to_string();

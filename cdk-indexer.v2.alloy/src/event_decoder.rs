@@ -6,6 +6,7 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;
 use serde_json::Value;
+use tracing::{info, warn};
 
 #[derive(Debug, Clone)]
 pub struct ParsedEventParam {
@@ -29,6 +30,43 @@ pub struct EventDecoder {
 }
 
 impl EventDecoder {
+    /// Preprocess ABI JSON to ensure all events have an anonymous field
+    pub fn preprocess_abi_json(abi_json_value: &Value) -> Result<Value> {
+        let mut value: Value = abi_json_value.clone();
+
+        if let Value::Array(events) = &mut value {
+            for event in events.iter_mut() {
+                if let Value::Object(obj) = event {
+                    // Check if this is an event and if it's missing the anonymous field
+                    if let Some(Value::String(event_type)) = obj.get("type") {
+                        if event_type == "event" && !obj.contains_key("anonymous") {
+                            // Add anonymous: false as default
+                            obj.insert("anonymous".to_string(), Value::Bool(false));
+                        }
+                    }
+                }
+            }
+        }
+
+        Ok(value)
+    }
+
+    pub fn preprocess_abi_json_from_str(abi_json: &str) -> Result<String> {
+        let abi_json_value: Value = serde_json::from_str(abi_json)?;
+        // Preprocess the JSON to add missing anonymous fields
+        let preprocessed_json = Self::preprocess_abi_json(&abi_json_value)?;
+        serde_json::to_string(&preprocessed_json)
+            .map_err(|e| anyhow!("Failed to serialize preprocessed JSON: {}", e))
+    }
+
+    pub fn preprocess_abi_json_from_vec(abi_json: &[u8]) -> Result<Vec<u8>> {
+        let abi_json_value: Value = serde_json::from_slice(abi_json)?;
+        // Preprocess the JSON to add missing anonymous fields
+        let preprocessed_json = Self::preprocess_abi_json(&abi_json_value)?;
+        serde_json::to_vec(&preprocessed_json)
+            .map_err(|e| anyhow!("Failed to serialize preprocessed JSON: {}", e))
+    }
+
     /// Create a new EventDecoder from a JSON ABI
     pub fn new(abi_json: Arc<JsonAbi>) -> Result<Self> {
         let mut events = HashMap::new();
@@ -51,66 +89,53 @@ impl EventDecoder {
 
     /// Create a new EventDecoder from a JSON ABI string
     pub fn from_str(abi_json: &str) -> Result<Self> {
-        let abi: JsonAbi = serde_json::from_str(abi_json)?;
+        // Preprocess the JSON to add missing anonymous fields
+        let preprocessed_json = Self::preprocess_abi_json_from_str(abi_json)?;
+        // Safely deserialize with JsonAbi
+        let abi: JsonAbi = serde_json::from_str(&preprocessed_json)?;
 
-        let mut events = HashMap::new();
-        let mut anonymous_events = Vec::new();
+        Self::new(abi.into())
+    }
 
-        for event in abi.events() {
-            if event.anonymous {
-                anonymous_events.push(event.clone());
-            } else {
-                let signature = event.selector();
-                events.insert(signature, event.clone());
-            }
-        }
+    /// Create a new EventDecoder from a JSON ABI vector/array
+    pub fn from_vec(abi_json: &[u8]) -> Result<Self> {
+        // Preprocess the JSON to add missing anonymous fields
+        let preprocessed_json = Self::preprocess_abi_json_from_vec(abi_json)?;
+        // Safely deserialize with JsonAbi
+        let abi: JsonAbi = serde_json::from_slice(&preprocessed_json)?;
 
-        Ok(Self {
-            events,
-            anonymous_events,
-        })
+        Self::new(abi.into())
     }
 
     /// Create a new EventDecoder from a JSON ABI read from a file by its path
     pub fn from_file(abi_path: &Path) -> Result<Self> {
-        let abi: JsonAbi = serde_json::from_str(&std::fs::read_to_string(abi_path)?)?;
+        let abi_json = std::fs::read_to_string(abi_path)?;
+        // Preprocess the JSON to add missing anonymous fields
+        let preprocessed_json = Self::preprocess_abi_json_from_str(&abi_json)?;
+        // Safely deserialize with JsonAbi
+        let abi: JsonAbi = serde_json::from_str(&preprocessed_json)?;
 
-        let mut events = HashMap::new();
-        let mut anonymous_events = Vec::new();
-
-        for event in abi.events() {
-            if event.anonymous {
-                anonymous_events.push(event.clone());
-            } else {
-                let signature = event.selector();
-                events.insert(signature, event.clone());
-            }
-        }
-
-        Ok(Self {
-            events,
-            anonymous_events,
-        })
+        Self::new(abi.into())
     }
 
     /// Create EventDecoder from individual events
-    pub fn from_events(events: Vec<Event>) -> Self {
+    pub fn from_events(events: Vec<Event>) -> Result<Self> {
         let mut event_map = HashMap::new();
         let mut anonymous_events = Vec::new();
 
         for event in events {
             if event.anonymous {
-                anonymous_events.push(event);
+                anonymous_events.push(event.clone());
             } else {
                 let signature = event.selector();
-                event_map.insert(signature, event);
+                event_map.insert(signature, event.clone());
             }
         }
 
-        Self {
+        Ok(Self {
             events: event_map,
             anonymous_events,
-        }
+        })
     }
 
     /// Decode a log entry into a ParsedEvent
