@@ -35,7 +35,9 @@ thiserror = "1.0"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "ansi"] }
 anyhow = "1.0"
+
 hex = "0.4"
+sha3 = "0.10"
 
 # For reading ABI files from disk
 # camino = "1.1"

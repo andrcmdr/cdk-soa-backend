@@ -21,6 +21,7 @@ pub struct PgCfg {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct NatsCfg {
+    pub nats_enabled: Option<u8>,
     pub url: String,
     pub object_store_bucket: String,
 }

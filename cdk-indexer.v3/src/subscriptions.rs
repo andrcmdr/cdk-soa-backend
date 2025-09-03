@@ -7,6 +7,8 @@ use alloy::{
     primitives::Address,
     json_abi::JsonAbi,
 };
+use alloy::providers::fillers::{BlobGasFiller, ChainIdFiller, FillProvider, GasFiller, JoinFill, NonceFiller};
+use alloy::providers::{Identity, RootProvider};
 
 use tokio_postgres::Client as DbClient;
 use async_nats::jetstream::object_store::ObjectStore;
@@ -18,17 +20,24 @@ use crate::types::EventPayload;
 
 use std::ops::{Range, RangeFrom};
 use std::sync::Arc;
+use alloy::consensus::Transaction;
+use alloy::network::TransactionResponse;
 use anyhow::anyhow;
+
+type RPCProvider = FillProvider<JoinFill<Identity, JoinFill<GasFiller, JoinFill<BlobGasFiller, JoinFill<NonceFiller, ChainIdFiller>>>>, RootProvider>;
 
 pub struct EventProcessor {
     addr_abi_map: BTreeMap<Address, ContractAbi>,
     db_pool: DbClient,
-    nats_store: Nats,
+    nats_store: Option<Nats>,
     config: AppConfig,
+    ws_rpc_provider: RPCProvider,
+    http_rpc_provider: RPCProvider,
+    chain_id: u64,
 }
 
 impl EventProcessor {
-    pub async fn new(config: &AppConfig, db_pool: DbClient, nats_store: Nats) -> anyhow::Result<Self> {
+    pub async fn new(config: &AppConfig, db_pool: DbClient, nats_store: Option<Nats>) -> anyhow::Result<Self> {
         // ABIs
         let mut contracts = Vec::with_capacity(config.contracts.len());
         for c in config.contracts.iter() {
@@ -43,18 +52,27 @@ impl EventProcessor {
         let mut addr_abi_map: BTreeMap<Address, ContractAbi> = BTreeMap::new();
         for c in contracts { addr_abi_map.insert(c.address, c); }
 
+        let (ws_rpc_provider, http_rpc_provider) = build_providers(&config.chain.http_rpc_url, &config.chain.ws_rpc_url).await?;
+
+        let chain_id = http_rpc_provider.get_chain_id().await?;
+
+        if chain_id != config.chain.chain_id {
+            anyhow::bail!("Chain ID mismatch: expected {}, got {}", config.chain.chain_id, chain_id);
+        }
+
         Ok(Self {
             addr_abi_map,
             db_pool,
             nats_store,
             config: config.clone(),
+            ws_rpc_provider,
+            http_rpc_provider,
+            chain_id,
         })
     }
 
-
     pub async fn run(&self) -> anyhow::Result<()> {
-        let ws = WsConnect::new(&self.config.chain.ws_rpc_url);
-        let provider = ProviderBuilder::new().connect_ws(ws).await?;
+        let provider = self.ws_rpc_provider.clone();
 
         let from_block = self.config.indexing.from_block.unwrap_or(0u64);
         let to_block = self.config.indexing.to_block;
@@ -133,16 +151,58 @@ impl EventProcessor {
             })
             .unwrap_or("0x".to_string());
 
+        // Retrieve tx sender using transaction hash
+        let tx_sender = if let Some(h) = log.transaction_hash {
+            match self.http_rpc_provider.get_transaction_by_hash(h).await? {
+                Some(tx) => Some(tx.from()),
+                None => None,
+            }
+        } else { None };
+
+        // Retrieve tx receiver using transaction hash
+        let tx_receiver = if let Some(h) = log.transaction_hash {
+            match self.http_rpc_provider.get_transaction_by_hash(h).await? {
+                Some(tx) => if let Some(addr) = tx.to() { Some(addr) } else { None },
+                None => None,
+            }
+        } else { None };
+
+        let transaction_sender = tx_sender
+            .map(|addr| addr.to_string())
+            .ok_or_else(|| {
+                error!("Missing sender address in transaction data");
+                anyhow!("Missing sender address in transaction data")
+            })
+            .unwrap_or("".to_string());
+
+        let transaction_receiver = tx_receiver
+            .map(|addr| addr.to_string())
+            .ok_or_else(|| {
+                error!("Missing receiver address in transaction data");
+                anyhow!("Missing receiver address in transaction data")
+            })
+            .unwrap_or("".to_string());
+
+        // Compute unique log hash using the Log's `hash()` with SHA3-256 hasher
+        let mut hasher = Sha3_256StdHasher::default();
+        log.inner.hash(&mut hasher);
+        let log_hash_bytes = hasher.finalize_bytes();
+        let log_hash = format!("0x{}", hex::encode(log_hash_bytes));
+
         let payload = EventPayload {
             contract_name: contract_name.to_string(),
             contract_address,
+            chain_id: self.chain_id.to_string(),
             block_number,
             block_hash,
             block_timestamp: block_timestamp.to_string(),
             block_time,
             transaction_hash,
+            transaction_sender,
+            transaction_receiver,
             transaction_index: tx_index,
             log_index,
+            log_hash,
             event_name: event_name.to_string(),
             event_signature,
             event_data: parsed_event_value,
@@ -151,7 +211,9 @@ impl EventProcessor {
         // Persist to Postgres
         db::insert_event(&self.db_pool, &payload).await?;
         // Persist to NATS Object Store
-        nats::publish_event(&self.nats_store.object_store, &payload).await?;
+        if let Some(nats_store) = &self.nats_store {
+            nats::publish_event(&nats_store.object_store, &payload).await?;
+        };
 
         Ok(())
     }
@@ -178,4 +240,43 @@ impl From<BlockRangeFrom> for FilterBlockOption {
 //          to_block: Some(BlockNumberOrTag::Latest),
         }
     }
+}
+
+use sha3::{Digest, Sha3_256};
+use std::hash::{Hash, Hasher};
+
+/// Custom hasher adapter so we can use `Log::hash(&mut hasher)` and also get full 32-byte SHA3-256
+#[derive(Default)]
+struct Sha3_256StdHasher {
+    inner: Sha3_256,
+}
+
+impl Hasher for Sha3_256StdHasher {
+    fn write(&mut self, bytes: &[u8]) { self.inner.update(bytes); }
+    fn finish(&self) -> u64 {
+        // not used for our logic; provide first 8 bytes of the digest for trait compliance
+        let mut clone = self.inner.clone();
+        let digest = clone.finalize();
+        let mut arr = [0u8; 8];
+        arr.copy_from_slice(&digest[..8]);
+        u64::from_be_bytes(arr)
+    }
+}
+
+impl Sha3_256StdHasher {
+    fn finalize_bytes(self) -> [u8; 32] {
+        let digest = self.inner.finalize();
+        let mut out = [0u8; 32];
+        out.copy_from_slice(&digest);
+        out
+    }
+}
+
+/// Build HTTP and WS providers using Alloy
+pub async fn build_providers(ws_rpc_url: &str, http_rpc_url: &str) -> anyhow::Result<(RPCProvider, RPCProvider)> {
+    let ws = WsConnect::new(ws_rpc_url);
+    let ws_rpc_provider = ProviderBuilder::new().connect_ws(ws).await?;
+    let http_rpc_provider = ProviderBuilder::new().connect_http(http_rpc_url.parse()?);
+
+    Ok((ws_rpc_provider, http_rpc_provider))
 }

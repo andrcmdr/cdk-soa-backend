@@ -3,7 +3,6 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use alloy_json_abi::JsonAbi;
 use alloy_primitives::Address;
-use serde_json::Value;
 use crate::event_decoder::EventDecoder;
 
 #[derive(Clone)]

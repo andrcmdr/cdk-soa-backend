@@ -51,12 +51,15 @@ pub async fn publish_event(
     payload: &EventPayload,
 ) -> anyhow::Result<()> {
     let key = format!(
-        "{}::{}::{}::{}::{}",
+        "{}::{}::{}::{}::{}::{}::{}::{}",
         payload.contract_name,
         payload.contract_address,
+        payload.chain_id,
+        payload.transaction_hash,
+        payload.transaction_sender,
+        payload.transaction_receiver,
         payload.event_name,
         payload.event_signature,
-        payload.transaction_hash
     );
 
     let bytes = serde_json::to_vec(&serde_json::to_value(payload)?)?;

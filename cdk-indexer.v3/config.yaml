@@ -13,6 +13,7 @@ postgres:
   schema: "./init.sql"
 
 nats:
+  nats_enabled: 1
   url: "nats://localhost:4222"
   # existing JetStream object store bucket for persisted event payloads
   object_store_bucket: "events_bucket"
