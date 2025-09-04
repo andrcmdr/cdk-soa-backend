@@ -1,0 +1,38 @@
+[package]
+name = "cdk-indexer"
+version = "0.4.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+thiserror = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "ansi"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+hex = "0.4"
+# Use the unified Alloy meta crate with full feature set (providers, primitives, rpc-types, dyn-abi, json-abi, etc.)
+alloy = { version = "1.0.25", features = ["full"] }
+# Stream utils
+futures = "0.3"
+# Time
+chrono = { version = "0.4", features = ["clock", "serde"] }
+# DB
+tokio-postgres = { version = "0.7", features = ["with-serde_json-1"] }
+# Messaging
+async-nats = "0.34"
+# Hashing
+sha3 = "0.10"
+# Binary serialization for stable hashing payload
+bincode = "1"
+# Async runtime
+tokio = { version = "1.39", features = ["rt-multi-thread", "macros", "signal"] }
+
+[build-dependencies]
+vergen = { version = "8", features = ["build", "cargo", "git"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = "z"

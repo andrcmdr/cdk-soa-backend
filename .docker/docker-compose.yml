@@ -4,7 +4,7 @@ services:
 
   indexer:
     build: .
-    command: ["/app/cdk-indexer", "/app/config.yaml", "/app/init.sql"]
+    command: ["/apps/events-monitor", "/apps/config.yaml", "/apps/init.sql"]
     depends_on:
       - postgres
       - nats

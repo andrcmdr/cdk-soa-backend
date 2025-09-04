@@ -1,10 +1,14 @@
 [workspace]
 members = [
-    "cdk-indexer.v3",
+    "events-monitor",
+    "abi-fetcher",
 ]
 exclude = [
+    "legacy",
     "cdk-indexer.v1.ethers",
     "cdk-indexer.v2.alloy",
+    "cdk-indexer.v3.prototype",
+    "cdk-indexer.v4.prototype",
     "merkle-trie-generator",
 ]
 

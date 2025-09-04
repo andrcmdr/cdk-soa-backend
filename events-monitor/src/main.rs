@@ -10,13 +10,13 @@ use crate::subscriptions::EventProcessor;
 
 use std::path::Path;
 use tracing_subscriber::{EnvFilter, fmt};
-use tracing::info;
+use tracing::{ info, debug, error, trace, warn };
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // logging
-    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
-    fmt().with_env_filter(filter).compact().init();
+    let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("debug"));
+    tracing_subscriber::fmt().with_env_filter(filter).compact().init();
 
     let cfg_path = std::env::args().nth(1).unwrap_or_else(|| "./config.yaml".to_string());
     let cfg = config::AppCfg::load(&cfg_path)?;

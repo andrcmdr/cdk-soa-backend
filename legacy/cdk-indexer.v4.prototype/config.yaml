@@ -1,0 +1,24 @@
+# HTTP/WS RPC endpoints for Polygon CDK chain (example placeholders)
+rpc_http_url: "http://execution-client:8545"
+rpc_ws_url: "ws://execution-client:8546"
+
+# Optional subject prefix; each contract will publish to `${subject}.events`
+nats:
+  url: "nats://nats:4222"
+  subject: "cdk.indexer"
+
+# Postgres connection string
+postgres:
+  url: "postgres://postgres:postgres@db:5432/indexer"
+
+# Contracts to watch and decode
+contracts:
+  - name: "Bridge"
+    address: "0x1111111111111111111111111111111111111111"
+    abi_path: "./abi/Bridge.json"
+  - name: "Rollup"
+    address: "0x2222222222222222222222222222222222222222"
+    abi_path: "./abi/Rollup.json"
+
+# Optional: filter fromBlock for initial subscription catch-up
+from_block: null  # e.g. "0x1234abcd"

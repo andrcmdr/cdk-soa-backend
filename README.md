@@ -3,8 +3,8 @@
 ### Polygon CDK (Chain Development Kit) blockchain backend (off-chain) components/services for SOA (service-oriented architecture) backend infrastructure and SOA service bus (MOM/MQ, message-oriented middleware, message queue) based on NATS Server.
 
 ## Components:
- - CDK Indexer service for indexing contract events.
- - CDK Indexer service (more generic) for indexing block data and providing request/response API and publisher/subscriber (producer/consumer) protocol for services over the NATS JetStream topics.
+ - Events Monitor for monitoring and indexing contract events for CDK chain.
+ - Events Monitor (more generic) for monitoring and indexing block data and providing request/response API and publisher/subscriber (producer/consumer) protocol for services over the NATS JetStream topics.
  - Transaction producer, library to include in other services. Includes wallet client functionality and KMS integration for storing private keys securely encrypted, for transaction signing.
  - Oracle service, for providing data from concrete API and DB.
  - Oracle service (more generic), on-chain contracts data provider component from off-chain data sources.

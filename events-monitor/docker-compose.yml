@@ -4,7 +4,7 @@ services:
 
   indexer:
     build: github.com/andrcmdr/cdk-soa-backend/.docker/cdk-soa-backend.dockerfile
-    command: ["/app/cdk-indexer", "/app/config.yaml", "/app/init.sql"]
+    command: ["/apps/cdk-indexer", "/apps/config.yaml", "/apps/init.sql"]
     environment:
       RUST_LOG: debug
     volumes:

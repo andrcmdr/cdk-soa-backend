@@ -34,14 +34,14 @@ set -f
 cd /app-builder/cdk-soa-backend
 git checkout v${VERSION}
 cargo build --release --all
-mv -T /app-builder/cdk-soa-backend/target/release/cdk-indexer /app-builder/cdk-indexer
-mv -T /app-builder/cdk-soa-backend/cdk-indexer.v1.legacy/config.toml /app-builder/config.toml
-cp -vrf /app-builder/cdk-soa-backend/cdk-indexer.v1.legacy/abi/ -T /app-builder/abi/
+mv -T /app-builder/cdk-soa-backend/target/release/events-monitor /app-builder/events-monitor
+mv -T /app-builder/cdk-soa-backend/events-monitor/config.yaml /app-builder/config.yaml
+cp -vrf /app-builder/cdk-soa-backend/events-monitor/abi/ -T /app-builder/abi/
 EOF
 
 
 # Stage 2: Runtime
-FROM debian:testing-slim AS cdk_indexer_app
+FROM debian:testing-slim AS events_monitor_app
 
 ENV SHELL="/usr/bin/env bash"
 
@@ -49,15 +49,15 @@ WORKDIR /apps
 
 RUN mkdir -vp /apps/.logs/
 
-COPY --from=builder /app-builder/cdk-indexer /apps/cdk-indexer
-COPY --from=builder /app-builder/config.toml /apps/config.toml
+COPY --from=builder /app-builder/events-monitor /apps/events-monitor
+COPY --from=builder /app-builder/config.yaml /apps/config.yaml
 COPY --from=builder /app-builder/abi/ /apps/abi/
 
 # Install libpq for tokio-postgres
 RUN apt-get update -y
 RUN apt-get install -y libpq-dev libpq5 time && apt autoclean && apt autoremove && apt autopurge
 
-# ENV RUST_LOG="cdk_indexer=debug"
+# ENV RUST_LOG="events_monitor=debug"
 ENV RUST_LOG="debug"
 ENV RUST_BACKTRACE="full"
-CMD cd /apps/; ./cdk-indexer >> /apps/.logs/cdk-indexer.log 2>&1 & disown; tail -f /apps/.logs/cdk-indexer.log
+CMD cd /apps/; ./events-monitor >> /apps/.logs/events-monitor.log 2>&1 & disown; tail -f /apps/.logs/events-monitor.log
