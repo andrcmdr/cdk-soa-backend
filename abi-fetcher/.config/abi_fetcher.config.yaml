@@ -1,0 +1,20 @@
+# Application configuration for Blockscout contract fetcher
+blockscout:
+  # Blockscout server URL (without trailing slash)
+  server: "https://blockscout.server"
+
+  # API path (with leading slash)
+  api_path: "/api/v2"
+
+  # Request timeout in seconds (optional, defaults to 30)
+  request_timeout_seconds: 10
+
+  # Maximum retries for failed requests (optional, defaults to 3)
+  max_retries: 10
+
+output:
+  # Output file path for contracts YAML
+  contracts_file: "contracts_output.yaml"
+
+  # Directory to save ABI JSON files
+  abi_directory: "./abi"

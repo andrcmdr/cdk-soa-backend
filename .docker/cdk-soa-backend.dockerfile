@@ -19,6 +19,8 @@ RUN curl -fsSL https://sh.rustup.rs | bash -is -- -y --verbose --no-modify-path 
 
 WORKDIR /app-builder
 
+RUN mkdir -vp /app-builder/.config/
+
 # COPY --link cdk-soa-backend/ /app-builder/cdk-soa-backend/
 RUN git clone -b main https://github.com/andrcmdr/cdk-soa-backend.git
 
@@ -35,9 +37,13 @@ cd /app-builder/cdk-soa-backend
 git checkout v${VERSION}
 cargo build --release --all
 mv -T /app-builder/cdk-soa-backend/target/release/events-monitor /app-builder/events-monitor
-mv -T /app-builder/cdk-soa-backend/events-monitor/config.yaml /app-builder/config.yaml
-cp -vrf /app-builder/cdk-soa-backend/events-monitor/abi/ -T /app-builder/abi/
+mv -T /app-builder/cdk-soa-backend/events-monitor/.config/events_monitor.config.yaml /app-builder/.config/events_monitor.config.yaml
+mv -T /app-builder/cdk-soa-backend/target/release/abi-fetcher /app-builder/abi-fetcher
+mv -T /app-builder/cdk-soa-backend/abi-fetcher/.config/abi_fetcher.config.yaml /app-builder/.config/abi_fetcher.config.yaml
+# cp -vrf /app-builder/cdk-soa-backend/events-monitor/abi/ -T /app-builder/abi/
 EOF
+
+COPY --link abi-fetcher/abi/ /app-builder/abi/
 
 
 # Stage 2: Runtime
@@ -47,10 +53,13 @@ ENV SHELL="/usr/bin/env bash"
 
 WORKDIR /apps
 
+RUN mkdir -vp /apps/.config/
 RUN mkdir -vp /apps/.logs/
 
 COPY --from=builder /app-builder/events-monitor /apps/events-monitor
-COPY --from=builder /app-builder/config.yaml /apps/config.yaml
+COPY --from=builder /app-builder/.config/events_monitor.config.yaml /apps/.config/events_monitor.config.yaml
+COPY --from=builder /app-builder/abi-fetcher /apps/abi-fetcher
+COPY --from=builder /app-builder/.config/abi_fetcher.config.yaml /apps/.config/abi_fetcher.config.yaml
 COPY --from=builder /app-builder/abi/ /apps/abi/
 
 # Install libpq for tokio-postgres
@@ -60,4 +69,4 @@ RUN apt-get install -y libpq-dev libpq5 time && apt autoclean && apt autoremove 
 # ENV RUST_LOG="events_monitor=debug"
 ENV RUST_LOG="debug"
 ENV RUST_BACKTRACE="full"
-CMD cd /apps/; ./events-monitor >> /apps/.logs/events-monitor.log 2>&1 & disown; tail -f /apps/.logs/events-monitor.log
+CMD cd /apps/; ./events-monitor ./.config/events_monitor.config.yaml >> /apps/.logs/events-monitor.log 2>&1 & disown; tail -f /apps/.logs/events-monitor.log

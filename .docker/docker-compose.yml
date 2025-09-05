@@ -4,7 +4,7 @@ services:
 
   indexer:
     build: .
-    command: ["/apps/events-monitor", "/apps/config.yaml", "/apps/init.sql"]
+    command: ["/apps/events-monitor", "/apps/.config/events_monitor.config.yaml"]
     depends_on:
       - postgres
       - nats
