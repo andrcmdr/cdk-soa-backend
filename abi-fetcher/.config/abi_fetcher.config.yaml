@@ -18,3 +18,12 @@ output:
 
   # Directory to save ABI JSON files
   abi_directory: "./abi"
+
+  # Directory to save event signature files
+  events_directory: "./events"
+
+  # Output file path for events YAML
+  events_file: "events_output.yaml"
+
+  # Output file path for contracts events YAML with extended signatures
+  contracts_events_file: "contracts_events.yaml"
