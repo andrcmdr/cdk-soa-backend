@@ -130,12 +130,14 @@ struct ContractAddress {
     is_contract: Option<bool>,
     is_verified: Option<bool>,
     name: Option<String>,
+    verified_at: Option<String>, // Add verified_at field
 }
 
 #[derive(Debug, Deserialize)]
 struct Implementation {
     address: String,
     name: Option<String>,
+    verified_at: Option<String>, // Add verified_at field
 }
 
 #[derive(Debug, Deserialize)]
@@ -151,6 +153,7 @@ struct ContractDetailsResponse {
     implementations: Option<Vec<Implementation>>,
     name: Option<String>,
     abi: Option<Value>,
+    verified_at: Option<String>, // Add verified_at field
 }
 
 // Output structures for YAML
@@ -178,6 +181,7 @@ struct ContractInfo {
     abi_file: Option<String>,
     is_verified: bool,
     is_fully_verified: Option<bool>,
+    verified_at: Option<String>, // Add verified_at field
     implementations: Option<Vec<ImplementationInfo>>,
 }
 
@@ -188,6 +192,7 @@ struct ImplementationInfo {
     abi_file: Option<String>,
     is_verified: bool,
     is_fully_verified: Option<bool>,
+    verified_at: Option<String>, // Add verified_at field
     implementations: Option<Vec<ImplementationInfo>>,
 }
 
@@ -197,6 +202,13 @@ struct ContractEventInfo {
     contract_name: Option<String>,
     contract_address: String,
     events: Vec<String>, // Extended event signatures
+}
+
+// Structure to track processed addresses with their verification times
+#[derive(Debug, Clone)]
+struct ProcessedContract {
+    verified_at: Option<String>,
+    processed_time: chrono::DateTime<chrono::Utc>,
 }
 
 struct BlockscoutClient {
@@ -305,6 +317,28 @@ impl BlockscoutClient {
         }
 
         Err(last_error.unwrap_or_else(|| anyhow::anyhow!("Max retries exceeded")))
+    }
+}
+
+// Helper function to parse RFC3339 timestamp and convert to Unix timestamp for comparison
+fn parse_verified_at_timestamp(verified_at: &Option<String>) -> Option<i64> {
+    verified_at.as_ref().and_then(|timestamp_str| {
+        chrono::DateTime::parse_from_rfc3339(timestamp_str)
+            .map(|dt| dt.timestamp())
+            .ok()
+    })
+}
+
+// Helper function to compare verification times, returning true if new_verified_at is more recent
+fn is_more_recent_verification(
+    existing_verified_at: &Option<String>,
+    new_verified_at: &Option<String>
+) -> bool {
+    match (parse_verified_at_timestamp(existing_verified_at), parse_verified_at_timestamp(new_verified_at)) {
+        (Some(existing_ts), Some(new_ts)) => new_ts > existing_ts,
+        (None, Some(_)) => true, // New has timestamp, existing doesn't
+        (Some(_), None) => false, // Existing has timestamp, new doesn't
+        (None, None) => false, // Neither has timestamp, keep existing
     }
 }
 
@@ -591,7 +625,7 @@ async fn process_implementations_recursively(
     abi_dir: &Path,
     events_map: &mut HashMap<String, EventDefinition>,
     contract_events_list: &mut Vec<ContractEventInfo>,
-    processed_addresses: &mut HashSet<String>,
+    processed_addresses: &mut HashMap<String, ProcessedContract>, // Changed from HashSet to HashMap
     depth: usize,
 ) -> Result<Vec<ImplementationInfo>> {
     if depth > 10 {
@@ -604,12 +638,21 @@ async fn process_implementations_recursively(
     for implementation in implementations {
         let impl_address = &implementation.address;
 
-        if processed_addresses.contains(impl_address) {
-            debug!("Skipping already processed implementation: {}", impl_address);
-            continue;
+        // Check if already processed and compare verification times
+        if let Some(existing_contract) = processed_addresses.get(impl_address) {
+            if !is_more_recent_verification(&existing_contract.verified_at, &implementation.verified_at) {
+                debug!("Skipping implementation {} - already processed with more recent or equal verification time", impl_address);
+                continue;
+            } else {
+                debug!("Re-processing implementation {} - found more recent verification time", impl_address);
+            }
         }
 
-        processed_addresses.insert(impl_address.clone());
+        // Update processed addresses with current contract info
+        processed_addresses.insert(impl_address.clone(), ProcessedContract {
+            verified_at: implementation.verified_at.clone(),
+            processed_time: chrono::Utc::now(),
+        });
 
         match client.fetch_contract_details(impl_address).await {
             Ok(impl_details) => {
@@ -664,6 +707,7 @@ async fn process_implementations_recursively(
                     abi_file: impl_abi_file,
                     is_verified,
                     is_fully_verified: impl_details.is_fully_verified,
+                    verified_at: impl_details.verified_at.or(implementation.verified_at.clone()),
                     implementations: nested_implementations,
                 });
             }
@@ -683,24 +727,33 @@ async fn process_contract_with_implementations(
     abi_dir: &Path,
     events_map: &mut HashMap<String, EventDefinition>,
     contract_events_list: &mut Vec<ContractEventInfo>,
-    processed_addresses: &mut HashSet<String>,
+    processed_addresses: &mut HashMap<String, ProcessedContract>, // Changed from HashSet to HashMap
 ) -> Result<ContractInfo> {
     let address = &contract_item.address.hash;
 
-    // Skip if already processed
-    if processed_addresses.contains(address) {
-        debug!("Skipping already processed contract: {}", address);
-        return Ok(ContractInfo {
-            name: contract_item.address.name.clone(),
-            address: address.clone(),
-            abi_file: None,
-            is_verified: is_contract_verified(contract_item.address.is_verified, None),
-            is_fully_verified: None,
-            implementations: None,
-        });
+    // Check if already processed and compare verification times
+    if let Some(existing_contract) = processed_addresses.get(address) {
+        if !is_more_recent_verification(&existing_contract.verified_at, &contract_item.address.verified_at) {
+            debug!("Skipping contract {} - already processed with more recent or equal verification time", address);
+            return Ok(ContractInfo {
+                name: contract_item.address.name.clone(),
+                address: address.clone(),
+                abi_file: None,
+                is_verified: is_contract_verified(contract_item.address.is_verified, None),
+                is_fully_verified: None,
+                verified_at: contract_item.address.verified_at.clone(),
+                implementations: None,
+            });
+        } else {
+            debug!("Re-processing contract {} - found more recent verification time", address);
+        }
     }
 
-    processed_addresses.insert(address.clone());
+    // Update processed addresses with current contract info
+    processed_addresses.insert(address.clone(), ProcessedContract {
+        verified_at: contract_item.address.verified_at.clone(),
+        processed_time: chrono::Utc::now(),
+    });
 
     // Fetch contract details
     let contract_details = client.fetch_contract_details(address).await
@@ -758,6 +811,7 @@ async fn process_contract_with_implementations(
         abi_file,
         is_verified,
         is_fully_verified: contract_details.is_fully_verified,
+        verified_at: contract_details.verified_at.or(contract_item.address.verified_at.clone()),
         implementations,
     })
 }
@@ -792,6 +846,43 @@ fn count_implementation_abi_files(implementations: &[ImplementationInfo]) -> usi
     }
 
     count
+}
+
+// Add sorting functions
+fn sort_contracts_by_verified_at(contracts: &mut Vec<ContractInfo>) {
+    contracts.sort_by(|a, b| {
+        match (parse_verified_at_timestamp(&a.verified_at), parse_verified_at_timestamp(&b.verified_at)) {
+            (Some(a_ts), Some(b_ts)) => a_ts.cmp(&b_ts),
+            (Some(_), None) => std::cmp::Ordering::Less, // Verified contracts first
+            (None, Some(_)) => std::cmp::Ordering::Greater,
+            (None, None) => a.address.cmp(&b.address), // Fallback to address comparison
+        }
+    });
+
+    // Sort implementations recursively
+    for contract in contracts {
+        if let Some(ref mut implementations) = contract.implementations {
+            sort_implementations_by_verified_at(implementations);
+        }
+    }
+}
+
+fn sort_implementations_by_verified_at(implementations: &mut Vec<ImplementationInfo>) {
+    implementations.sort_by(|a, b| {
+        match (parse_verified_at_timestamp(&a.verified_at), parse_verified_at_timestamp(&b.verified_at)) {
+            (Some(a_ts), Some(b_ts)) => a_ts.cmp(&b_ts),
+            (Some(_), None) => std::cmp::Ordering::Less,
+            (None, Some(_)) => std::cmp::Ordering::Greater,
+            (None, None) => a.address.cmp(&b.address),
+        }
+    });
+
+    // Sort nested implementations recursively
+    for implementation in implementations {
+        if let Some(ref mut nested_implementations) = implementation.implementations {
+            sort_implementations_by_verified_at(nested_implementations);
+        }
+    }
 }
 
 fn ensure_directory_exists<P: AsRef<Path>>(dir_path: P) -> Result<()> {
@@ -893,7 +984,7 @@ async fn main() -> Result<()> {
     info!("Processing {} contracts and their implementations...", contract_items.len());
 
     // Process each contract and its implementations
-    let mut processed_addresses = HashSet::new();
+    let mut processed_addresses = HashMap::new(); // Changed from HashSet to HashMap
     let mut contract_infos = Vec::new();
     let mut events_map: HashMap<String, EventDefinition> = HashMap::new();
     let mut contract_events_list: Vec<ContractEventInfo> = Vec::new();
@@ -929,6 +1020,10 @@ async fn main() -> Result<()> {
         }
     }
 
+    // Sort contracts by verified_at timestamp
+    sort_contracts_by_verified_at(&mut verified_contracts);
+    sort_contracts_by_verified_at(&mut unverified_contracts);
+
     // Count total ABI files
     let total_abi_files = count_abi_files_recursively(&verified_contracts) +
                          count_abi_files_recursively(&unverified_contracts);
@@ -948,7 +1043,7 @@ async fn main() -> Result<()> {
     // Create events output structure
     let events_output = EventsOutput {
         metadata: EventsMetadata {
-            generated_at: chrono::Utc::now().to_rfc3339(),
+            generated_at: chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true),
             blockscout_server: config.blockscout.server.clone(),
             total_events: events_list.len(),
             total_unique_signatures: unique_signatures,
@@ -963,7 +1058,7 @@ async fn main() -> Result<()> {
     // Create contracts output structure
     let contracts_output = ContractsOutput {
         metadata: ContractsMetadata {
-            generated_at: chrono::Utc::now().to_rfc3339(),
+            generated_at: chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Millis, true),
             blockscout_server: config.blockscout.server.clone(),
             total_verified: verified_contracts.len(),
             total_unverified: unverified_contracts.len(),
@@ -1069,5 +1164,29 @@ mod tests {
     fn test_generate_topic_hash() {
         let hash = generate_topic_hash("Transfer(address,address,uint256)");
         assert_eq!(hash, "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef");
+    }
+
+    #[test]
+    fn test_parse_verified_at_timestamp() {
+        let valid_timestamp = Some("2023-09-11T10:30:45Z".to_string());
+        let invalid_timestamp = Some("invalid".to_string());
+        let none_timestamp: Option<String> = None;
+
+        assert!(parse_verified_at_timestamp(&valid_timestamp).is_some());
+        assert!(parse_verified_at_timestamp(&invalid_timestamp).is_none());
+        assert!(parse_verified_at_timestamp(&none_timestamp).is_none());
+    }
+
+    #[test]
+    fn test_is_more_recent_verification() {
+        let older_timestamp = Some("2023-09-10T10:30:45Z".to_string());
+        let newer_timestamp = Some("2023-09-11T10:30:45Z".to_string());
+        let none_timestamp: Option<String> = None;
+
+        assert!(is_more_recent_verification(&older_timestamp, &newer_timestamp));
+        assert!(!is_more_recent_verification(&newer_timestamp, &older_timestamp));
+        assert!(is_more_recent_verification(&none_timestamp, &newer_timestamp));
+        assert!(!is_more_recent_verification(&newer_timestamp, &none_timestamp));
+        assert!(!is_more_recent_verification(&none_timestamp, &none_timestamp));
     }
 }
