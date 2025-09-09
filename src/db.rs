@@ -86,7 +86,7 @@ impl Database {
     }
 
     // Gets unsubmitted revenue reports from the database
-    pub async fn get_unsubmitted_revenue_reports(&self, limit: i32) -> Result<Vec<RevenueReport>> {
+    pub async fn get_unsubmitted_revenue_reports(&self, limit: i32) -> Result<Vec<tokio_postgres::Row>> {
         let query = r#"
             SELECT artifact_address, revenue, timestamp
             FROM revenue_reports
@@ -96,22 +96,11 @@ impl Database {
         "#;
 
         let rows = self.client.query(query, &[&limit]).await?;
-        
-        let mut reports = Vec::new();
-        for row in rows {
-            let report = RevenueReport {
-                artifact_address: row.get(0),
-                revenue: row.get(1),
-                timestamp: row.get(2),
-            };
-            reports.push(report);
-        }
-
-        Ok(reports)
+        Ok(rows)
     }
 
     // Gets unsubmitted usage reports from the database
-    pub async fn get_unsubmitted_usage_reports(&self, limit: i32) -> Result<Vec<UsageReport>> {
+    pub async fn get_unsubmitted_usage_reports(&self, limit: i32) -> Result<Vec<tokio_postgres::Row>> {
         let query = r#"
             SELECT artifact_address, usage, timestamp
             FROM usage_reports
@@ -121,18 +110,7 @@ impl Database {
         "#;
 
         let rows = self.client.query(query, &[&limit]).await?;
-        
-        let mut reports = Vec::new();
-        for row in rows {
-            let report = UsageReport {
-                artifact_address: row.get(0),
-                usage: row.get(1),
-                timestamp: row.get(2),
-            };
-            reports.push(report);
-        }
-
-        Ok(reports)
+        Ok(rows)
     }
 
 }
