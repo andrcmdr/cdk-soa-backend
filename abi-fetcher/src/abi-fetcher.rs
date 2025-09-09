@@ -82,7 +82,7 @@ struct EventDefinition {
     topic_hash: String,
     anonymous: bool,
     inputs: Vec<EventInput>,
-    contract_sources: Vec<String>, // Addresses of contracts that have this event
+    contract_sources: Vec<ContractSource>, // Changed from Vec<String> to Vec<ContractSource>
     signature_file: String,
 }
 
@@ -91,6 +91,13 @@ struct EventInput {
     name: String,
     input_type: String,
     indexed: bool,
+}
+
+// New structure to include address and verified_at time
+#[derive(Debug, Serialize, Clone)]
+struct ContractSource {
+    address: String,
+    verified_at: Option<String>,
 }
 
 // Contract events output structures
@@ -102,7 +109,7 @@ struct ContractsEventsOutput {
 #[derive(Debug, Serialize)]
 struct ContractEvents {
     name: Option<String>,
-    address: Vec<String>,
+    address: Vec<ContractSource>, // Changed from Vec<String> to Vec<ContractSource>
     events: Vec<EventSignature>,
 }
 
@@ -201,6 +208,7 @@ struct ImplementationInfo {
 struct ContractEventInfo {
     contract_name: Option<String>,
     contract_address: String,
+    verified_at: Option<String>,
     events: Vec<String>, // Extended event signatures
 }
 
@@ -342,11 +350,24 @@ fn is_more_recent_verification(
     }
 }
 
+// Helper function to sort contract sources by verified_at in descending order (most recent first)
+fn sort_contract_sources_by_verified_at_desc(contract_sources: &mut Vec<ContractSource>) {
+    contract_sources.sort_by(|a, b| {
+        match (parse_verified_at_timestamp(&a.verified_at), parse_verified_at_timestamp(&b.verified_at)) {
+            (Some(a_ts), Some(b_ts)) => b_ts.cmp(&a_ts), // Descending order (b > a)
+            (Some(_), None) => std::cmp::Ordering::Less, // Verified contracts first
+            (None, Some(_)) => std::cmp::Ordering::Greater,
+            (None, None) => a.address.cmp(&b.address), // Fallback to address comparison
+        }
+    });
+}
+
 // Event processing functions
 fn parse_abi_events(
     abi: &Value,
     contract_address: &str,
     contract_name: Option<&str>,
+    verified_at: &Option<String>,
     events_map: &mut HashMap<String, EventDefinition>,
     contract_events: &mut Vec<ContractEventInfo>
 ) -> Result<()> {
@@ -384,8 +405,13 @@ fn parse_abi_events(
                 // Use signature as key to group events from different contracts
                 if let Some(existing_event) = events_map.get_mut(&signature) {
                     // Add this contract to the sources if not already present
-                    if !existing_event.contract_sources.contains(&contract_address.to_string()) {
-                        existing_event.contract_sources.push(contract_address.to_string());
+                    let contract_source = ContractSource {
+                        address: contract_address.to_string(),
+                        verified_at: verified_at.clone(),
+                    };
+
+                    if !existing_event.contract_sources.iter().any(|cs| cs.address == contract_address) {
+                        existing_event.contract_sources.push(contract_source);
                     }
                 } else {
                     events_map.insert(signature.clone(), EventDefinition {
@@ -394,7 +420,10 @@ fn parse_abi_events(
                         topic_hash,
                         anonymous,
                         inputs: event_inputs,
-                        contract_sources: vec![contract_address.to_string()],
+                        contract_sources: vec![ContractSource {
+                            address: contract_address.to_string(),
+                            verified_at: verified_at.clone(),
+                        }],
                         signature_file: format!("{}.txt", sanitize_filename(&signature)),
                     });
                 }
@@ -407,6 +436,7 @@ fn parse_abi_events(
         contract_events.push(ContractEventInfo {
             contract_name: contract_name.map(|s| s.to_string()),
             contract_address: contract_address.to_string(),
+            verified_at: verified_at.clone(),
             events: current_contract_events,
         });
     }
@@ -506,9 +536,13 @@ fn save_event_signature_to_file(
         ));
     }
 
-    content.push_str("\nContract Sources:\n");
+    content.push_str("\nContract Sources (sorted by verification time, most recent first):\n");
     for source in &event.contract_sources {
-        content.push_str(&format!("  - {}\n", source));
+        let verified_at_str = source.verified_at
+            .as_ref()
+            .map(|s| s.as_str())
+            .unwrap_or("N/A");
+        content.push_str(&format!("  - {} (verified_at: {})\n", source.address, verified_at_str));
     }
 
     fs::write(&file_path, content)
@@ -526,10 +560,15 @@ fn build_contracts_events_output(contract_events_list: Vec<ContractEventInfo>) -
             .clone()
             .unwrap_or_else(|| format!("unnamed_{}", &contract_event_info.contract_address[2..8]));
 
+        let contract_source = ContractSource {
+            address: contract_event_info.contract_address.clone(),
+            verified_at: contract_event_info.verified_at,
+        };
+
         if let Some(existing_contract) = contracts_map.get_mut(&contract_key) {
             // Add address if not already present
-            if !existing_contract.address.contains(&contract_event_info.contract_address) {
-                existing_contract.address.push(contract_event_info.contract_address);
+            if !existing_contract.address.iter().any(|cs| cs.address == contract_event_info.contract_address) {
+                existing_contract.address.push(contract_source);
             }
 
             // Add events, avoiding duplicates
@@ -546,7 +585,7 @@ fn build_contracts_events_output(contract_events_list: Vec<ContractEventInfo>) -
 
             contracts_map.insert(contract_key.clone(), ContractEvents {
                 name: contract_event_info.contract_name,
-                address: vec![contract_event_info.contract_address],
+                address: vec![contract_source],
                 events,
             });
         }
@@ -560,9 +599,10 @@ fn build_contracts_events_output(contract_events_list: Vec<ContractEventInfo>) -
         a_name.cmp(b_name)
     });
 
-    // Sort events within each contract
+    // Sort events within each contract and addresses by verified_at in descending order
     for contract in &mut contracts {
         contract.events.sort_by(|a, b| a.event.cmp(&b.event));
+        sort_contract_sources_by_verified_at_desc(&mut contract.address);
     }
 
     ContractsEventsOutput { contracts }
@@ -661,10 +701,12 @@ async fn process_implementations_recursively(
                 let impl_abi_file = if is_verified {
                     if let Some(abi) = &impl_details.abi {
                         // Parse events from this ABI
+                        let final_verified_at = impl_details.verified_at.as_ref().or(implementation.verified_at.as_ref());
                         if let Err(e) = parse_abi_events(
                             abi,
                             impl_address,
                             impl_details.name.as_deref().or(implementation.name.as_deref()),
+                            &final_verified_at.cloned(),
                             events_map,
                             contract_events_list
                         ) {
@@ -765,10 +807,12 @@ async fn process_contract_with_implementations(
     let abi_file = if is_verified {
         if let Some(abi) = &contract_details.abi {
             // Parse events from this ABI
+            let final_verified_at = contract_details.verified_at.as_ref().or(contract_item.address.verified_at.as_ref());
             if let Err(e) = parse_abi_events(
                 abi,
                 address,
                 contract_details.name.as_deref(),
+                &final_verified_at.cloned(),
                 events_map,
                 contract_events_list
             ) {
@@ -848,11 +892,11 @@ fn count_implementation_abi_files(implementations: &[ImplementationInfo]) -> usi
     count
 }
 
-// Add sorting functions
+// Add sorting functions - changed to descending order for contracts output
 fn sort_contracts_by_verified_at(contracts: &mut Vec<ContractInfo>) {
     contracts.sort_by(|a, b| {
         match (parse_verified_at_timestamp(&a.verified_at), parse_verified_at_timestamp(&b.verified_at)) {
-            (Some(a_ts), Some(b_ts)) => a_ts.cmp(&b_ts),
+            (Some(a_ts), Some(b_ts)) => b_ts.cmp(&a_ts), // Descending order (most recent first)
             (Some(_), None) => std::cmp::Ordering::Less, // Verified contracts first
             (None, Some(_)) => std::cmp::Ordering::Greater,
             (None, None) => a.address.cmp(&b.address), // Fallback to address comparison
@@ -870,7 +914,7 @@ fn sort_contracts_by_verified_at(contracts: &mut Vec<ContractInfo>) {
 fn sort_implementations_by_verified_at(implementations: &mut Vec<ImplementationInfo>) {
     implementations.sort_by(|a, b| {
         match (parse_verified_at_timestamp(&a.verified_at), parse_verified_at_timestamp(&b.verified_at)) {
-            (Some(a_ts), Some(b_ts)) => a_ts.cmp(&b_ts),
+            (Some(a_ts), Some(b_ts)) => b_ts.cmp(&a_ts), // Descending order (most recent first)
             (Some(_), None) => std::cmp::Ordering::Less,
             (None, Some(_)) => std::cmp::Ordering::Greater,
             (None, None) => a.address.cmp(&b.address),
@@ -1020,7 +1064,7 @@ async fn main() -> Result<()> {
         }
     }
 
-    // Sort contracts by verified_at timestamp
+    // Sort contracts by verified_at timestamp (descending order - most recent first)
     sort_contracts_by_verified_at(&mut verified_contracts);
     sort_contracts_by_verified_at(&mut unverified_contracts);
 
@@ -1031,6 +1075,11 @@ async fn main() -> Result<()> {
     // Save event signature files and prepare events output
     let mut events_list: Vec<EventDefinition> = events_map.into_values().collect();
     events_list.sort_by(|a, b| a.name.cmp(&b.name));
+
+    // Sort contract sources within each event by verified_at in descending order
+    for event in &mut events_list {
+        sort_contract_sources_by_verified_at_desc(&mut event.contract_sources);
+    }
 
     for event in &events_list {
         if let Err(e) = save_event_signature_to_file(event, events_dir) {
