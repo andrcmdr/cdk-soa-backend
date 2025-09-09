@@ -37,9 +37,9 @@ pub struct AppState {
 }
 
 // Create the main router with all endpoints
-pub fn create_router(db: Database) -> Router {
+pub fn create_router(db: Arc<Database>) -> Router {
     let state = AppState {
-        db: Arc::new(db),
+        db,
     };
 
     Router::new()
@@ -63,7 +63,7 @@ async fn get_six_months_revenue(
     
     let current_time = chrono::Utc::now().timestamp();
     
-    // Placeholder response. This would instead be created from the database response.
+    // Placeholder response. This would instead be created from the oracle smart-contract response.
     let response = SixMonthsRevenueResponse {
         artifact_address: address,
         six_month_revenue: "0".to_string(),
@@ -82,7 +82,7 @@ async fn get_total_usage(
     
     let current_time = chrono::Utc::now().timestamp();
     
-    // Placeholder response. This would instead be created from the database response.
+    // Placeholder response. This would instead be created from the oracle smart-contract response.
     let response = TotalUsageResponse {
         artifact_address: address,
         total_usage: "0".to_string(),

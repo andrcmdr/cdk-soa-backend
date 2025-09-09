@@ -4,14 +4,15 @@ mod db;
 mod models;
 mod mock_data;
 mod validators;
+mod miner;
 
 
 use anyhow::Result;
-use crate::mock_data::{load_mock_revenue_reports, load_mock_usage_reports};
-use crate::validators::{validate_revenue_report, validate_usage_report};
+use crate::miner::APIMiner;
 use crate::api::create_router;
-use tracing::{info, debug, error};
+use tracing::{info, error};
 use std::net::SocketAddr;
+use std::sync::Arc;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -41,51 +42,11 @@ async fn main() -> Result<()> {
     
     info!("Oracle Service started successfully!");
 
-    info!("Loading mock data...");
-    let revenue_reports = load_mock_revenue_reports()?;
-    let usage_reports = load_mock_usage_reports()?;
-    info!("Mock data loaded successfully");
+    // Create shared database handle
+    let db_handle = Arc::new(db);
     
-    debug!("Revenue reports: {:?}", revenue_reports);
-    debug!("Usage reports: {:?}", usage_reports);
-
-    info!("Inserting mock data into database...");
-
-    // validate revenue reports and insert into database
-    for (i, revenue_report) in revenue_reports.iter().enumerate() {
-        match validate_revenue_report(&revenue_report) {
-            Ok(valid) => {
-                if valid {
-                    match db.insert_revenue_report(&revenue_report).await {
-                        Ok(_) => info!("Inserted revenue report {}", i),
-                        Err(e) => error!("Failed to insert revenue report {}: {}", i, e),
-                    }
-                }
-            }
-            Err(e) => info!("Validation of revenue report {} failed: {}", i, e),
-        }
-    }
-
-    for (i, usage_report) in usage_reports.iter().enumerate() {
-        match validate_usage_report(&usage_report) {
-            Ok(valid) => {
-                if valid {
-                    match db.insert_usage_report(&usage_report).await {
-                        Ok(_) => info!("Inserted usage report {}", i),
-                        Err(e) => error!("Failed to insert usage report {}: {}", i, e),
-                    }
-                }
-            }
-            Err(e) => info!("Validation of revenue report {} failed: {}", i, e),
-        }
-    }
-
-    info!("Mock data inserted into database successfully");
-
-    info!("Database stats - Revenue reports: {}, Usage reports: {}", db.get_revenue_reports_count().await?, db.get_usage_reports_count().await?);
-
     // Create the API router
-    let app = create_router(db);
+    let app = create_router(db_handle.clone());
     
     // Bind to the configured address
     let addr = format!("{}:{}", config.service.host, config.service.port)
@@ -94,9 +55,36 @@ async fn main() -> Result<()> {
     
     info!("Starting HTTP server on {}", addr);
     
-    // Start the server
-    let listener = tokio::net::TcpListener::bind(addr).await?;
-    axum::serve(listener, app).await?;
+    // Start miners concurrently with the API server
+    let db_for_api_miner = db_handle.clone();
+    
+    // Spawn API miner task
+    let api_miner_handle = tokio::spawn(async move {
+        info!("Starting API miner...");
+        let api_miner = APIMiner::new(db_for_api_miner, 60);
+        if let Err(e) = api_miner.start().await {
+            error!("API miner failed: {}", e);
+        }
+    });
+    
+    // Start the HTTP server
+    let server_handle = tokio::spawn(async move {
+        let listener = tokio::net::TcpListener::bind(addr).await?;
+        axum::serve(listener, app).await?;
+        Ok::<(), anyhow::Error>(())
+    });
+    
+    // Wait for any of the tasks to complete (they should run indefinitely)
+    tokio::select! {
+        result = api_miner_handle => {
+            error!("API miner task ended: {:?}", result);
+        }
+        result = server_handle => {
+            error!("HTTP server task ended: {:?}", result);
+        }
+    }
+
+
 
     Ok(())
 }
