@@ -3,6 +3,14 @@ name = "abi-fetcher"
 version = "0.4.0"
 edition = "2021"
 
+[[bin]]
+name = "abi-fetcher"
+path = "src/abi-fetcher.rs"
+
+#[[bin]]
+#name = "json-rpc-fetcher"
+#path = "src/json-rpc-fetcher.rs"
+
 [dependencies]
 anyhow = "1"
 reqwest = { version = "0.12", features = ["json"] }
