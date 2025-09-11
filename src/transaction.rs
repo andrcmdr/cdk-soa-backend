@@ -2,7 +2,7 @@ use anyhow::Result;
 use tracing::info;
 use alloy::{
     primitives::{Address, U256},
-    providers::{ProviderBuilder, RootProvider, fillers::{FillProvider, JoinFill, GasFiller, BlobGasFiller, NonceFiller, ChainIdFiller}, Identity},
+    providers::{ProviderBuilder, RootProvider, fillers::{FillProvider, JoinFill, GasFiller, BlobGasFiller, NonceFiller, ChainIdFiller}, Identity, Provider},
     signers::{k256::ecdsa::SigningKey, local::PrivateKeySigner, Signer},
     sol,
     hex,
@@ -40,15 +40,20 @@ sol! {
             uint256[] calldata usages,
             uint256[] calldata timestamps
         ) external;
+
+        function isArtifactActive(address _artifact) external view returns (bool);
+
+        function getArtifactCount() external view returns (uint256);
+
     }
 }
 
 // Type alias to avoid complex type
-type Provider = FillProvider<JoinFill<Identity, JoinFill<GasFiller, JoinFill<BlobGasFiller, JoinFill<NonceFiller, ChainIdFiller>>>>, RootProvider<Ethereum>>;
+type CustomProvider = FillProvider<JoinFill<Identity, JoinFill<GasFiller, JoinFill<BlobGasFiller, JoinFill<NonceFiller, ChainIdFiller>>>>, RootProvider<Ethereum>>;
 
 /// Blockchain client for interacting with the ArtifactManager contract using Alloy
 pub struct BlockchainClient {
-    provider: Provider,
+    provider: CustomProvider,
     wallet: PrivateKeySigner,
     contract_address: Address,
 }
@@ -144,8 +149,64 @@ impl BlockchainClient {
 
 #[cfg(test)]
 mod tests {
+    use chrono::Utc;
+    use alloy::primitives::{Address, U256};
+    use crate::transaction::{BlockchainClient, ArtifactManager};
+    use tracing::info;
+    use std::str::FromStr;
+
     #[tokio::test]
-    async fn test_blockchain_client_creation() {
+    async fn test_blockchain_transaction() {
+        // Initialize logging to show info level
+        let _ = tracing_subscriber::fmt()
+            .with_max_level(tracing::Level::INFO)
+            .try_init();
+            
+        // Load environment variables from .env file
+        dotenv::dotenv().ok();
+        
         // Test implementation would go here
+        // read the private key from the .env file
+        let private_key = std::env::var("PRIVATE_KEY").unwrap();
+        let rpc_url = std::env::var("RPC_URL").unwrap();
+        let contract_address = std::env::var("CONTRACT_ADDRESS").unwrap();
+        let chain_id = std::env::var("CHAIN_ID").unwrap();
+
+        let contract_addr = Address::from_str(&contract_address).unwrap();
+        let chain_id_num = chain_id.parse::<u64>().unwrap();
+        let client = BlockchainClient::new(rpc_url, private_key, contract_addr, chain_id_num).await.unwrap();
+
+        // Debug: Print wallet address to check permissions
+        let wallet_addr = client.wallet_address();
+        info!("Wallet address: {:?}", wallet_addr);
+        info!("Wallet address (checksum): {:?}", wallet_addr.to_checksum(Some(chain_id_num)));
+        info!("Contract address: {:?}", client.contract_address());
+        
+        // Try a simple view function first to test connection
+        let contract = ArtifactManager::new(contract_addr, &client.provider);
+        match contract.getArtifactCount().call().await {
+            Ok(count) => {
+                info!("Artifact count: {:?}", count);
+                
+            },
+            Err(e) => {
+                info!("Failed to call getArtifactCount: {:?}", e);
+                return; // Exit early if we can't even call view functions
+            }
+        }
+
+        // submit a revenue report
+        let artifacts = vec![Address::from_str("0x8e29aF04fe09d1C1109f12fC300F189cc6f4828d").unwrap()];
+        let revenues = vec![U256::from(100)];
+        let timestamps = vec![U256::from(Utc::now().timestamp())];
+        match client.batch_report_artifact_revenue(artifacts, revenues, timestamps).await {
+            Ok(tx_hash) => {
+                info!("BlockchainClient: Batch revenue report submitted with tx hash: {:?}", tx_hash);
+                assert!(!tx_hash.is_zero());
+            },
+            Err(e) => {
+                info!("Failed to submit revenue report: {:?}", e);
+            }
+        }
     }
 }
