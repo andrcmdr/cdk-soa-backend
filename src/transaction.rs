@@ -1,18 +1,19 @@
 use anyhow::Result;
-use std::sync::Arc;
-use tracing::{info, error};
+use tracing::info;
 use alloy::{
     primitives::{Address, U256},
-    providers::{Provider, ProviderBuilder, RootProvider},
-    signers::{k256::ecdsa::SigningKey, LocalWallet, Signer},
-    contract::ContractInstance,
-    transports::http::Http,
+    providers::{ProviderBuilder, RootProvider, fillers::{FillProvider, JoinFill, GasFiller, BlobGasFiller, NonceFiller, ChainIdFiller}, Identity},
+    signers::{k256::ecdsa::SigningKey, local::PrivateKeySigner, Signer},
+    sol,
+    hex,
 };
+use alloy_network::Ethereum;
 
 // Define the contract interface using sol! macro
 sol! {
     /// @title ArtifactManager
     /// @notice Manages artifacts in the system, including their registration, deprecation, and associated data
+    #[sol(rpc)]
     contract ArtifactManager {
         // Events
         event ArtifactBatchRevenueReported(
@@ -42,11 +43,13 @@ sol! {
     }
 }
 
+// Type alias to avoid complex type
+type Provider = FillProvider<JoinFill<Identity, JoinFill<GasFiller, JoinFill<BlobGasFiller, JoinFill<NonceFiller, ChainIdFiller>>>>, RootProvider<Ethereum>>;
+
 /// Blockchain client for interacting with the ArtifactManager contract using Alloy
 pub struct BlockchainClient {
-    contract: ContractInstance<RootProvider<Http<reqwest::Client>>, LocalWallet, ArtifactManager>,
-    provider: RootProvider<Http<reqwest::Client>>,
-    wallet: LocalWallet,
+    provider: Provider,
+    wallet: PrivateKeySigner,
     contract_address: Address,
 }
 
@@ -58,20 +61,15 @@ impl BlockchainClient {
         chain_id: u64,
     ) -> Result<Self> {
         // Create provider
-        let provider = ProviderBuilder::new()
-            .on_http(rpc_url.parse()?);
-        
+        let provider = ProviderBuilder::new().connect(&rpc_url).await?;
+
         // Create wallet from private key
-        let signing_key = SigningKey::from_bytes(&hex::decode(private_key.trim_start_matches("0x"))?)?;
-        let wallet = LocalWallet::from(signing_key);
-        let wallet = wallet.with_chain_id(chain_id);
+        let private_key_bytes = hex::decode(private_key.trim_start_matches("0x"))?;
+        let signing_key = SigningKey::from_slice(&private_key_bytes)?;
+        let wallet = PrivateKeySigner::from(signing_key).with_chain_id(Some(chain_id));
         
-        // Create contract instance using the sol! generated interface
-        let contract = ArtifactManager::new(contract_address, &provider);
-        let contract = contract.with_signer(wallet.clone());
         
         Ok(Self {
-            contract,
             provider,
             wallet,
             contract_address,
@@ -96,10 +94,11 @@ impl BlockchainClient {
             return Err(anyhow::anyhow!("Array length mismatch"));
         }
 
-        // Call the contract function using the generated interface
-        let call = self.contract.batchReportArtifactRevenue(artifacts, revenues, timestamps);
+        // Create contract instance and call the function
+        let contract = ArtifactManager::new(self.contract_address, &self.provider);
+        let call = contract.batchReportArtifactRevenue(artifacts, revenues, timestamps);
         let pending_tx = call.send().await?;
-        let tx_hash = pending_tx.tx_hash();
+        let tx_hash = *pending_tx.tx_hash();
         
         info!("BlockchainClient: Batch revenue report submitted with tx hash: {:?}", tx_hash);
         Ok(tx_hash)
@@ -122,10 +121,11 @@ impl BlockchainClient {
             return Err(anyhow::anyhow!("Array length mismatch"));
         }
 
-        // Call the contract function using the generated interface
-        let call = self.contract.batchReportArtifactUsage(artifacts, usages, timestamps);
+        // Create contract instance and call the function
+        let contract = ArtifactManager::new(self.contract_address, &self.provider);
+        let call = contract.batchReportArtifactUsage(artifacts, usages, timestamps);
         let pending_tx = call.send().await?;
-        let tx_hash = pending_tx.tx_hash();
+        let tx_hash = *pending_tx.tx_hash();
         
         info!("BlockchainClient: Batch usage report submitted with tx hash: {:?}", tx_hash);
         Ok(tx_hash)
@@ -144,11 +144,8 @@ impl BlockchainClient {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use alloy::primitives::Address;
-
     #[tokio::test]
     async fn test_blockchain_client_creation() {
-    //    Read config from .env file
+        // Test implementation would go here
     }
 }

@@ -20,3 +20,5 @@ num-bigint = { version = "0.4.6", features = ["serde"] }
 axum = "0.8.4"
 chrono = { version = "0.4", features = ["serde"] }
 alloy = "1.0.30"
+alloy-network = "1.0.30"
+reqwest = "0.12.23"
