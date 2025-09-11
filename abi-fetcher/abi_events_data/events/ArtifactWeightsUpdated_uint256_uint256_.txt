@@ -1,0 +1,13 @@
+Event Name: ArtifactWeightsUpdated
+Signature: ArtifactWeightsUpdated(uint256,uint256)
+Topic Hash: 0x1fe9a41d2b7325eb33b7e26079ade2029a2deed7eeb25c9cd83b6299dcdf960a
+Anonymous: false
+
+Inputs:
+  0: newLambda uint256 (indexed)
+  1: newX uint256 (indexed)
+
+Contract Sources:
+  - 0x4f46d08569B6d96DFC576cFdEa02023284c8Ea46
+  - 0x6Ae23326039d030fa018D9081e0C48669749F3f6
+  - 0x5dBFBb78453719189f153c10b484De23d70B7f22

@@ -1,0 +1,12 @@
+Event Name: ArtifactStakingUpdated
+Signature: ArtifactStakingUpdated(address,address)
+Topic Hash: 0x3c4cb12a9b07fba4814e46ad69d1da1815a545466d2250791b829f9d12019af2
+Anonymous: false
+
+Inputs:
+  0: oldAddress address (indexed)
+  1: newAddress address (indexed)
+
+Contract Sources:
+  - 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
+  - 0xb52BEB65d2f59801c272eA99b0d3Fd227c54185E

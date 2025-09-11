@@ -1,0 +1,16 @@
+Event Name: RewardsClaimed
+Signature: RewardsClaimed(address,uint256)
+Topic Hash: 0xfc30cddea38e2bf4d6ea7d3f9ed3b6ad7f176419f4963bd81318067a4aee73fe
+Anonymous: false
+
+Inputs:
+  0: user address (indexed)
+  1: amount uint256 (indexed)
+
+Contract Sources:
+  - 0xaF7AF80d194eA8213A8E9EcBC5c6761e89420f94
+  - 0xe57D1ae23BE2Bcd41B07EdD6852c9f2388d45F67
+  - 0x2D9C048e8d6FC9283fb80B63a6CbBB4982A6770B
+  - 0x04Aaacc1eCB311e299DE7c275f28E1a184522b96
+  - 0xe50351B10a011DfAE5903A4f99Ef6cA749a59c01
+  - 0x6C08aC820CcCf22253833894297040767Da7E776

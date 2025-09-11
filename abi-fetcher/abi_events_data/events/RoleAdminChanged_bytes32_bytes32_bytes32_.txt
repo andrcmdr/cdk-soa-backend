@@ -1,0 +1,16 @@
+Event Name: RoleAdminChanged
+Signature: RoleAdminChanged(bytes32,bytes32,bytes32)
+Topic Hash: 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff
+Anonymous: false
+
+Inputs:
+  0: role bytes32 (indexed)
+  1: previousAdminRole bytes32 (indexed)
+  2: newAdminRole bytes32 (indexed)
+
+Contract Sources:
+  - 0x1A3329E7813a35c7E5B4189BB3b21bd112eC6536
+  - 0xA643f0D8FFDC2C7d7A15A46a2683953fB0bCc407
+  - 0x74623e0F207071571747A1f6C7Cfe674D86C33f5
+  - 0xcFB541d62148DEFd2D0C7f4f3984603d8D0a357d
+  - 0x80e6f0937fE177415A868e78e00E2e1D768B8533

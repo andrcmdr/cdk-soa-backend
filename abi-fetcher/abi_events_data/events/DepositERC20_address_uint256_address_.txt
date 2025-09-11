@@ -1,0 +1,17 @@
+Event Name: DepositERC20
+Signature: DepositERC20(address,uint256,address)
+Topic Hash: 0x7a90a142016f91c1467264ab2bf3d1f697661f736fc4400ffd076883a2b8d5ec
+Anonymous: false
+
+Inputs:
+  0: user address (indexed)
+  1: amount uint256 (indexed)
+  2: token address (not indexed)
+
+Contract Sources:
+  - 0x60617073Cebe71bf358FDA04c1880b79364fC958
+  - 0xFf075D0E712e771B43861659F3d128bA958f2950
+  - 0x81fFB6d4e08116338D0eD6f7d1A5f8Daf4373Dc8
+  - 0x6A56C06563eF2B4EA571f180eAD54A763415EB69
+  - 0x63Ee3427DBb51963C42b74135A8496c7843fcf33
+  - 0x1e77398571F4E59EA7080E626231b654D23528Af

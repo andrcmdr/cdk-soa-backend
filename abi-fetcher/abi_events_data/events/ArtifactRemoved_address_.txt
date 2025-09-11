@@ -1,0 +1,14 @@
+Event Name: ArtifactRemoved
+Signature: ArtifactRemoved(address)
+Topic Hash: 0xaf64ce7f14469a94f6eab9281274dc6f4460925a0302a5ebaf050e8035007e06
+Anonymous: false
+
+Inputs:
+  0: artifact address (indexed)
+
+Contract Sources:
+  - 0x27b304B4B8a6a6E154Cc961B2ff4ff9A704E2d0c
+  - 0x0d2f8934DA45296a868a6B96853bDB7e4708bE09
+  - 0x74623e0F207071571747A1f6C7Cfe674D86C33f5
+  - 0x2211d7Ec83017B0f8De7BEf363842be79Afa959D
+  - 0xb5507F0B32feDdf0CD628Ef9F2444B8074a02062

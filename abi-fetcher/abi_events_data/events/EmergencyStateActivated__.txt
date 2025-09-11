@@ -1,0 +1,9 @@
+Event Name: EmergencyStateActivated
+Signature: EmergencyStateActivated()
+Topic Hash: 0x2261efe5aef6fedc1fd1550b25facc9181745623049c7901287030b9ad1a5497
+Anonymous: false
+
+Inputs:
+
+Contract Sources:
+  - 0x8BD36ca1A55e389335004872aA3C3Be0969D3aA7

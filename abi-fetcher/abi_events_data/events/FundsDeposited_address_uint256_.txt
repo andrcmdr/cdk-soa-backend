@@ -1,0 +1,13 @@
+Event Name: FundsDeposited
+Signature: FundsDeposited(address,uint256)
+Topic Hash: 0x543ba50a5eec5e6178218e364b1d0f396157b3c8fa278522c2cb7fd99407d474
+Anonymous: false
+
+Inputs:
+  0: from address (indexed)
+  1: amount uint256 (not indexed)
+
+Contract Sources:
+  - 0x7aB7ab179cD819756D1E31876a4d22722100F826
+  - 0xbcaF7A004F0e16e8FA5Db44079CB5236e1E06D3D
+  - 0x4Ab5e8Fc41eD0bB2f6F0BC8c83E57Bc385E390C1

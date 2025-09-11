@@ -1,0 +1,15 @@
+Event Name: ArtifactCreated
+Signature: ArtifactCreated(bytes32,address)
+Topic Hash: 0xdc723ddd9f108c62f91fce655c012a626d9567fb664b0027679b001834896513
+Anonymous: false
+
+Inputs:
+  0: artifactHash bytes32 (indexed)
+  1: artifactAddress address (indexed)
+
+Contract Sources:
+  - 0x207Eea90B43515d9e5f6798CE286B1Af02F5eAE2
+  - 0x69FE6Aa509fe7aE8F348BFb25df1092809AaD7b2
+  - 0x83e1bc5B2BF2B7E4b54C621F74fbc1f8305b0E0A
+  - 0x4f7d66e656289263B5DC33e1F9664f06fB052C2e
+  - 0xC697Edbf690b014AFF6F93958d18D62547C5b809

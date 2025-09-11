@@ -1,0 +1,16 @@
+Event Name: ArtifactRevenueReported
+Signature: ArtifactRevenueReported(address,uint256,uint256)
+Topic Hash: 0xd301369ea02b84949217d6cf20336ece6b183fa7c7c86bb8c3e1f7b7fce78b49
+Anonymous: false
+
+Inputs:
+  0: artifact address (indexed)
+  1: revenue uint256 (not indexed)
+  2: timestamp uint256 (not indexed)
+
+Contract Sources:
+  - 0x27b304B4B8a6a6E154Cc961B2ff4ff9A704E2d0c
+  - 0x0d2f8934DA45296a868a6B96853bDB7e4708bE09
+  - 0x74623e0F207071571747A1f6C7Cfe674D86C33f5
+  - 0x2211d7Ec83017B0f8De7BEf363842be79Afa959D
+  - 0xb5507F0B32feDdf0CD628Ef9F2444B8074a02062

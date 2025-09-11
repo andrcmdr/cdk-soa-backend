@@ -1,0 +1,10 @@
+Event Name: SignMsg
+Signature: SignMsg(bytes32)
+Topic Hash: 0xe7f4675038f4f6034dfcbbb24c4dc08e4ebf10eb9d257d3d02c0f38d122ac6e4
+Anonymous: false
+
+Inputs:
+  0: msgHash bytes32 (indexed)
+
+Contract Sources:
+  - 0x3E5c63644E683549055b9Be8653de26E0B4CD36E

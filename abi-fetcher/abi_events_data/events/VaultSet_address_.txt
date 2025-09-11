@@ -1,0 +1,10 @@
+Event Name: VaultSet
+Signature: VaultSet(address)
+Topic Hash: 0xe7ae49f883c825b05681b3e00e8be6fdea9ed2a8a45e4c6ecb9390fc44cce615
+Anonymous: false
+
+Inputs:
+  0: vault address (indexed)
+
+Contract Sources:
+  - 0x81112D4A0389AFBE159F39a5b048602cEb221285

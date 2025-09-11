@@ -1,0 +1,12 @@
+Event Name: RepStakingUpdated
+Signature: RepStakingUpdated(address,address)
+Topic Hash: 0x8da74c24cb5cba8fa69d9f7c349c4b9452a47e174c242ae937e436da82c3e176
+Anonymous: false
+
+Inputs:
+  0: oldAddress address (indexed)
+  1: newAddress address (indexed)
+
+Contract Sources:
+  - 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
+  - 0xb52BEB65d2f59801c272eA99b0d3Fd227c54185E

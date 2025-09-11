@@ -1,0 +1,10 @@
+Event Name: Initialized
+Signature: Initialized(uint8)
+Topic Hash: 0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
+Anonymous: false
+
+Inputs:
+  0: version uint8 (not indexed)
+
+Contract Sources:
+  - 0x8BD36ca1A55e389335004872aA3C3Be0969D3aA7

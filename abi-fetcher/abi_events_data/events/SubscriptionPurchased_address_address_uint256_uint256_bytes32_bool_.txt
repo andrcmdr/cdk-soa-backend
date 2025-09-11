@@ -1,0 +1,19 @@
+Event Name: SubscriptionPurchased
+Signature: SubscriptionPurchased(address,address,uint256,uint256,bytes32,bool)
+Topic Hash: 0x74bf3e0880c7618d5b3b03106634ee5f114181758b206d9f77c1f58cefc8bc6b
+Anonymous: false
+
+Inputs:
+  0: buyer address (indexed)
+  1: owner address (indexed)
+  2: expiry uint256 (indexed)
+  3: amount uint256 (not indexed)
+  4: subscriptionIdHash bytes32 (not indexed)
+  5: activate bool (not indexed)
+
+Contract Sources:
+  - 0xd75333f0dA29618468A4BaEC91c08abE6317cc63
+  - 0x598330de4ae6e9Dc686a81c27f523E591EF9838a
+  - 0x2086Be28CE3B80FA7ec8405268A19BbA01F3b041
+  - 0x2263e66D70aa362c6058c9e04b88de14a2C4418C
+  - 0xfE6bE49550167D4Ee1610aE03Db044a4f86c7350

@@ -1,0 +1,11 @@
+Event Name: SafeReceived
+Signature: SafeReceived(address,uint256)
+Topic Hash: 0x3d0ce9bfc3ed7d6862dbb28b2dea94561fe714a1b4d019aa8af39730d1ad7c3d
+Anonymous: false
+
+Inputs:
+  0: sender address (indexed)
+  1: value uint256 (not indexed)
+
+Contract Sources:
+  - 0x3E5c63644E683549055b9Be8653de26E0B4CD36E

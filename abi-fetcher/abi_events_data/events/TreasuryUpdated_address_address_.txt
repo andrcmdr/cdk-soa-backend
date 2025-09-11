@@ -1,0 +1,12 @@
+Event Name: TreasuryUpdated
+Signature: TreasuryUpdated(address,address)
+Topic Hash: 0x4ab5be82436d353e61ca18726e984e561f5c1cc7c6d38b29d2553c790434705a
+Anonymous: false
+
+Inputs:
+  0: oldAddress address (indexed)
+  1: newAddress address (indexed)
+
+Contract Sources:
+  - 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
+  - 0xb52BEB65d2f59801c272eA99b0d3Fd227c54185E

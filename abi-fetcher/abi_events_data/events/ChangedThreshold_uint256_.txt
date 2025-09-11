@@ -1,0 +1,10 @@
+Event Name: ChangedThreshold
+Signature: ChangedThreshold(uint256)
+Topic Hash: 0x610f7ff2b304ae8903c3de74c60c6ab1f7d6226b3f52c5161905bb5ad4039c93
+Anonymous: false
+
+Inputs:
+  0: threshold uint256 (not indexed)
+
+Contract Sources:
+  - 0x3E5c63644E683549055b9Be8653de26E0B4CD36E

@@ -1,0 +1,11 @@
+Event Name: ApproveHash
+Signature: ApproveHash(bytes32,address)
+Topic Hash: 0xf2a0eb156472d1440255b0d7c1e19cc07115d1051fe605b0dce69acfec884d9c
+Anonymous: false
+
+Inputs:
+  0: approvedHash bytes32 (indexed)
+  1: owner address (indexed)
+
+Contract Sources:
+  - 0x3E5c63644E683549055b9Be8653de26E0B4CD36E

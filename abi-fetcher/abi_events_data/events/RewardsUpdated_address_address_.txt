@@ -1,0 +1,12 @@
+Event Name: RewardsUpdated
+Signature: RewardsUpdated(address,address)
+Topic Hash: 0x52cb9bd420e692b24367bfe6cc4e8640928dc4a9011c4bb0f1c36fac91b9a6da
+Anonymous: false
+
+Inputs:
+  0: oldAddress address (indexed)
+  1: newAddress address (indexed)
+
+Contract Sources:
+  - 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
+  - 0xb52BEB65d2f59801c272eA99b0d3Fd227c54185E

@@ -1,0 +1,11 @@
+Event Name: RolesUpdated
+Signature: RolesUpdated(address,uint256)
+Topic Hash: 0x715ad5ce61fc9595c7b415289d59cf203f23a94fa06f04af7e489a0a76e1fe26
+Anonymous: false
+
+Inputs:
+  0: user address (indexed)
+  1: roles uint256 (indexed)
+
+Contract Sources:
+  - 0x81112D4A0389AFBE159F39a5b048602cEb221285

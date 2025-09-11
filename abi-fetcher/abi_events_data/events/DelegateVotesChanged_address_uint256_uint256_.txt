@@ -1,0 +1,13 @@
+Event Name: DelegateVotesChanged
+Signature: DelegateVotesChanged(address,uint256,uint256)
+Topic Hash: 0xdec2bacdd2f05b59de34da9b523dff8be42e5e38e818c82fdb0bae774387a724
+Anonymous: false
+
+Inputs:
+  0: delegate address (indexed)
+  1: oldValue uint256 (not indexed)
+  2: newValue uint256 (not indexed)
+
+Contract Sources:
+  - 0x9215195cd638D87A53Fb40D3056d5B4203caf6ce
+  - 0xd1C10537f71A23E30494eA810108594dB3a03338

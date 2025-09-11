@@ -1,0 +1,10 @@
+Event Name: AddedOwner
+Signature: AddedOwner(address)
+Topic Hash: 0x9465fa0c962cc76958e6373a993326400c1c94f8be2fe3a952adfa7f60b2ea26
+Anonymous: false
+
+Inputs:
+  0: owner address (not indexed)
+
+Contract Sources:
+  - 0x3E5c63644E683549055b9Be8653de26E0B4CD36E

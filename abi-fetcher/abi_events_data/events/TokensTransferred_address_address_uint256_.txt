@@ -1,0 +1,13 @@
+Event Name: TokensTransferred
+Signature: TokensTransferred(address,address,uint256)
+Topic Hash: 0x1b89874203ff7f0bba87c969ada3f32fda22ed38a6706d35199d21280c7811b1
+Anonymous: false
+
+Inputs:
+  0: token address (indexed)
+  1: to address (indexed)
+  2: amount uint256 (not indexed)
+
+Contract Sources:
+  - 0x1A3329E7813a35c7E5B4189BB3b21bd112eC6536
+  - 0x80e6f0937fE177415A868e78e00E2e1D768B8533

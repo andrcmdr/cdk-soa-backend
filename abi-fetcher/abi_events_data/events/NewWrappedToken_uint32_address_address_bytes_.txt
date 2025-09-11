@@ -1,0 +1,13 @@
+Event Name: NewWrappedToken
+Signature: NewWrappedToken(uint32,address,address,bytes)
+Topic Hash: 0x490e59a1701b938786ac72570a1efeac994a3dbe96e2e883e19e902ace6e6a39
+Anonymous: false
+
+Inputs:
+  0: originNetwork uint32 (not indexed)
+  1: originTokenAddress address (not indexed)
+  2: wrappedTokenAddress address (not indexed)
+  3: metadata bytes (not indexed)
+
+Contract Sources:
+  - 0x8BD36ca1A55e389335004872aA3C3Be0969D3aA7

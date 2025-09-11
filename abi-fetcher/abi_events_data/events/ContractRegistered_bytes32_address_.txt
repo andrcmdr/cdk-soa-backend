@@ -1,0 +1,12 @@
+Event Name: ContractRegistered
+Signature: ContractRegistered(bytes32,address)
+Topic Hash: 0xd380d199d4ec1ef14fd6dfcf8ac58331b0b2beeca0aec4aa52f8842a7c7fe3e4
+Anonymous: false
+
+Inputs:
+  0: contractType bytes32 (indexed)
+  1: contractAddress address (indexed)
+
+Contract Sources:
+  - 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
+  - 0xb52BEB65d2f59801c272eA99b0d3Fd227c54185E

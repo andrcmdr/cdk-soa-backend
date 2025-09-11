@@ -1,0 +1,12 @@
+Event Name: GovernanceUpdated
+Signature: GovernanceUpdated(address,address)
+Topic Hash: 0x434a2db650703b36c824e745330d6397cdaa9ee2cc891a4938ae853e1c50b68d
+Anonymous: false
+
+Inputs:
+  0: oldAddress address (indexed)
+  1: newAddress address (indexed)
+
+Contract Sources:
+  - 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
+  - 0xb52BEB65d2f59801c272eA99b0d3Fd227c54185E

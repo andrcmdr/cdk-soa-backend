@@ -1,0 +1,13 @@
+Event Name: VaultFunded
+Signature: VaultFunded(address,address,uint256)
+Topic Hash: 0x9ac8f8f804c58a5ee0a5e1bfed5351fd7e0c1af16216c2c3dc97305a71a7cb87
+Anonymous: false
+
+Inputs:
+  0: vault address (indexed)
+  1: token address (indexed)
+  2: amount uint256 (not indexed)
+
+Contract Sources:
+  - 0x1A3329E7813a35c7E5B4189BB3b21bd112eC6536
+  - 0x80e6f0937fE177415A868e78e00E2e1D768B8533

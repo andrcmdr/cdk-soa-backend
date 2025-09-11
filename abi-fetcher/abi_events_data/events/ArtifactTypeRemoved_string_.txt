@@ -1,0 +1,10 @@
+Event Name: ArtifactTypeRemoved
+Signature: ArtifactTypeRemoved(string)
+Topic Hash: 0x0a6f5c358224b63ffe287bf5f0e5ec1b8a8c3b63cdfcc81e2987780ccbeb83f0
+Anonymous: false
+
+Inputs:
+  0: artifactType string (indexed)
+
+Contract Sources:
+  - 0xA643f0D8FFDC2C7d7A15A46a2683953fB0bCc407

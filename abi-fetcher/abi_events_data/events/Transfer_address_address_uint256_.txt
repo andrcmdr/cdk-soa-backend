@@ -1,0 +1,15 @@
+Event Name: Transfer
+Signature: Transfer(address,address,uint256)
+Topic Hash: 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
+Anonymous: false
+
+Inputs:
+  0: from address (indexed)
+  1: to address (indexed)
+  2: amount uint256 (not indexed)
+
+Contract Sources:
+  - 0x9215195cd638D87A53Fb40D3056d5B4203caf6ce
+  - 0x98E1f3D6D35E117174510b6d70C731691b6f18fD
+  - 0xd1C10537f71A23E30494eA810108594dB3a03338
+  - 0xD1B37c0F6e2325F63176c3780052f318c9424941

@@ -1,0 +1,10 @@
+Event Name: EnabledModule
+Signature: EnabledModule(address)
+Topic Hash: 0xecdf3a3effea5783a3c4c2140e677577666428d44ed9d474a0b3a4c9943f8440
+Anonymous: false
+
+Inputs:
+  0: module address (not indexed)
+
+Contract Sources:
+  - 0x3E5c63644E683549055b9Be8653de26E0B4CD36E

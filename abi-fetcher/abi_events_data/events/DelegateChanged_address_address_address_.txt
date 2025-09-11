@@ -1,0 +1,13 @@
+Event Name: DelegateChanged
+Signature: DelegateChanged(address,address,address)
+Topic Hash: 0x3134e8a2e6d97e929a7e54011ea5485d7d196dd5f0ba4d4ef95803e8e3fc257f
+Anonymous: false
+
+Inputs:
+  0: delegator address (indexed)
+  1: from address (indexed)
+  2: to address (indexed)
+
+Contract Sources:
+  - 0x9215195cd638D87A53Fb40D3056d5B4203caf6ce
+  - 0xd1C10537f71A23E30494eA810108594dB3a03338

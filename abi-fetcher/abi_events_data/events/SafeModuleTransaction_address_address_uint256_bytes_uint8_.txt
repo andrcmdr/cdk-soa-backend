@@ -1,0 +1,14 @@
+Event Name: SafeModuleTransaction
+Signature: SafeModuleTransaction(address,address,uint256,bytes,uint8)
+Topic Hash: 0xb648d3644f584ed1c2232d53c46d87e693586486ad0d1175f8656013110b714e
+Anonymous: false
+
+Inputs:
+  0: module address (not indexed)
+  1: to address (not indexed)
+  2: value uint256 (not indexed)
+  3: data bytes (not indexed)
+  4: operation uint8 (not indexed)
+
+Contract Sources:
+  - 0x3E5c63644E683549055b9Be8653de26E0B4CD36E
