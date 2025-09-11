@@ -28,6 +28,8 @@ struct BlockscoutConfig {
     max_retries: u32,
     #[serde(default = "default_abi_fetch_attempts")]
     abi_fetch_attempts: u32,
+    #[serde(default = "default_pagination_offset")]
+    pagination_offset: u32,
 }
 
 #[derive(Debug, Deserialize)]
@@ -42,6 +44,7 @@ struct OutputConfig {
 fn default_request_timeout() -> u64 { 30 }
 fn default_max_retries() -> u32 { 3 }
 fn default_abi_fetch_attempts() -> u32 { 5 }
+fn default_pagination_offset() -> u32 { 1000 }
 
 // API response structures for contract list endpoints
 #[derive(Debug, Deserialize)]
@@ -195,10 +198,11 @@ struct BlockscoutClient {
     base_url: String,
     max_retries: u32,
     abi_fetch_attempts: u32,
+    pagination_offset: u32,
 }
 
 impl BlockscoutClient {
-    fn new(server: &str, api_path: &str, timeout_seconds: u64, max_retries: u32, abi_fetch_attempts: u32) -> Self {
+    fn new(server: &str, api_path: &str, timeout_seconds: u64, max_retries: u32, abi_fetch_attempts: u32, pagination_offset: u32) -> Self {
         let client = reqwest::Client::builder()
             .timeout(std::time::Duration::from_secs(timeout_seconds))
             .build()
@@ -211,43 +215,162 @@ impl BlockscoutClient {
             base_url,
             max_retries,
             abi_fetch_attempts,
+            pagination_offset,
         }
     }
 
     async fn fetch_verified_contracts(&self) -> Result<Vec<ContractListItem>> {
-        let url = format!("{}?module=contract&action=listcontracts&filter=verified", self.base_url);
-        info!("Fetching verified contracts from: {}", url);
+        let mut all_contracts = Vec::new();
+        let mut page = 1;
 
-        let response = self.fetch_with_retry(&url).await
-            .context("Failed to fetch verified contracts list")?;
+        loop {
+            let url = format!(
+                "{}?module=contract&action=listcontracts&filter=verified&offset={}&page={}",
+                self.base_url, self.pagination_offset, page
+            );
 
-        let contracts_response: ContractListResponse = response.json().await
-            .context("Failed to parse verified contracts response")?;
+            info!("Fetching verified contracts from: {} (page {})", url, page);
 
-        if contracts_response.status != "1" {
-            return Err(anyhow::anyhow!("API returned error status: {}", contracts_response.message));
+            let response = self.fetch_with_retry(&url).await
+                .context("Failed to fetch verified contracts list")?;
+
+            let contracts_response: ContractListResponse = response.json().await
+                .context("Failed to parse verified contracts response")?;
+
+            if contracts_response.status != "1" {
+                return Err(anyhow::anyhow!("API returned error status: {}", contracts_response.message));
+            }
+
+            let items_count = contracts_response.result.len();
+            info!("Fetched {} verified contracts on page {}", items_count, page);
+
+            // If no results, we've reached the end
+            if items_count == 0 {
+                info!("No more verified contracts, pagination complete at page {}", page);
+                break;
+            }
+
+            all_contracts.extend(contracts_response.result);
+
+            // If we got fewer items than the offset, this might be the last page
+            if items_count < self.pagination_offset as usize {
+                info!("Received {} items (less than offset {}), checking next page to confirm end",
+                      items_count, self.pagination_offset);
+
+                // Check next page to be sure
+                page += 1;
+                let next_url = format!(
+                    "{}?module=contract&action=listcontracts&filter=verified&offset={}&page={}",
+                    self.base_url, self.pagination_offset, page
+                );
+
+                match self.fetch_with_retry(&next_url).await {
+                    Ok(next_response) => {
+                        match next_response.json::<ContractListResponse>().await {
+                            Ok(next_contracts_response) => {
+                                if next_contracts_response.result.is_empty() {
+                                    info!("Confirmed end of verified contracts at page {}", page);
+                                    break;
+                                } else {
+                                    info!("Found {} more verified contracts on page {}", next_contracts_response.result.len(), page);
+                                    all_contracts.extend(next_contracts_response.result);
+                                }
+                            }
+                            Err(e) => {
+                                warn!("Failed to parse next page response for verified contracts: {:?}", e);
+                                break;
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        warn!("Failed to fetch next page for verified contracts: {:?}", e);
+                        break;
+                    }
+                }
+            }
+
+            page += 1;
         }
 
-        info!("Fetched {} verified contracts", contracts_response.result.len());
-        Ok(contracts_response.result)
+        info!("Total verified contracts fetched: {}", all_contracts.len());
+        Ok(all_contracts)
     }
 
     async fn fetch_unverified_contracts(&self) -> Result<Vec<ContractListItem>> {
-        let url = format!("{}?module=contract&action=listcontracts&filter=unverified", self.base_url);
-        info!("Fetching unverified contracts from: {}", url);
+        let mut all_contracts = Vec::new();
+        let mut page = 1;
 
-        let response = self.fetch_with_retry(&url).await
-            .context("Failed to fetch unverified contracts list")?;
+        loop {
+            let url = format!(
+                "{}?module=contract&action=listcontracts&filter=unverified&offset={}&page={}",
+                self.base_url, self.pagination_offset, page
+            );
 
-        let contracts_response: ContractListResponse = response.json().await
-            .context("Failed to parse unverified contracts response")?;
+            info!("Fetching unverified contracts from: {} (page {})", url, page);
 
-        if contracts_response.status != "1" {
-            return Err(anyhow::anyhow!("API returned error status: {}", contracts_response.message));
+            let response = self.fetch_with_retry(&url).await
+                .context("Failed to fetch unverified contracts list")?;
+
+            let contracts_response: ContractListResponse = response.json().await
+                .context("Failed to parse unverified contracts response")?;
+
+            if contracts_response.status != "1" {
+                return Err(anyhow::anyhow!("API returned error status: {}", contracts_response.message));
+            }
+
+            let items_count = contracts_response.result.len();
+            info!("Fetched {} unverified contracts on page {}", items_count, page);
+
+            // If no results, we've reached the end
+            if items_count == 0 {
+                info!("No more unverified contracts, pagination complete at page {}", page);
+                break;
+            }
+
+            all_contracts.extend(contracts_response.result);
+
+            // If we got fewer items than the offset, this might be the last page
+            if items_count < self.pagination_offset as usize {
+                info!("Received {} items (less than offset {}), checking next page to confirm end",
+                      items_count, self.pagination_offset);
+
+                // Check next page to be sure
+                page += 1;
+                let next_url = format!(
+                    "{}?module=contract&action=listcontracts&filter=unverified&offset={}&page={}",
+                    self.base_url, self.pagination_offset, page
+                );
+
+                match self.fetch_with_retry(&next_url).await {
+                    Ok(next_response) => {
+                        match next_response.json::<ContractListResponse>().await {
+                            Ok(next_contracts_response) => {
+                                if next_contracts_response.result.is_empty() {
+                                    info!("Confirmed end of unverified contracts at page {}", page);
+                                    break;
+                                } else {
+                                    info!("Found {} more unverified contracts on page {}", next_contracts_response.result.len(), page);
+                                    all_contracts.extend(next_contracts_response.result);
+                                }
+                            }
+                            Err(e) => {
+                                warn!("Failed to parse next page response for unverified contracts: {:?}", e);
+                                break;
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        warn!("Failed to fetch next page for unverified contracts: {:?}", e);
+                        break;
+                    }
+                }
+            }
+
+            page += 1;
         }
 
-        info!("Fetched {} unverified contracts", contracts_response.result.len());
-        Ok(contracts_response.result)
+        info!("Total unverified contracts fetched: {}", all_contracts.len());
+        Ok(all_contracts)
     }
 
     async fn fetch_contract_abi(&self, address: &str) -> Result<Option<Value>> {
@@ -278,7 +401,7 @@ impl BlockscoutClient {
                                         }
                                         _ => {
                                             if attempt < self.abi_fetch_attempts {
-                                                debug!("Invalid ABI format for contract {}, retrying... (attempt {}/{})", 
+                                                debug!("Invalid ABI format for contract {}, retrying... (attempt {}/{})",
                                                       address, attempt, self.abi_fetch_attempts);
                                                 tokio::time::sleep(tokio::time::Duration::from_millis(1000 * attempt as u64)).await;
                                                 continue;
@@ -290,7 +413,7 @@ impl BlockscoutClient {
                                     }
                                 } else {
                                     if attempt < self.abi_fetch_attempts {
-                                        debug!("No result in ABI response for contract {}, retrying... (attempt {}/{})", 
+                                        debug!("No result in ABI response for contract {}, retrying... (attempt {}/{})",
                                               address, attempt, self.abi_fetch_attempts);
                                         tokio::time::sleep(tokio::time::Duration::from_millis(1000 * attempt as u64)).await;
                                         continue;
@@ -301,7 +424,7 @@ impl BlockscoutClient {
                                 }
                             } else {
                                 if attempt < self.abi_fetch_attempts {
-                                    debug!("API error for contract {}: {}, retrying... (attempt {}/{})", 
+                                    debug!("API error for contract {}: {}, retrying... (attempt {}/{})",
                                           address, abi_response.message, attempt, self.abi_fetch_attempts);
                                     tokio::time::sleep(tokio::time::Duration::from_millis(1000 * attempt as u64)).await;
                                     continue;
@@ -313,12 +436,12 @@ impl BlockscoutClient {
                         }
                         Err(e) => {
                             if attempt < self.abi_fetch_attempts {
-                                debug!("Failed to parse ABI response for contract {}: {:?}, retrying... (attempt {}/{})", 
+                                debug!("Failed to parse ABI response for contract {}: {:?}, retrying... (attempt {}/{})",
                                       address, e, attempt, self.abi_fetch_attempts);
                                 tokio::time::sleep(tokio::time::Duration::from_millis(1000 * attempt as u64)).await;
                                 continue;
                             } else {
-                                warn!("Failed to parse ABI response for contract {} after {} attempts: {:?}", 
+                                warn!("Failed to parse ABI response for contract {} after {} attempts: {:?}",
                                      address, self.abi_fetch_attempts, e);
                                 return Ok(None);
                             }
@@ -327,12 +450,12 @@ impl BlockscoutClient {
                 }
                 Err(e) => {
                     if attempt < self.abi_fetch_attempts {
-                        debug!("HTTP request failed for contract {}: {:?}, retrying... (attempt {}/{})", 
+                        debug!("HTTP request failed for contract {}: {:?}, retrying... (attempt {}/{})",
                               address, e, attempt, self.abi_fetch_attempts);
                         tokio::time::sleep(tokio::time::Duration::from_millis(1000 * attempt as u64)).await;
                         continue;
                     } else {
-                        warn!("HTTP request failed for contract {} after {} attempts: {:?}", 
+                        warn!("HTTP request failed for contract {} after {} attempts: {:?}",
                              address, self.abi_fetch_attempts, e);
                         return Ok(None);
                     }
@@ -760,6 +883,7 @@ async fn main() -> Result<()> {
         config.blockscout.request_timeout_seconds,
         config.blockscout.max_retries,
         config.blockscout.abi_fetch_attempts,
+        config.blockscout.pagination_offset,
     );
 
     // Fetch verified contracts
@@ -770,7 +894,7 @@ async fn main() -> Result<()> {
     let unverified_contract_items = client.fetch_unverified_contracts().await
         .context("Failed to fetch unverified contracts")?;
 
-    info!("Processing {} verified and {} unverified contracts...", 
+    info!("Processing {} verified and {} unverified contracts...",
           verified_contract_items.len(), unverified_contract_items.len());
 
     let mut verified_contracts = Vec::new();
@@ -941,4 +1065,72 @@ async fn main() -> Result<()> {
     );
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_generate_extended_event_signature() {
+        let inputs = vec![
+            AbiInput {
+                name: "userPercentage".to_string(),
+                input_type: "uint256".to_string(),
+                indexed: Some(true),
+                components: None,
+            },
+            AbiInput {
+                name: "repPercentage".to_string(),
+                input_type: "uint256".to_string(),
+                indexed: Some(true),
+                components: None,
+            },
+            AbiInput {
+                name: "artifactPercentage".to_string(),
+                input_type: "uint256".to_string(),
+                indexed: Some(true),
+                components: None,
+            },
+        ];
+
+        let extended_signature = generate_extended_event_signature("RewardPercentagesUpdated", &inputs, false);
+        assert_eq!(extended_signature, "RewardPercentagesUpdated(uint256 indexed userPercentage, uint256 indexed repPercentage, uint256 indexed artifactPercentage)");
+    }
+
+    #[test]
+    fn test_generate_event_signature() {
+        let inputs = vec![
+            AbiInput {
+                name: "from".to_string(),
+                input_type: "address".to_string(),
+                indexed: Some(true),
+                components: None,
+            },
+            AbiInput {
+                name: "to".to_string(),
+                input_type: "address".to_string(),
+                indexed: Some(true),
+                components: None,
+            },
+            AbiInput {
+                name: "value".to_string(),
+                input_type: "uint256".to_string(),
+                indexed: Some(false),
+                components: None,
+            },
+        ];
+
+        let signature = generate_event_signature("Transfer", &inputs, false);
+        assert_eq!(signature, "Transfer(address,address,uint256)");
+
+        let anon_signature = generate_event_signature("Transfer", &inputs, true);
+        assert_eq!(anon_signature, "Transfer(address,address,uint256) [anonymous]");
+    }
+
+    #[test]
+    fn test_generate_topic_hash() {
+        let hash = generate_topic_hash("Transfer(address,address,uint256)");
+        assert_eq!(hash, "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef");
+    }
 }
