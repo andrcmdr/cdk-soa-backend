@@ -41,6 +41,8 @@ mv -T /app-builder/cdk-soa-backend/events-monitor/.config/events_monitor.config.
 mv -T /app-builder/cdk-soa-backend/target/release/abi-fetcher /app-builder/abi-fetcher
 mv -T /app-builder/cdk-soa-backend/abi-fetcher/.config/abi_fetcher.config.yaml /app-builder/.config/abi_fetcher.config.yaml
 # cp -vrf /app-builder/cdk-soa-backend/events-monitor/abi/ -T /app-builder/abi/
+mv -T /app-builder/cdk-soa-backend/target/release/json-rpc-fetcher /app-builder/json-rpc-fetcher
+mv -T /app-builder/cdk-soa-backend/abi-fetcher/.config/json_rpc_fetcher.config.yaml /app-builder/.config/json_rpc_fetcher.config.yaml
 EOF
 
 COPY --link abi-fetcher/abi/ /app-builder/abi/
@@ -61,6 +63,8 @@ COPY --from=builder /app-builder/.config/events_monitor.config.yaml /apps/.confi
 COPY --from=builder /app-builder/abi-fetcher /apps/abi-fetcher
 COPY --from=builder /app-builder/.config/abi_fetcher.config.yaml /apps/.config/abi_fetcher.config.yaml
 COPY --from=builder /app-builder/abi/ /apps/abi/
+COPY --from=builder /app-builder/json-rpc-fetcher /apps/json-rpc-fetcher
+COPY --from=builder /app-builder/.config/json_rpc_fetcher.config.yaml /apps/.config/json_rpc_fetcher.config.yaml
 
 # Install libpq for tokio-postgres
 RUN apt-get update -y

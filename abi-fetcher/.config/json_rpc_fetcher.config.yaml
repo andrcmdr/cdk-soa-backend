@@ -1,0 +1,14 @@
+blockscout:
+  server: "https://blockscout.server"
+  api_path: "/api"
+  request_timeout_seconds: 10
+  max_retries: 10
+  abi_fetch_attempts: 3
+  pagination_offset: 1000
+
+output:
+  contracts_file: "./contracts/contracts.yaml"
+  abi_directory: "./contracts/abi"
+  events_directory: "./contracts/events"
+  events_file: "./contracts/events.yaml"
+  contracts_events_file: "./contracts/contracts_events.yaml"
