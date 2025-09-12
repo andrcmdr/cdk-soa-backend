@@ -158,6 +158,8 @@ mod tests {
     use crate::transaction::{ContractClient, ArtifactManager};
     use tracing::info;
     use std::str::FromStr;
+    use alloy::primitives::hex;
+    use alloy::contract::Error as ContractError;
 
     #[tokio::test]
     async fn test_function_call() {
@@ -222,23 +224,31 @@ mod tests {
             let artifact_address = Address::from_str(&artifact_address).unwrap();
             info!("Artifact address: {:?}", artifact_address);
 
-            // Check if the artifact is active
             let contract = ArtifactManager::new(contract_addr, &client.provider);
-            let is_active = match contract.isArtifactActive(artifact_address).call().await {
-                Ok(v) => v,
+            let call = contract.isArtifactActive(artifact_address);
+
+            match call.call().await {
+                Ok(_) => {
+                    info!("Artifact is active");
+                }
                 Err(e) => {
-                    tracing::error!("isArtifactActive reverted: {:?}", e);
+                    // If you later add errors to sol!, try:
+                    // if let Some(errs) = e.as_decoded_interface_error::<ArtifactManager::ArtifactManagerErrors>() {
+                    //     info!("Custom error: {:?}", errs);
+                    // } else 
+                    if let Some(data) = e.as_revert_data() {
+                        info!("Revert data: 0x{}", alloy::primitives::hex::encode(data));
+                    } else {
+                        info!("Other error: {e:?}");
+                    }
                     return;
                 }
-            };
-            if !is_active {
-                tracing::info!("Artifact inactive");
-                return;
             }
 
             let artifacts = vec![artifact_address];
             let revenues = vec![U256::from(100)];
-            let timestamps = vec![U256::from(Utc::now().timestamp())];
+            let timestamp = Utc::now().timestamp() - 60;
+            let timestamps = vec![U256::from(timestamp)];
             match client.batch_report_artifact_revenue(artifacts, revenues, timestamps).await {
                 Ok(tx_hash) => {
                     info!("ContractClient: Batch revenue report submitted with tx hash: {:?}", tx_hash);
