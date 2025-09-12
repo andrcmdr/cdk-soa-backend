@@ -43,6 +43,7 @@ sha3 = "0.10"
 # camino = "1.1"
 
 chrono = "0.4"
+reqwest = { version = "0.12", features = ["json"] }
 
 [build-dependencies]
 vergen = { version = "9" }

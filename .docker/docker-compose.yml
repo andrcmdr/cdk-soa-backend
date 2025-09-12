@@ -14,17 +14,18 @@ services:
       - ./abi/:/apps/abi/:ro
       - ./config.toml:/apps/config.toml:ro
       - ./config.yaml:/apps/config.yaml:ro
-      - ./init.sql:/apps/init.sql:ro
+      - ./init_table.sql:/apps/init_table.sql:ro
     restart: unless-stopped
 
   postgres:
-    image: postgres:16
+    image: postgres:17
     environment:
-      POSTGRES_DB: indexer
+      POSTGRES_DB: events_monitor_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secret
+      POSTGRES_PASSWORD_FILE: /run/secrets/pg-passwd
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./.pgdata/:/var/lib/postgresql/data/pgdata/
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "5432:5432"
@@ -33,11 +34,11 @@ services:
     image: nats:2-scratch
     command: ["-js", "--store_dir", "/data/nats/"]
     volumes:
-      - ./natsdata/:/data/nats/
+      - ./.natsdata/:/data/nats/
     ports:
       - "4222:4222"
       - "8222:8222"
 
 volumes:
-  pgdata:
-  natsdata:
+  .pgdata:
+  .natsdata:

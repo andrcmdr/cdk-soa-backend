@@ -1669,6 +1669,7 @@ dependencies = [
  "hex",
  "openssl",
  "postgres-types",
+ "reqwest",
  "serde",
  "serde_json",
  "serde_yaml",

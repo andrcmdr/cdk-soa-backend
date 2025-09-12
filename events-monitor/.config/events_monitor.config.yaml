@@ -9,8 +9,8 @@ indexing:
 
 postgres:
   # libpq connection string format
-  dsn: "host=localhost user=cdk_indexer password=secret dbname=cdk_indexer port=5432"
-  schema: "./init.sql"
+  dsn: "host=localhost user=events_monitor password=passwd dbname=events_monitor_db port=5432"
+  schema: "./init_table.sql"
 
 nats:
   nats_enabled: 1
