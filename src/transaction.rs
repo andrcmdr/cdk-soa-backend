@@ -145,6 +145,7 @@ impl ContractClient {
         self.contract_address
     }
 
+    /// Get the wallet address
     pub fn wallet_address(&self) -> Address {
         self.provider.wallet().default_signer().address()
     }
@@ -152,9 +153,103 @@ impl ContractClient {
 
 #[cfg(test)]
 mod tests {
-    async fn test_blockchain_submission() {
+    use chrono::Utc;
+    use alloy::primitives::{Address, U256};
+    use crate::transaction::{ContractClient, ArtifactManager};
+    use tracing::info;
+    use std::str::FromStr;
+
+    #[tokio::test]
+    async fn test_function_call() {
         // empty test
-        assert!(true);
-        return;
+        let _ = tracing_subscriber::fmt()
+            .with_max_level(tracing::Level::INFO)
+            .try_init();
+            
+        // Load environment variables from .env file
+        dotenv::dotenv().ok();
+        
+        // read the private key from the .env file
+        let private_key = std::env::var("PRIVATE_KEY").unwrap();
+        let rpc_url = std::env::var("RPC_URL").unwrap();
+        let contract_address = std::env::var("CONTRACT_ADDRESS").unwrap();
+        let chain_id = std::env::var("CHAIN_ID").unwrap();
+
+        let contract_addr = Address::from_str(&contract_address).unwrap();
+        let chain_id_num = chain_id.parse::<u64>().unwrap();
+        let client = ContractClient::new(rpc_url, private_key, contract_addr, chain_id_num).await.unwrap();
+
+        // Debug: Print wallet address to check permissions
+        let wallet_addr = client.wallet_address();
+        info!("Wallet address: {:?}", wallet_addr);
+        info!("Wallet address (checksum): {:?}", wallet_addr.to_checksum(Some(chain_id_num)));
+        info!("Contract address: {:?}", client.contract_address());
+        
+        // Try a simple view function first to test connection
+        let contract = ArtifactManager::new(contract_addr, &client.provider);
+        match contract.getArtifactCount().call().await {
+            Ok(count) => {
+                info!("Artifact count: {:?}", count);
+                
+            },
+            Err(e) => {
+                info!("Failed to call getArtifactCount: {:?}", e);
+                return; // Exit early if we can't even call view functions
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn test_revenue_submission() {
+        // empty test
+        let _ = tracing_subscriber::fmt()
+            .with_max_level(tracing::Level::INFO)
+            .try_init();
+
+            dotenv::dotenv().ok();
+        
+            // read the private key from the .env file
+            let private_key = std::env::var("PRIVATE_KEY").unwrap();
+            let rpc_url = std::env::var("RPC_URL").unwrap();
+            let contract_address = std::env::var("CONTRACT_ADDRESS").unwrap();
+            let chain_id = std::env::var("CHAIN_ID").unwrap();
+        
+            let contract_addr = Address::from_str(&contract_address).unwrap();
+            let chain_id_num = chain_id.parse::<u64>().unwrap();
+            let client = ContractClient::new(rpc_url, private_key, contract_addr, chain_id_num).await.unwrap();
+
+            let artifact_address = std::env::var("ARTIFACT_ADDRESS").unwrap();
+            let artifact_address = Address::from_str(&artifact_address).unwrap();
+            info!("Artifact address: {:?}", artifact_address);
+
+            // Check if the artifact is active
+            let contract = ArtifactManager::new(contract_addr, &client.provider);
+            let is_active = match contract.isArtifactActive(artifact_address).call().await {
+                Ok(v) => v,
+                Err(e) => {
+                    tracing::error!("isArtifactActive reverted: {:?}", e);
+                    return;
+                }
+            };
+            if !is_active {
+                tracing::info!("Artifact inactive");
+                return;
+            }
+
+            let artifacts = vec![artifact_address];
+            let revenues = vec![U256::from(100)];
+            let timestamps = vec![U256::from(Utc::now().timestamp())];
+            match client.batch_report_artifact_revenue(artifacts, revenues, timestamps).await {
+                Ok(tx_hash) => {
+                    info!("ContractClient: Batch revenue report submitted with tx hash: {:?}", tx_hash);
+                    assert!(!tx_hash.is_zero());
+                },
+                Err(e) => {
+                    info!("Failed to submit revenue report: {:?}", e);
+                }
+            }
+
+
+            
     }
 }
