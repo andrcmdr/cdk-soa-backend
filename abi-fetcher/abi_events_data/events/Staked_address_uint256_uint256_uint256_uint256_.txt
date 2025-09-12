@@ -10,5 +10,5 @@ Inputs:
   3: lockDuration uint256 (not indexed)
   4: stakeWeight uint256 (not indexed)
 
-Contract Sources:
-  - 0x9052DEAaF20D183c2D64006508Ed8f63f76FBF58
+Contract Sources (sorted by verification time, most recent first):
+  - 0x9052DEAaF20D183c2D64006508Ed8f63f76FBF58 (contract_name: ArtifactStaking, verified_at: 2025-08-27T08:22:36.237638Z)

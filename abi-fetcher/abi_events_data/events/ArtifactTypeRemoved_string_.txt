@@ -6,5 +6,5 @@ Anonymous: false
 Inputs:
   0: artifactType string (indexed)
 
-Contract Sources:
-  - 0xA643f0D8FFDC2C7d7A15A46a2683953fB0bCc407
+Contract Sources (sorted by verification time, most recent first):
+  - 0xA643f0D8FFDC2C7d7A15A46a2683953fB0bCc407 (contract_name: ArtifactFactory, verified_at: 2025-09-04T10:31:28.479422Z)

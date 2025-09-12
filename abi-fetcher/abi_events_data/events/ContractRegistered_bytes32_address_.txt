@@ -7,6 +7,6 @@ Inputs:
   0: contractType bytes32 (indexed)
   1: contractAddress address (indexed)
 
-Contract Sources:
-  - 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
-  - 0xb52BEB65d2f59801c272eA99b0d3Fd227c54185E
+Contract Sources (sorted by verification time, most recent first):
+  - 0x6421Ed6b21AD276E1d77a0635df4fD839980654A (contract_name: Registry, verified_at: 2025-09-04T13:35:39.732065Z)
+  - 0xb52BEB65d2f59801c272eA99b0d3Fd227c54185E (contract_name: Registry, verified_at: 2025-08-28T14:05:39.250725Z)

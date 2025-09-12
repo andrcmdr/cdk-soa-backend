@@ -8,9 +8,9 @@ Inputs:
   1: usages uint256[] (not indexed)
   2: timestamps uint256[] (not indexed)
 
-Contract Sources:
-  - 0x27b304B4B8a6a6E154Cc961B2ff4ff9A704E2d0c
-  - 0x0d2f8934DA45296a868a6B96853bDB7e4708bE09
-  - 0x74623e0F207071571747A1f6C7Cfe674D86C33f5
-  - 0x2211d7Ec83017B0f8De7BEf363842be79Afa959D
-  - 0xb5507F0B32feDdf0CD628Ef9F2444B8074a02062
+Contract Sources (sorted by verification time, most recent first):
+  - 0x27b304B4B8a6a6E154Cc961B2ff4ff9A704E2d0c (contract_name: ArtifactManager, verified_at: 2025-09-11T02:32:02.965561Z)
+  - 0x0d2f8934DA45296a868a6B96853bDB7e4708bE09 (contract_name: ArtifactManager, verified_at: 2025-09-11T02:31:55.436516Z)
+  - 0x74623e0F207071571747A1f6C7Cfe674D86C33f5 (contract_name: ArtifactManager, verified_at: 2025-09-04T10:31:06.129513Z)
+  - 0x2211d7Ec83017B0f8De7BEf363842be79Afa959D (contract_name: ArtifactManager, verified_at: 2025-08-27T08:22:20.167426Z)
+  - 0xb5507F0B32feDdf0CD628Ef9F2444B8074a02062 (contract_name: ArtifactManager, verified_at: 2025-08-26T09:10:01.181630Z)

@@ -8,6 +8,6 @@ Inputs:
   1: oldValue uint256 (not indexed)
   2: newValue uint256 (not indexed)
 
-Contract Sources:
-  - 0x9215195cd638D87A53Fb40D3056d5B4203caf6ce
-  - 0xd1C10537f71A23E30494eA810108594dB3a03338
+Contract Sources (sorted by verification time, most recent first):
+  - 0x9215195cd638D87A53Fb40D3056d5B4203caf6ce (contract_name: OwnershipERC20, verified_at: 2025-09-11T02:32:02.838962Z)
+  - 0xd1C10537f71A23E30494eA810108594dB3a03338 (contract_name: OwnershipERC20, verified_at: 2025-08-26T09:08:34.126007Z)

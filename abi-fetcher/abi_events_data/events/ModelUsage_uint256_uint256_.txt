@@ -7,7 +7,7 @@ Inputs:
   0: usageAmount uint256 (not indexed)
   1: apiCreditUsed uint256 (not indexed)
 
-Contract Sources:
-  - 0xd75333f0dA29618468A4BaEC91c08abE6317cc63
-  - 0x598330de4ae6e9Dc686a81c27f523E591EF9838a
-  - 0xfE6bE49550167D4Ee1610aE03Db044a4f86c7350
+Contract Sources (sorted by verification time, most recent first):
+  - 0xd75333f0dA29618468A4BaEC91c08abE6317cc63 (contract_name: EnhancedArtifact, verified_at: 2025-09-11T02:32:02.240855Z)
+  - 0x598330de4ae6e9Dc686a81c27f523E591EF9838a (contract_name: EnhancedArtifact, verified_at: 2025-09-10T21:39:55.369870Z)
+  - 0xfE6bE49550167D4Ee1610aE03Db044a4f86c7350 (contract_name: EnhancedArtifact, verified_at: 2025-08-26T09:09:13.013588Z)

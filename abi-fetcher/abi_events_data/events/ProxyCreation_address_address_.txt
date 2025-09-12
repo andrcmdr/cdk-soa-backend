@@ -7,5 +7,5 @@ Inputs:
   0: proxy address (not indexed)
   1: singleton address (not indexed)
 
-Contract Sources:
-  - 0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2
+Contract Sources (sorted by verification time, most recent first):
+  - 0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2 (contract_name: GnosisSafeProxyFactory, verified_at: 2025-08-28T09:26:59.168433Z)

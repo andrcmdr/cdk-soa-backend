@@ -7,5 +7,5 @@ Inputs:
   0: src address (indexed)
   1: wad uint256 (not indexed)
 
-Contract Sources:
-  - 0x98E1f3D6D35E117174510b6d70C731691b6f18fD
+Contract Sources (sorted by verification time, most recent first):
+  - 0x98E1f3D6D35E117174510b6d70C731691b6f18fD (contract_name: WETH9, verified_at: 2025-09-05T08:28:19.180025Z)

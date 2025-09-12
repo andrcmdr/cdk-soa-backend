@@ -7,5 +7,5 @@ Inputs:
   0: previousArtifactFactory address (indexed)
   1: newArtifactFactory address (indexed)
 
-Contract Sources:
-  - 0x74623e0F207071571747A1f6C7Cfe674D86C33f5
+Contract Sources (sorted by verification time, most recent first):
+  - 0x74623e0F207071571747A1f6C7Cfe674D86C33f5 (contract_name: ArtifactManager, verified_at: 2025-09-04T10:31:06.129513Z)

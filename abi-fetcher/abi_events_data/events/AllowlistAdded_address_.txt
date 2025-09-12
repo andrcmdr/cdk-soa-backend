@@ -6,7 +6,7 @@ Anonymous: false
 Inputs:
   0: account address (indexed)
 
-Contract Sources:
-  - 0x7aB7ab179cD819756D1E31876a4d22722100F826
-  - 0xbcaF7A004F0e16e8FA5Db44079CB5236e1E06D3D
-  - 0x4Ab5e8Fc41eD0bB2f6F0BC8c83E57Bc385E390C1
+Contract Sources (sorted by verification time, most recent first):
+  - 0x7aB7ab179cD819756D1E31876a4d22722100F826 (contract_name: Treasury, verified_at: 2025-09-04T13:36:39.523777Z)
+  - 0xbcaF7A004F0e16e8FA5Db44079CB5236e1E06D3D (contract_name: Treasury, verified_at: 2025-08-28T14:06:15.168733Z)
+  - 0x4Ab5e8Fc41eD0bB2f6F0BC8c83E57Bc385E390C1 (contract_name: Treasury, verified_at: 2025-08-27T08:23:08.991015Z)

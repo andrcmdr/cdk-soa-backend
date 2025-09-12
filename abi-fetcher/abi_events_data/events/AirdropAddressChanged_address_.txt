@@ -6,10 +6,10 @@ Anonymous: false
 Inputs:
   0: _distributionTokensAddress address (indexed)
 
-Contract Sources:
-  - 0x207Eea90B43515d9e5f6798CE286B1Af02F5eAE2
-  - 0x69FE6Aa509fe7aE8F348BFb25df1092809AaD7b2
-  - 0x83e1bc5B2BF2B7E4b54C621F74fbc1f8305b0E0A
-  - 0xcFB541d62148DEFd2D0C7f4f3984603d8D0a357d
-  - 0x4f7d66e656289263B5DC33e1F9664f06fB052C2e
-  - 0xC697Edbf690b014AFF6F93958d18D62547C5b809
+Contract Sources (sorted by verification time, most recent first):
+  - 0x207Eea90B43515d9e5f6798CE286B1Af02F5eAE2 (contract_name: ArtifactFactory, verified_at: 2025-09-11T02:32:03.566613Z)
+  - 0x69FE6Aa509fe7aE8F348BFb25df1092809AaD7b2 (contract_name: ArtifactFactory, verified_at: 2025-09-11T02:32:03.210539Z)
+  - 0x83e1bc5B2BF2B7E4b54C621F74fbc1f8305b0E0A (contract_name: ArtifactFactory, verified_at: 2025-09-10T22:16:09.058650Z)
+  - 0xcFB541d62148DEFd2D0C7f4f3984603d8D0a357d (contract_name: ArtifactFactory, verified_at: 2025-08-26T09:10:21.788605Z)
+  - 0x4f7d66e656289263B5DC33e1F9664f06fB052C2e (contract_name: ArtifactFactory, verified_at: 2025-08-22T05:26:04.477377Z)
+  - 0xC697Edbf690b014AFF6F93958d18D62547C5b809 (contract_name: ArtifactFactory, verified_at: 2025-08-22T05:11:37.070316Z)
