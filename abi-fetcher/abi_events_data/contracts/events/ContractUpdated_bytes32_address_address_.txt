@@ -1,0 +1,13 @@
+Event Name: ContractUpdated
+Signature: ContractUpdated(bytes32,address,address)
+Topic Hash: 0xf8a6175bca1ba37d682089187edc5e20a859989727f10ca6bd9a5bc0de8caf94
+Anonymous: false
+
+Inputs:
+  0: contractType bytes32 (indexed)
+  1: oldAddress address (indexed)
+  2: newAddress address (indexed)
+
+Contract Sources:
+  - 0xb52beb65d2f59801c272ea99b0d3fd227c54185e (contract_name: Registry)
+  - 0x6421ed6b21ad276e1d77a0635df4fd839980654a (contract_name: Registry)

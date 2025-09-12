@@ -1,0 +1,12 @@
+Event Name: EmissionRateUpdated
+Signature: EmissionRateUpdated(uint256)
+Topic Hash: 0xffcc630bf88a67ba7c8b27440787c31777ae923aee1e9bbd0127feea56da2cd0
+Anonymous: false
+
+Inputs:
+  0: newRate uint256 (indexed)
+
+Contract Sources:
+  - 0x5dbfbb78453719189f153c10b484de23d70b7f22 (contract_name: Governance)
+  - 0x6ae23326039d030fa018d9081e0c48669749f3f6 (contract_name: Governance)
+  - 0x4f46d08569b6d96dfc576cfdea02023284c8ea46 (contract_name: Governance)

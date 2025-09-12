@@ -1,0 +1,14 @@
+Event Name: DelegateVotesChanged
+Signature: DelegateVotesChanged(address,uint256,uint256)
+Topic Hash: 0xdec2bacdd2f05b59de34da9b523dff8be42e5e38e818c82fdb0bae774387a724
+Anonymous: false
+
+Inputs:
+  0: delegate address (indexed)
+  1: oldValue uint256 (not indexed)
+  2: newValue uint256 (not indexed)
+
+Contract Sources:
+  - 0xd1c10537f71a23e30494ea810108594db3a03338 (contract_name: OwnershipERC20)
+  - 0x9215195cd638d87a53fb40d3056d5b4203caf6ce (contract_name: OwnershipERC20)
+  - 0xc2346deaab1f41db27621ec0ba26507aca0f2770 (contract_name: OwnershipERC20)

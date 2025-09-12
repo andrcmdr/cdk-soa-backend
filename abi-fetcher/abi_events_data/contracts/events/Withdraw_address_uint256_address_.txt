@@ -1,0 +1,14 @@
+Event Name: Withdraw
+Signature: Withdraw(address,uint256,address)
+Topic Hash: 0x56c54ba9bd38d8fd62012e42c7ee564519b09763c426d331b3661b537ead19b2
+Anonymous: false
+
+Inputs:
+  0: user address (indexed)
+  1: amount uint256 (indexed)
+  2: token address (not indexed)
+
+Contract Sources:
+  - 0x1e77398571f4e59ea7080e626231b654d23528af (contract_name: Escrow)
+  - 0x6a56c06563ef2b4ea571f180ead54a763415eb69 (contract_name: Escrow)
+  - 0xff075d0e712e771b43861659f3d128ba958f2950 (contract_name: Escrow)

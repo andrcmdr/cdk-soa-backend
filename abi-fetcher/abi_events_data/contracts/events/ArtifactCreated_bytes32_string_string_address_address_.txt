@@ -1,0 +1,14 @@
+Event Name: ArtifactCreated
+Signature: ArtifactCreated(bytes32,string,string,address,address)
+Topic Hash: 0x61f6226016fbc1388bd2cf935f481665a0181f423f71c10b537f6604aa7bbe6c
+Anonymous: false
+
+Inputs:
+  0: artifactId bytes32 (indexed)
+  1: artifactName string (not indexed)
+  2: artifactType string (not indexed)
+  3: artifactAddress address (indexed)
+  4: owner address (indexed)
+
+Contract Sources:
+  - 0xa643f0d8ffdc2c7d7a15a46a2683953fb0bcc407 (contract_name: ArtifactFactory)

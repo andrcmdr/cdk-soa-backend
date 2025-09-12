@@ -1,0 +1,10 @@
+Event Name: FeeSet
+Signature: FeeSet(uint256)
+Topic Hash: 0x20461e09b8e557b77e107939f9ce6544698123aad0fc964ac5cc59b7df2e608f
+Anonymous: false
+
+Inputs:
+  0: fee uint256 (not indexed)
+
+Contract Sources:
+  - 0x81112d4a0389afbe159f39a5b048602ceb221285 (contract_name: NativeDistributor)

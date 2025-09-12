@@ -1,0 +1,14 @@
+Event Name: Unstaked
+Signature: Unstaked(address,uint256,uint256)
+Topic Hash: 0x7fc4727e062e336010f2c282598ef5f14facb3de68cf8195c2f23e1454b2b74e
+Anonymous: false
+
+Inputs:
+  0: artifact address (indexed)
+  1: stakeId uint256 (not indexed)
+  2: amount uint256 (not indexed)
+
+Contract Sources:
+  - 0x9052deaaf20d183c2d64006508ed8f63f76fbf58 (contract_name: ArtifactStaking)
+  - 0xeb739b5b19281679bafa2e8c8406b6c2d2b31394 (contract_name: ArtifactStaking)
+  - 0xc22a05711ef9f3e59baf8ae48f59896715d49faf (contract_name: ArtifactStaking)

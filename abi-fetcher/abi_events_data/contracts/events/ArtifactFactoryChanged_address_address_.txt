@@ -1,0 +1,11 @@
+Event Name: ArtifactFactoryChanged
+Signature: ArtifactFactoryChanged(address,address)
+Topic Hash: 0xfd3c30401caba6e86edd3ad95d896de1028d5787fee934dee51a134bd7cff8f6
+Anonymous: false
+
+Inputs:
+  0: previousArtifactFactory address (indexed)
+  1: newArtifactFactory address (indexed)
+
+Contract Sources:
+  - 0x74623e0f207071571747a1f6c7cfe674d86c33f5 (contract_name: ArtifactManager)

@@ -1,0 +1,11 @@
+Event Name: MerkleConfigurationUpdate
+Signature: MerkleConfigurationUpdate(bytes32,bytes32)
+Topic Hash: 0x5f8f4c6efebc2c9c76d8cadfd5f9bd9cf6611483e79417c706c86997840e9573
+Anonymous: false
+
+Inputs:
+  0: root bytes32 (indexed)
+  1: configurator bytes32 (indexed)
+
+Contract Sources:
+  - 0x81112d4a0389afbe159f39a5b048602ceb221285 (contract_name: NativeDistributor)

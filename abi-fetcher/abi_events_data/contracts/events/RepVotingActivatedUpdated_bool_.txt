@@ -1,0 +1,12 @@
+Event Name: RepVotingActivatedUpdated
+Signature: RepVotingActivatedUpdated(bool)
+Topic Hash: 0xfcadbe4148f8e4014a0e64353ea4c7b2b1ea85e2414a7ce04c4ebd192a5ee6fd
+Anonymous: false
+
+Inputs:
+  0: activated bool (indexed)
+
+Contract Sources:
+  - 0x5dbfbb78453719189f153c10b484de23d70b7f22 (contract_name: Governance)
+  - 0x6ae23326039d030fa018d9081e0c48669749f3f6 (contract_name: Governance)
+  - 0x4f46d08569b6d96dfc576cfdea02023284c8ea46 (contract_name: Governance)

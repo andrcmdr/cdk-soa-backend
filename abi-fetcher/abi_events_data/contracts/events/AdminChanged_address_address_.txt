@@ -1,0 +1,11 @@
+Event Name: AdminChanged
+Signature: AdminChanged(address,address)
+Topic Hash: 0x7e644d79422f17c01e4894b5f4f588d331ebfa28653d42ae832dc59e38c9798f
+Anonymous: false
+
+Inputs:
+  0: previousAdmin address (not indexed)
+  1: newAdmin address (not indexed)
+
+Contract Sources:
+  - 0x528e26b25a34a4a5d0dbda1d57d318153d2ed582 (contract_name: TransparentUpgradeableProxy)

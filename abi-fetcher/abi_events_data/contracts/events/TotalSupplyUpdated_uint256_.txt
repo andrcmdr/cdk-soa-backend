@@ -1,0 +1,12 @@
+Event Name: TotalSupplyUpdated
+Signature: TotalSupplyUpdated(uint256)
+Topic Hash: 0xf8cbdbee6d402ad22cddbc250098e39cd0d24f0fad122f64794577167c605df9
+Anonymous: false
+
+Inputs:
+  0: newTotalSupply uint256 (indexed)
+
+Contract Sources:
+  - 0x5dbfbb78453719189f153c10b484de23d70b7f22 (contract_name: Governance)
+  - 0x6ae23326039d030fa018d9081e0c48669749f3f6 (contract_name: Governance)
+  - 0x4f46d08569b6d96dfc576cfdea02023284c8ea46 (contract_name: Governance)

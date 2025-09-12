@@ -1,0 +1,16 @@
+Event Name: Staked
+Signature: Staked(address,address,uint256,uint256,uint256,uint256)
+Topic Hash: 0x1a239cfcc9eee66af37729671dcbd82e1544f57835d53fa02eb9220a930a8f87
+Anonymous: false
+
+Inputs:
+  0: user address (indexed)
+  1: artifact address (indexed)
+  2: stakeId uint256 (indexed)
+  3: amount uint256 (not indexed)
+  4: lockDuration uint256 (not indexed)
+  5: stakeWeight uint256 (not indexed)
+
+Contract Sources:
+  - 0xeb739b5b19281679bafa2e8c8406b6c2d2b31394 (contract_name: ArtifactStaking)
+  - 0xc22a05711ef9f3e59baf8ae48f59896715d49faf (contract_name: ArtifactStaking)

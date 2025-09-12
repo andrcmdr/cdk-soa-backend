@@ -1,0 +1,16 @@
+Event Name: OwnershipTokenBeaconChanged
+Signature: OwnershipTokenBeaconChanged(address)
+Topic Hash: 0x70064ba97bde05e56249138aa49d6bcda1ae88c69de93ee75e8486cd9a2e9c93
+Anonymous: false
+
+Inputs:
+  0: _ownershipTokenBeacon address (indexed)
+
+Contract Sources:
+  - 0xc697edbf690b014aff6f93958d18d62547c5b809 (contract_name: ArtifactFactory)
+  - 0x4f7d66e656289263b5dc33e1f9664f06fb052c2e (contract_name: ArtifactFactory)
+  - 0xcfb541d62148defd2d0c7f4f3984603d8d0a357d (contract_name: ArtifactFactory)
+  - 0x83e1bc5b2bf2b7e4b54c621f74fbc1f8305b0e0a (contract_name: ArtifactFactory)
+  - 0x69fe6aa509fe7ae8f348bfb25df1092809aad7b2 (contract_name: ArtifactFactory)
+  - 0x207eea90b43515d9e5f6798ce286b1af02f5eae2 (contract_name: ArtifactFactory)
+  - 0x8dca2664f61f4eb722a966b0172de27342f89780 (contract_name: ArtifactFactory)

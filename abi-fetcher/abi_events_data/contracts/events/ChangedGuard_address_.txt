@@ -1,0 +1,10 @@
+Event Name: ChangedGuard
+Signature: ChangedGuard(address)
+Topic Hash: 0x1151116914515bc0891ff9047a6cb32cf902546f83066499bcf8ba33d2353fa2
+Anonymous: false
+
+Inputs:
+  0: guard address (not indexed)
+
+Contract Sources:
+  - 0x3e5c63644e683549055b9be8653de26e0b4cd36e (contract_name: GnosisSafeL2)

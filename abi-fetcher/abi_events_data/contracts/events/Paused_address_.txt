@@ -1,0 +1,11 @@
+Event Name: Paused
+Signature: Paused(address)
+Topic Hash: 0x62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a258
+Anonymous: false
+
+Inputs:
+  0: account address (not indexed)
+
+Contract Sources:
+  - 0x80e6f0937fe177415a868e78e00e2e1d768b8533 (contract_name: Treasury)
+  - 0x1a3329e7813a35c7e5b4189bb3b21bd112ec6536 (contract_name: Treasury)

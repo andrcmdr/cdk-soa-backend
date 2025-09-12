@@ -1,0 +1,15 @@
+Event Name: SubscriptionActivated
+Signature: SubscriptionActivated(address,bytes32)
+Topic Hash: 0x39044525bb21480b9245e68b31e47a294b129bce36ec4ab2bda31e8bbd885bc1
+Anonymous: false
+
+Inputs:
+  0: user address (indexed)
+  1: subscriptionIdHash bytes32 (indexed)
+
+Contract Sources:
+  - 0xfe6be49550167d4ee1610ae03db044a4f86c7350 (contract_name: EnhancedArtifact)
+  - 0x2263e66d70aa362c6058c9e04b88de14a2c4418c (contract_name: Artifact)
+  - 0x2086be28ce3b80fa7ec8405268a19bba01f3b041 (contract_name: Artifact)
+  - 0x598330de4ae6e9dc686a81c27f523e591ef9838a (contract_name: EnhancedArtifact)
+  - 0xd75333f0da29618468a4baec91c08abe6317cc63 (contract_name: EnhancedArtifact)

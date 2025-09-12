@@ -1,0 +1,16 @@
+Event Name: ArtifactAdded
+Signature: ArtifactAdded(address,string)
+Topic Hash: 0x5803fa912b3854a02e417cd9afca86a072831b098728d79ccf8484f34ba02843
+Anonymous: false
+
+Inputs:
+  0: artifact address (indexed)
+  1: metadataURI string (not indexed)
+
+Contract Sources:
+  - 0xb5507f0b32feddf0cd628ef9f2444b8074a02062 (contract_name: ArtifactManager)
+  - 0x2211d7ec83017b0f8de7bef363842be79afa959d (contract_name: ArtifactManager)
+  - 0x74623e0f207071571747a1f6c7cfe674d86c33f5 (contract_name: ArtifactManager)
+  - 0x0d2f8934da45296a868a6b96853bdb7e4708be09 (contract_name: ArtifactManager)
+  - 0x27b304b4b8a6a6e154cc961b2ff4ff9a704e2d0c (contract_name: ArtifactManager)
+  - 0x1dd254de55ac042d95d37877c51876b0152af165 (contract_name: ArtifactManager)

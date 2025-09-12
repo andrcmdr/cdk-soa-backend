@@ -1,0 +1,378 @@
+contracts:
+- name: Artifact
+  address:
+  - address: 0x0de00f104593ce3bfb734cb6b41fa2fc98045bc1
+  - address: 0x0fdb58407dbd62a388d0a0ff4d3beaedc0758e6f
+  - address: 0x2086be28ce3b80fa7ec8405268a19bba01f3b041
+  - address: 0x2263e66d70aa362c6058c9e04b88de14a2c4418c
+  - address: 0x314b685bbab14fbbbeaa5834893f392a3a58eb4e
+  - address: 0x6cd4c6eb245d736794a1d320c1c1d200a96d3763
+  - address: 0xf590d5c64abbe503d68b9c639fa0203fe9f4f27a
+  events:
+  - event: Initialized(uint64 version)
+  - event: MerkleRootUpdated(bytes32 merkleRoot)
+  - event: ModelUsage(address indexed contributor, uint256 usageAmount, uint256 apiCreditUsed)
+  - event: OwnershipHandoverCanceled(address indexed pendingOwner)
+  - event: OwnershipHandoverRequested(address indexed pendingOwner)
+  - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
+  - event: SubscriptionActivated(address indexed owner, bytes32 subscriptionIdHash)
+  - event: SubscriptionPurchased(address indexed buyer, address indexed owner, uint256 indexed endTime, uint256 amount, bytes32 subscriptionIdHash, bool activated)
+  - event: SubscriptionTransferred(address indexed from, address indexed to, bytes32 subscriptionIdHash)
+  - event: UsageAmountUpdated(uint256 usageAmount)
+- name: ArtifactFactory
+  address:
+  - address: 0x207eea90b43515d9e5f6798ce286b1af02f5eae2
+  - address: 0x4f7d66e656289263b5dc33e1f9664f06fb052c2e
+  - address: 0x69fe6aa509fe7ae8f348bfb25df1092809aad7b2
+  - address: 0x83e1bc5b2bf2b7e4b54c621f74fbc1f8305b0e0a
+  - address: 0x8dca2664f61f4eb722a966b0172de27342f89780
+  - address: 0xa643f0d8ffdc2c7d7a15a46a2683953fb0bcc407
+  - address: 0xc697edbf690b014aff6f93958d18d62547c5b809
+  - address: 0xcfb541d62148defd2d0c7f4f3984603d8d0a357d
+  events:
+  - event: AirdropAddressChanged(address indexed _distributionTokensAddress)
+  - event: ArtifactBeaconChanged(address indexed _artifactBeacon)
+  - event: ArtifactCreated(bytes32 indexed artifactHash, address indexed artifactAddress)
+  - event: ArtifactCreated(bytes32 indexed artifactID, string artifactName, uint8 indexed artifactType, address indexed artifactAddress, tuple[] artifactOwners)
+  - event: ArtifactCreated(bytes32 indexed artifactId, string artifactName, string artifactType, address indexed artifactAddress, address indexed owner)
+  - event: ArtifactTypeAdded(string indexed artifactType)
+  - event: ArtifactTypeRemoved(string indexed artifactType)
+  - event: EscrowBeaconChanged(address indexed _escrowBeacon)
+  - event: Initialized(uint64 version)
+  - event: OwnershipHandoverCanceled(address indexed pendingOwner)
+  - event: OwnershipHandoverRequested(address indexed pendingOwner)
+  - event: OwnershipTokenBeaconChanged(address indexed _ownershipTokenBeacon)
+  - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
+  - event: RewardsBeaconChanged(address indexed _rewardsBeacon)
+  - event: RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+  - event: RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: Upgraded(address indexed implementation)
+- name: ArtifactManager
+  address:
+  - address: 0x0d2f8934da45296a868a6b96853bdb7e4708be09
+  - address: 0x1dd254de55ac042d95d37877c51876b0152af165
+  - address: 0x2211d7ec83017b0f8de7bef363842be79afa959d
+  - address: 0x27b304b4b8a6a6e154cc961b2ff4ff9a704e2d0c
+  - address: 0x74623e0f207071571747a1f6c7cfe674d86c33f5
+  - address: 0xb5507f0b32feddf0cd628ef9f2444b8074a02062
+  events:
+  - event: ArtifactAdded(address indexed artifact, string metadataURI)
+  - event: ArtifactAdded(address indexed artifact, string metadataUri)
+  - event: ArtifactBatchRevenueReported(address[] artifacts, uint256[] revenues, uint256[] timestamps)
+  - event: ArtifactBatchUsageReported(address[] artifacts, uint256[] usages, uint256[] timestamps)
+  - event: ArtifactFactoryChanged(address indexed previousArtifactFactory, address indexed newArtifactFactory)
+  - event: ArtifactMetadataUpdated(address indexed artifact, string newMetadataURI)
+  - event: ArtifactMetadataUpdated(address indexed artifact, string newMetadataUri)
+  - event: ArtifactRemoved(address indexed artifact)
+  - event: ArtifactRevenueReported(address indexed artifact, uint256 revenue, uint256 timestamp)
+  - event: ArtifactUsageReported(address indexed artifact, uint256 usage, uint256 timestamp)
+  - event: Initialized(uint64 version)
+  - event: OwnershipHandoverCanceled(address indexed pendingOwner)
+  - event: OwnershipHandoverRequested(address indexed pendingOwner)
+  - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
+  - event: RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+  - event: RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: Upgraded(address indexed implementation)
+- name: ArtifactStaking
+  address:
+  - address: 0x9052deaaf20d183c2d64006508ed8f63f76fbf58
+  - address: 0xc22a05711ef9f3e59baf8ae48f59896715d49faf
+  - address: 0xeb739b5b19281679bafa2e8c8406b6c2d2b31394
+  events:
+  - event: Initialized(uint64 version)
+  - event: OwnershipHandoverCanceled(address indexed pendingOwner)
+  - event: OwnershipHandoverRequested(address indexed pendingOwner)
+  - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
+  - event: RewardsAutoClaimed(address indexed user, uint256 amount)
+  - event: Staked(address indexed artifact, uint256 indexed stakeId, uint256 indexed amount, uint256 lockDuration, uint256 stakeWeight)
+  - event: Staked(address indexed user, address indexed artifact, uint256 indexed stakeId, uint256 amount, uint256 lockDuration, uint256 stakeWeight)
+  - event: Unstaked(address indexed artifact, uint256 stakeId, uint256 amount)
+  - event: Unstaked(address indexed user, uint256 stakeId, uint256 amount)
+  - event: Upgraded(address indexed implementation)
+- name: ERC1967Proxy
+  address:
+  - address: 0x046cfa8edbd9a73c1dbb6a696f2268667a79106d
+  - address: 0x06c8c1c819117cf48ce865c6e65ce3e4aa1a856e
+  - address: 0x108f00a7667b88e86339c3919a7bf8b0ca55b58d
+  - address: 0x1833305f0e2b5622b74ddb114c4972b571ad0ab3
+  - address: 0x1ebee0dbb03f4bac22cf5946c2c7542a8c455482
+  - address: 0x2453d7f5f030ec0a99a32d597f23fc5a63d0cb62
+  - address: 0x27dd450a4337feb20ab7ec3c3c0e991db4680652
+  - address: 0x3659af1f531849de9807cb06889e91970c2fa039
+  - address: 0x382912e8a1e760b698c50b2e0612f96ab9362998
+  - address: 0x3d9acf593ba2d96b5753743ce505589cbc84c0cf
+  - address: 0x42bcb93c536dd7bd3a840db30d55fde90e4c05d6
+  - address: 0x42c690d8a8906b4fa27fdd1d5e329ae8de9e00da
+  - address: 0x4adb6d1fa10679d095636e3a2666e418610a6648
+  - address: 0x50a9460a8bc1a0c9909c4459b0df11263e2ebd43
+  - address: 0x56825b404101ef5ec0492e193445fd7312d41cf3
+  - address: 0x570c6ae4d899601d7b906dbc53277bea6321ed1e
+  - address: 0x57a217d84431a178028a3ce9c677d2efd510e638
+  - address: 0x6bc3d486b5d65cfc05f3d495a8ee0ab8e244b0bd
+  - address: 0x7cf53de56bd822b5cb9a828a96b3ac5dc26a22bc
+  - address: 0x8c111d33fa90b631330e213c8b25a3bd52cb6eda
+  - address: 0x978bef8942dc2f21b03ad8eb0962af7da655d8be
+  - address: 0xa8afac147c25e87a20e1e989ce835931becc6e10
+  - address: 0xa93971da32fe32c80d6929ca420f4f61e0d831be
+  - address: 0xb569004187fb377eec7400c10d217be8b00d9ab5
+  - address: 0xb5a7dce30f3c6b90b349d2a5a06dc5288633ad0c
+  - address: 0xbfec4568a10ac2aacf95e36a09e7902803994264
+  - address: 0xc40e4aaf0211822337f234aaf1e87b83aa8cf54c
+  - address: 0xc73b06f6441d076e45e024a40f9a4c56cbf84906
+  - address: 0xc94e700187efa611c4f402834bd4c33d9ffac97d
+  - address: 0xd07c25e4412a7f86e35b2c1e23e3690f619efede
+  - address: 0xd1aa178d7dd009ddf7f97fc7dc14f5de9568f158
+  - address: 0xd3f7d43233d4bd443393600963cefe56cd828561
+  - address: 0xdaf2ed3c1b9befbcb06c5c005a3fea25f6a830bc
+  - address: 0xdbde2efb569e72fb8797d80615410f1384e92ec7
+  - address: 0xdf14845dfa28df08135fe38b18ee2899cb71c093
+  - address: 0xe324892f5658e50e4bf98587b9833e9734bbf50e
+  - address: 0xf9bc433b3039adfe1a68b032333c48c63d5bdf16
+  events:
+  - event: Upgraded(address indexed implementation)
+- name: EnhancedArtifact
+  address:
+  - address: 0x598330de4ae6e9dc686a81c27f523e591ef9838a
+  - address: 0xd75333f0da29618468a4baec91c08abe6317cc63
+  - address: 0xfe6be49550167d4ee1610ae03db044a4f86c7350
+  events:
+  - event: Initialized(uint64 version)
+  - event: MerkleRootUpdated(bytes32 merkleRoot)
+  - event: ModelUsage(uint256 usageAmount, uint256 apiCreditUsed)
+  - event: OwnershipHandoverCanceled(address indexed pendingOwner)
+  - event: OwnershipHandoverRequested(address indexed pendingOwner)
+  - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
+  - event: SubscriptionActivated(address indexed user, bytes32 indexed subscriptionIdHash)
+  - event: SubscriptionPurchased(address indexed buyer, address indexed owner, uint256 indexed expiry, uint256 amount, bytes32 subscriptionIdHash, bool activate)
+  - event: SubscriptionTransferred(address indexed from, address indexed to, bytes32 indexed subscriptionIdHash)
+  - event: Upgraded(address indexed implementation)
+  - event: UsageAmountUpdated(uint256 usageAmount)
+- name: EnhancedEscrow
+  address:
+  - address: 0x60617073cebe71bf358fda04c1880b79364fc958
+  - address: 0x63ee3427dbb51963c42b74135a8496c7843fcf33
+  - address: 0x81ffb6d4e08116338d0ed6f7d1a5f8daf4373dc8
+  events:
+  - event: Deposit(address indexed user, uint256 indexed amount)
+  - event: DepositERC20(address indexed user, uint256 indexed amount, address token)
+  - event: Initialized(uint64 version)
+  - event: OwnershipHandoverCanceled(address indexed pendingOwner)
+  - event: OwnershipHandoverRequested(address indexed pendingOwner)
+  - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
+  - event: Upgraded(address indexed implementation)
+  - event: Withdraw(address indexed user, uint256 indexed amount)
+- name: EnhancedRewards
+  address:
+  - address: 0x04aaacc1ecb311e299de7c275f28e1a184522b96
+  - address: 0x2d9c048e8d6fc9283fb80b63a6cbbb4982a6770b
+  - address: 0xaf7af80d194ea8213a8e9ecbc5c6761e89420f94
+  events:
+  - event: Initialized(uint64 version)
+  - event: OwnershipHandoverCanceled(address indexed pendingOwner)
+  - event: OwnershipHandoverRequested(address indexed pendingOwner)
+  - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
+  - event: RewardsClaimed(address indexed user, uint256 indexed amount)
+  - event: SnapshotRegistered(uint256 indexed snapshotId, uint256 indexed checkpoint, uint256 indexed rewardPool)
+  - event: Upgraded(address indexed implementation)
+- name: Escrow
+  address:
+  - address: 0x1e77398571f4e59ea7080e626231b654d23528af
+  - address: 0x6a56c06563ef2b4ea571f180ead54a763415eb69
+  - address: 0xff075d0e712e771b43861659f3d128ba958f2950
+  events:
+  - event: DepositERC20(address indexed user, uint256 indexed amount, address token)
+  - event: DepositETH(address indexed user, uint256 indexed amount)
+  - event: Initialized(uint64 version)
+  - event: Withdraw(address indexed user, uint256 indexed amount, address token)
+- name: GnosisSafeL2
+  address:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+  events:
+  - event: AddedOwner(address owner)
+  - event: ApproveHash(bytes32 indexed approvedHash, address indexed owner)
+  - event: ChangedFallbackHandler(address handler)
+  - event: ChangedGuard(address guard)
+  - event: ChangedThreshold(uint256 threshold)
+  - event: DisabledModule(address module)
+  - event: EnabledModule(address module)
+  - event: ExecutionFailure(bytes32 txHash, uint256 payment)
+  - event: ExecutionFromModuleFailure(address indexed module)
+  - event: ExecutionFromModuleSuccess(address indexed module)
+  - event: ExecutionSuccess(bytes32 txHash, uint256 payment)
+  - event: RemovedOwner(address owner)
+  - event: SafeModuleTransaction(address module, address to, uint256 value, bytes data, uint8 operation)
+  - event: SafeMultiSigTransaction(address to, uint256 value, bytes data, uint8 operation, uint256 safeTxGas, uint256 baseGas, uint256 gasPrice, address gasToken, address refundReceiver, bytes signatures, bytes additionalInfo)
+  - event: SafeReceived(address indexed sender, uint256 value)
+  - event: SafeSetup(address indexed initiator, address[] owners, uint256 threshold, address initializer, address fallbackHandler)
+  - event: SignMsg(bytes32 indexed msgHash)
+- name: GnosisSafeProxyFactory
+  address:
+  - address: 0xa6b71e26c5e0845f74c812102ca7114b6a896ab2
+  events:
+  - event: ProxyCreation(address proxy, address singleton)
+- name: Governance
+  address:
+  - address: 0x4f46d08569b6d96dfc576cfdea02023284c8ea46
+  - address: 0x5dbfbb78453719189f153c10b484de23d70b7f22
+  - address: 0x6ae23326039d030fa018d9081e0c48669749f3f6
+  events:
+  - event: ArtifactWeightsUpdated(uint256 indexed newLambda, uint256 indexed newX)
+  - event: EmissionRateUpdated(uint256 indexed newRate)
+  - event: Initialized(uint64 version)
+  - event: LockDurationsUpdated(uint256 indexed newMin, uint256 indexed newMax)
+  - event: OwnershipHandoverCanceled(address indexed pendingOwner)
+  - event: OwnershipHandoverRequested(address indexed pendingOwner)
+  - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
+  - event: RepBaseFeeUpdated(uint256 indexed newBaseFee)
+  - event: RepRegistrationFeeUpdated(uint256 indexed newFee)
+  - event: RepVotingActivatedUpdated(bool indexed activated)
+  - event: RewardPercentagesUpdated(uint256 indexed userPercentage, uint256 indexed repPercentage, uint256 indexed artifactPercentage)
+  - event: TotalSupplyUpdated(uint256 indexed newTotalSupply)
+  - event: Upgraded(address indexed implementation)
+- name: Light
+  address:
+  - address: 0xd1b37c0f6e2325f63176c3780052f318c9424941
+  events:
+  - event: Approval(address indexed owner, address indexed spender, uint256 value)
+  - event: Transfer(address indexed from, address indexed to, uint256 value)
+- name: NativeDistributor
+  address:
+  - address: 0x81112d4a0389afbe159f39a5b048602ceb221285
+  events:
+  - event: AirdropClaimed(address indexed account, bytes32 indexed root, uint256 amount)
+  - event: FeeSet(uint256 fee)
+  - event: MerkleConfigurationUpdate(bytes32 indexed root, bytes32 indexed configurator)
+  - event: OwnershipHandoverCanceled(address indexed pendingOwner)
+  - event: OwnershipHandoverRequested(address indexed pendingOwner)
+  - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
+  - event: RolesUpdated(address indexed user, uint256 indexed roles)
+  - event: VaultSet(address indexed vault)
+  - event: Withdraw(address indexed to, uint256 amount)
+- name: OwnershipERC20
+  address:
+  - address: 0x9215195cd638d87a53fb40d3056d5b4203caf6ce
+  - address: 0xc2346deaab1f41db27621ec0ba26507aca0f2770
+  - address: 0xd1c10537f71a23e30494ea810108594db3a03338
+  events:
+  - event: Approval(address indexed owner, address indexed spender, uint256 amount)
+  - event: DelegateChanged(address indexed delegator, address indexed from, address indexed to)
+  - event: DelegateVotesChanged(address indexed delegate, uint256 oldValue, uint256 newValue)
+  - event: Initialized(uint64 version)
+  - event: OwnershipHandoverCanceled(address indexed pendingOwner)
+  - event: OwnershipHandoverRequested(address indexed pendingOwner)
+  - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
+  - event: Transfer(address indexed from, address indexed to, uint256 amount)
+- name: PolygonZkEVMBridgeV2
+  address:
+  - address: 0x8bd36ca1a55e389335004872aa3c3be0969d3aa7
+  events:
+  - event: BridgeEvent(uint8 leafType, uint32 originNetwork, address originAddress, uint32 destinationNetwork, address destinationAddress, uint256 amount, bytes metadata, uint32 depositCount)
+  - event: ClaimEvent(uint256 globalIndex, uint32 originNetwork, address originAddress, address destinationAddress, uint256 amount)
+  - event: EmergencyStateActivated()
+  - event: EmergencyStateDeactivated()
+  - event: Initialized(uint8 version)
+  - event: NewWrappedToken(uint32 originNetwork, address originTokenAddress, address wrappedTokenAddress, bytes metadata)
+- name: Registry
+  address:
+  - address: 0x6421ed6b21ad276e1d77a0635df4fd839980654a
+  - address: 0xb52beb65d2f59801c272ea99b0d3fd227c54185e
+  events:
+  - event: ArtifactManagerUpdated(address indexed oldAddress, address indexed newAddress)
+  - event: ArtifactStakingUpdated(address indexed oldAddress, address indexed newAddress)
+  - event: ContractRegistered(bytes32 indexed contractType, address indexed contractAddress)
+  - event: ContractRemoved(bytes32 indexed contractType, address indexed contractAddress)
+  - event: ContractUpdated(bytes32 indexed contractType, address indexed oldAddress, address indexed newAddress)
+  - event: GovernanceUpdated(address indexed oldAddress, address indexed newAddress)
+  - event: Initialized(uint64 version)
+  - event: OwnershipHandoverCanceled(address indexed pendingOwner)
+  - event: OwnershipHandoverRequested(address indexed pendingOwner)
+  - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
+  - event: RepStakingUpdated(address indexed oldAddress, address indexed newAddress)
+  - event: RewardsUpdated(address indexed oldAddress, address indexed newAddress)
+  - event: TreasuryUpdated(address indexed oldAddress, address indexed newAddress)
+  - event: Upgraded(address indexed implementation)
+- name: Rewards
+  address:
+  - address: 0x16d846093cac3d92f124a181fbb44cd17b85cc95
+  - address: 0x64ec59f979fcd0f97ef0618dfe751e15cb631612
+  - address: 0x6c08ac820cccf22253833894297040767da7e776
+  - address: 0xdac1fe96fc3fa5bb9bd4a3ada9fa44d4a44be9e2
+  - address: 0xe50351b10a011dfae5903a4f99ef6ca749a59c01
+  - address: 0xe57d1ae23be2bcd41b07edd6852c9f2388d45f67
+  events:
+  - event: Initialized(uint64 version)
+  - event: OwnershipHandoverCanceled(address indexed pendingOwner)
+  - event: OwnershipHandoverRequested(address indexed pendingOwner)
+  - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
+  - event: RewardsClaimed(address indexed artifact, uint256 amount, uint256 blockNumber)
+  - event: RewardsClaimed(address indexed user, uint256 amount, uint256 blockNumber)
+  - event: RewardsClaimed(address indexed user, uint256 indexed amount)
+  - event: SnapshotRegistered(uint256 indexed snapshotId, uint256 indexed checkpoint, uint256 indexed rewardPool)
+  - event: Upgraded(address indexed implementation)
+- name: TokenWrapped
+  address:
+  - address: 0x1a1af9c78704d3a0ab9e031c92e7bd808711a582
+  events:
+  - event: Approval(address indexed owner, address indexed spender, uint256 value)
+  - event: Transfer(address indexed from, address indexed to, uint256 value)
+- name: TransparentUpgradeableProxy
+  address:
+  - address: 0x528e26b25a34a4a5d0dbda1d57d318153d2ed582
+  events:
+  - event: AdminChanged(address previousAdmin, address newAdmin)
+  - event: BeaconUpgraded(address indexed beacon)
+  - event: Upgraded(address indexed implementation)
+- name: Treasury
+  address:
+  - address: 0x1a3329e7813a35c7e5b4189bb3b21bd112ec6536
+  - address: 0x4ab5e8fc41ed0bb2f6f0bc8c83e57bc385e390c1
+  - address: 0x7ab7ab179cd819756d1e31876a4d22722100f826
+  - address: 0x80e6f0937fe177415a868e78e00e2e1d768b8533
+  - address: 0xbcaf7a004f0e16e8fa5db44079cb5236e1e06d3d
+  events:
+  - event: AllowlistAdded(address indexed account)
+  - event: AllowlistRemoved(address indexed account)
+  - event: EmergencyWithdrawal(address indexed to, uint256 amount)
+  - event: FundsDeposited(address indexed from, uint256 amount)
+  - event: FundsWithdrawn(address indexed to, uint256 amount)
+  - event: Initialized(uint64 version)
+  - event: OwnershipHandoverCanceled(address indexed pendingOwner)
+  - event: OwnershipHandoverRequested(address indexed pendingOwner)
+  - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
+  - event: Paused(address account)
+  - event: PaymasterFunded(address indexed paymaster, uint256 amount)
+  - event: RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+  - event: RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: TokensTransferred(address indexed token, address indexed to, uint256 amount)
+  - event: TreasuryFunded(address indexed token, uint256 amount)
+  - event: Unpaused(address account)
+  - event: Upgraded(address indexed implementation)
+  - event: VaultFunded(address indexed vault, address indexed token, uint256 amount)
+- name: UpgradeableBeacon
+  address:
+  - address: 0x0a4da8bd84c509771de4747cf4da27e0e763c52f
+  - address: 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8
+  - address: 0x3bf7511d453884778d821603a269514e4c66d6bc
+  - address: 0x4573d6aa0f36b0967c8e2a8bba75ee42a9693c90
+  - address: 0x6945de0f82b073ca13e17de88fc5691a2e38a88a
+  - address: 0x71ac73716a923d3060ab1fa5bad6617620833448
+  - address: 0x7d607c4bbf98815664b8f47003cc7fe73518035d
+  - address: 0x89e34c24a5094b3fbee4c831c8335c3a078bfc99
+  - address: 0xa4d75c55196eb30a25dc043374e2e0f23f15262d
+  - address: 0xc010f2272792d81952d83900e43d1d934cc009c5
+  - address: 0xc04d4b0cc065b95162f2982a896bf24a7c0d2af5
+  - address: 0xf38ba92c97465538911c5f4ff184730a94d6a26e
+  events:
+  - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+  - event: Upgraded(address indexed implementation)
+- name: WETH9
+  address:
+  - address: 0x98e1f3d6d35e117174510b6d70c731691b6f18fd
+  events:
+  - event: Approval(address indexed src, address indexed guy, uint256 wad)
+  - event: Deposit(address indexed dst, uint256 wad)
+  - event: Transfer(address indexed src, address indexed dst, uint256 wad)
+  - event: Withdrawal(address indexed src, uint256 wad)

@@ -1,0 +1,11 @@
+Event Name: ApproveHash
+Signature: ApproveHash(bytes32,address)
+Topic Hash: 0xf2a0eb156472d1440255b0d7c1e19cc07115d1051fe605b0dce69acfec884d9c
+Anonymous: false
+
+Inputs:
+  0: approvedHash bytes32 (indexed)
+  1: owner address (indexed)
+
+Contract Sources:
+  - 0x3e5c63644e683549055b9be8653de26e0b4cd36e (contract_name: GnosisSafeL2)

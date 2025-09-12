@@ -1,0 +1,17 @@
+Event Name: Approval
+Signature: Approval(address,address,uint256)
+Topic Hash: 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925
+Anonymous: false
+
+Inputs:
+  0: owner address (indexed)
+  1: spender address (indexed)
+  2: value uint256 (not indexed)
+
+Contract Sources:
+  - 0xd1b37c0f6e2325f63176c3780052f318c9424941 (contract_name: Light)
+  - 0xd1c10537f71a23e30494ea810108594db3a03338 (contract_name: OwnershipERC20)
+  - 0x98e1f3d6d35e117174510b6d70c731691b6f18fd (contract_name: WETH9)
+  - 0x9215195cd638d87a53fb40d3056d5b4203caf6ce (contract_name: OwnershipERC20)
+  - 0x1a1af9c78704d3a0ab9e031c92e7bd808711a582 (contract_name: TokenWrapped)
+  - 0xc2346deaab1f41db27621ec0ba26507aca0f2770 (contract_name: OwnershipERC20)

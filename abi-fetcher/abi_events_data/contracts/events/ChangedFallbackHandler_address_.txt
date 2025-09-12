@@ -1,0 +1,10 @@
+Event Name: ChangedFallbackHandler
+Signature: ChangedFallbackHandler(address)
+Topic Hash: 0x5ac6c46c93c8d0e53714ba3b53db3e7c046da994313d7ed0d192028bc7c228b0
+Anonymous: false
+
+Inputs:
+  0: handler address (not indexed)
+
+Contract Sources:
+  - 0x3e5c63644e683549055b9be8653de26e0b4cd36e (contract_name: GnosisSafeL2)

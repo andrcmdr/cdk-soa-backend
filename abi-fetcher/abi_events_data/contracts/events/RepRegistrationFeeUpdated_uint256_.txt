@@ -1,0 +1,12 @@
+Event Name: RepRegistrationFeeUpdated
+Signature: RepRegistrationFeeUpdated(uint256)
+Topic Hash: 0x940bd6858c142657b0a3426be9a9f259ffee828c7677250a20a08c4564be7ae3
+Anonymous: false
+
+Inputs:
+  0: newFee uint256 (indexed)
+
+Contract Sources:
+  - 0x5dbfbb78453719189f153c10b484de23d70b7f22 (contract_name: Governance)
+  - 0x6ae23326039d030fa018d9081e0c48669749f3f6 (contract_name: Governance)
+  - 0x4f46d08569b6d96dfc576cfdea02023284c8ea46 (contract_name: Governance)

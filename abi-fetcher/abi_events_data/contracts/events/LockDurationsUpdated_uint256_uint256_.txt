@@ -1,0 +1,13 @@
+Event Name: LockDurationsUpdated
+Signature: LockDurationsUpdated(uint256,uint256)
+Topic Hash: 0xfb6643f1917d4ac31b0c062fdf49db2da21205d50d01ffd6c07ed5e73389f600
+Anonymous: false
+
+Inputs:
+  0: newMin uint256 (indexed)
+  1: newMax uint256 (indexed)
+
+Contract Sources:
+  - 0x5dbfbb78453719189f153c10b484de23d70b7f22 (contract_name: Governance)
+  - 0x6ae23326039d030fa018d9081e0c48669749f3f6 (contract_name: Governance)
+  - 0x4f46d08569b6d96dfc576cfdea02023284c8ea46 (contract_name: Governance)

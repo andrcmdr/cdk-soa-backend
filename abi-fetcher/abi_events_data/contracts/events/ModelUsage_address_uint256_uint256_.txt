@@ -1,0 +1,13 @@
+Event Name: ModelUsage
+Signature: ModelUsage(address,uint256,uint256)
+Topic Hash: 0x13807030a34436b32919810fc44cbce6cd53ca63523a750b957bee98dc49a7a3
+Anonymous: false
+
+Inputs:
+  0: contributor address (indexed)
+  1: usageAmount uint256 (not indexed)
+  2: apiCreditUsed uint256 (not indexed)
+
+Contract Sources:
+  - 0x2263e66d70aa362c6058c9e04b88de14a2c4418c (contract_name: Artifact)
+  - 0x2086be28ce3b80fa7ec8405268a19bba01f3b041 (contract_name: Artifact)

@@ -1,0 +1,12 @@
+Event Name: TreasuryFunded
+Signature: TreasuryFunded(address,uint256)
+Topic Hash: 0xda1785fe1dec267c363b06ae3e02c3e086123f9d611399f7a1cc98492518372e
+Anonymous: false
+
+Inputs:
+  0: token address (indexed)
+  1: amount uint256 (not indexed)
+
+Contract Sources:
+  - 0x80e6f0937fe177415a868e78e00e2e1d768b8533 (contract_name: Treasury)
+  - 0x1a3329e7813a35c7e5b4189bb3b21bd112ec6536 (contract_name: Treasury)

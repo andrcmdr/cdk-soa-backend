@@ -1,0 +1,12 @@
+Event Name: AirdropClaimed
+Signature: AirdropClaimed(address,bytes32,uint256)
+Topic Hash: 0x286b28c8571c73086fa8d8852b677537690a70b51e1a76820fe50db64e127779
+Anonymous: false
+
+Inputs:
+  0: account address (indexed)
+  1: root bytes32 (indexed)
+  2: amount uint256 (not indexed)
+
+Contract Sources:
+  - 0x81112d4a0389afbe159f39a5b048602ceb221285 (contract_name: NativeDistributor)

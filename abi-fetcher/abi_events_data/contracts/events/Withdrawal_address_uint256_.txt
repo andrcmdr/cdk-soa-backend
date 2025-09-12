@@ -1,0 +1,11 @@
+Event Name: Withdrawal
+Signature: Withdrawal(address,uint256)
+Topic Hash: 0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65
+Anonymous: false
+
+Inputs:
+  0: src address (indexed)
+  1: wad uint256 (not indexed)
+
+Contract Sources:
+  - 0x98e1f3d6d35e117174510b6d70c731691b6f18fd (contract_name: WETH9)

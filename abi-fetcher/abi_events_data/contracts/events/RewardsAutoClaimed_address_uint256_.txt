@@ -1,0 +1,12 @@
+Event Name: RewardsAutoClaimed
+Signature: RewardsAutoClaimed(address,uint256)
+Topic Hash: 0x7b7110e987a1767e6aa3c56de5d167d8709ec79c8545c932231ae7c561978da2
+Anonymous: false
+
+Inputs:
+  0: user address (indexed)
+  1: amount uint256 (not indexed)
+
+Contract Sources:
+  - 0xeb739b5b19281679bafa2e8c8406b6c2d2b31394 (contract_name: ArtifactStaking)
+  - 0xc22a05711ef9f3e59baf8ae48f59896715d49faf (contract_name: ArtifactStaking)
