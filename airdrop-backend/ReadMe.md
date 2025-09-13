@@ -1,16 +1,26 @@
-## Usage Example:
+## Backend for Airdrop Eligibility Service
 
-```rust
-let mut service = AirdropService::new(config).await?;
+### Usage Examples:
 
-// Process multiple rounds
-service.process_csv_and_update_trie("data/round_1.csv", 1).await?;
-service.process_csv_and_update_trie("data/round_2.csv", 2).await?;
+**Upload CSV:**
+```bash
+curl -X POST "http://localhost:3000/api/v1/upload-csv" \
+  -F "round_id=1" \
+  -F "csv_file=@eligibility_round_1.csv"
+```
 
-// Submit to blockchain
-service.submit_trie_update(1).await?;
-service.submit_trie_update(2).await?;
+**Submit Trie to Blockchain:**
+```bash
+curl -X POST "http://localhost:3000/api/v1/submit-trie/1"
+```
 
-// Verify eligibility
-let is_eligible = service.verify_eligibility(1, user_address, amount).await?;
+**Verify Eligibility:**
+```bash
+curl -X POST "http://localhost:3000/api/v1/verify-eligibility" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "round_id": 1,
+    "address": "0x742C4d97C86bCF0176776C16e073b8c6f9Db4021",
+    "amount": "1000000000000000000"
+  }'
 ```
