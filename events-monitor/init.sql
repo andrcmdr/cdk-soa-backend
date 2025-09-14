@@ -25,7 +25,7 @@ GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO events_monitor;
 GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO events_monitor;
 -- GRANT ALL PRIVILEGES ON ALL TYPES IN SCHEMA public TO events_monitor;
 
-CREATE TABLE IF NOT EXISTS events_monitor_data OWNED BY events_monitor (
+CREATE TABLE IF NOT EXISTS events_monitor_data (
     id BIGSERIAL PRIMARY KEY,
     contract_name TEXT NOT NULL,
     contract_address TEXT NOT NULL,
