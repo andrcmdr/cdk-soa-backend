@@ -1,0 +1,28 @@
+Event Name: MerkleRootUpdated
+Signature: MerkleRootUpdated(bytes32)
+Topic Hash: 0x90004c04698bc3322499a575ed3752dd4abf33e0a7294c06a787a0fe01bea941
+Anonymous: false
+
+Inputs:
+  0: merkleRoot bytes32 (not indexed)
+
+Contract Sources:
+  - 0xf590d5c64abbe503d68b9c639fa0203fe9f4f27a (contract_name: Artifact)
+  - 0x314b685bbab14fbbbeaa5834893f392a3a58eb4e (contract_name: Artifact)
+  - 0xfe6be49550167d4ee1610ae03db044a4f86c7350 (contract_name: EnhancedArtifact)
+  - 0x2263e66d70aa362c6058c9e04b88de14a2c4418c (contract_name: Artifact)
+  - 0x2086be28ce3b80fa7ec8405268a19bba01f3b041 (contract_name: Artifact)
+  - 0x598330de4ae6e9dc686a81c27f523e591ef9838a (contract_name: EnhancedArtifact)
+  - 0xd75333f0da29618468a4baec91c08abe6317cc63 (contract_name: EnhancedArtifact)
+  - 0x0de00f104593ce3bfb734cb6b41fa2fc98045bc1 (contract_name: Artifact)
+  - 0x6cd4c6eb245d736794a1d320c1c1d200a96d3763 (contract_name: Artifact)
+  - 0x0fdb58407dbd62a388d0a0ff4d3beaedc0758e6f (contract_name: Artifact)
+  - 0x34c99cd2b338332b89eee7c0c162beda8339b543 (contract_name: Artifact)
+  - 0x84cb3431d112dfac66fa2a62cc99430f4cc45103 (contract_name: EnhancedArtifact)
+  - 0x6eefd00130cd006fc5180905352867c3d1547772 (contract_name: Artifact)
+  - 0xfa236b8bd50e7abba18981540025cd5b60ae475e (contract_name: EnhancedArtifact)
+  - 0xd498c989ab0e20dc5c7c3e27b4b25adfe19e93a3 (contract_name: Artifact)
+  - 0x39bddf9729d0bac364139756ff19695e2e2c379a (contract_name: EnhancedArtifact)
+  - 0xb39a363f162f69aff76dec5527da7897849cbae3 (contract_name: EnhancedArtifact)
+  - 0x7b56cc3c7978b478d4e936ccdf0752b392485777 (contract_name: Artifact)
+  - 0x793563b85df251e1d7aba6f096728c064dd37a64 (contract_name: EnhancedArtifact)

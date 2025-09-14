@@ -1,0 +1,11 @@
+Event Name: RemovedOwner
+Signature: RemovedOwner(address)
+Topic Hash: 0xf8d49fc529812e9a7c5c50e69c20f0dccc0db8fa95c98bc58cc9a4f1c1299eaf
+Anonymous: false
+
+Inputs:
+  0: owner address (not indexed)
+
+Contract Sources:
+  - 0x3e5c63644e683549055b9be8653de26e0b4cd36e (contract_name: GnosisSafeL2)
+  - 0xd9db270c1b5e3bd161e8c8503c55ceabee709552 (contract_name: GnosisSafe)

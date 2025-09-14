@@ -1,0 +1,12 @@
+Event Name: ExecutionSuccess
+Signature: ExecutionSuccess(bytes32,uint256)
+Topic Hash: 0x442e715f626346e8c54381002da614f62bee8d27386535b2521ec8540898556e
+Anonymous: false
+
+Inputs:
+  0: txHash bytes32 (not indexed)
+  1: payment uint256 (not indexed)
+
+Contract Sources:
+  - 0x3e5c63644e683549055b9be8653de26e0b4cd36e (contract_name: GnosisSafeL2)
+  - 0xd9db270c1b5e3bd161e8c8503c55ceabee709552 (contract_name: GnosisSafe)

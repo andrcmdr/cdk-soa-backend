@@ -1,0 +1,28 @@
+Event Name: SnapshotRegistered
+Signature: SnapshotRegistered(uint256,uint256,uint256)
+Topic Hash: 0x4f754550a3181f2503de59eca71f13be3c95c9a6632425cbe9b87a647a117e09
+Anonymous: false
+
+Inputs:
+  0: snapshotId uint256 (indexed)
+  1: checkpoint uint256 (indexed)
+  2: rewardPool uint256 (indexed)
+
+Contract Sources:
+  - 0x6c08ac820cccf22253833894297040767da7e776 (contract_name: Rewards)
+  - 0x04aaacc1ecb311e299de7c275f28e1a184522b96 (contract_name: EnhancedRewards)
+  - 0xe50351b10a011dfae5903a4f99ef6ca749a59c01 (contract_name: Rewards)
+  - 0x2d9c048e8d6fc9283fb80b63a6cbbb4982a6770b (contract_name: EnhancedRewards)
+  - 0xe57d1ae23be2bcd41b07edd6852c9f2388d45f67 (contract_name: Rewards)
+  - 0xaf7af80d194ea8213a8e9ecbc5c6761e89420f94 (contract_name: EnhancedRewards)
+  - 0x616c21506baf6ee02f681a15219c07d997ac8982 (contract_name: EnhancedRewards)
+  - 0x2685ff912c8cd0a4787675e7cdf602e08d9f5dc0 (contract_name: Rewards)
+  - 0x581056ea7dec2a5cba941d50402d3f93b3cd9ac2 (contract_name: EnhancedRewards)
+  - 0x9a3b03e1fb83eb18c37f09a0c73b63466fb06ea6 (contract_name: EnhancedRewards)
+  - 0x387f1b6e081fa69754a4de77feabb3c15841c4ca (contract_name: EnhancedRewards)
+  - 0x4652696284989dd5c3fecfed3d6489d0e8475dd6 (contract_name: Rewards)
+  - 0xe38f515d8ac33e9d68669ea20a50a585caa51fb8 (contract_name: EnhancedRewards)
+  - 0xe4cdbd2df584bfb96a4dcde7a384510922981409 (contract_name: Rewards)
+  - 0x4c45119ac34c2c0e263f3ddf6bdab0783cf1a70f (contract_name: Rewards)
+  - 0x113c33e277104ef9e75ecfa93a82eb03795fd43a (contract_name: Rewards)
+  - 0x2e2ebb4b97b9de9d5bca343987e3b4d76df36d25 (contract_name: Rewards)

@@ -1,0 +1,15 @@
+Event Name: SafeSetup
+Signature: SafeSetup(address,address[],uint256,address,address)
+Topic Hash: 0x141df868a6331af528e38c83b7aa03edc19be66e37ae67f9285bf4f8e3c6a1a8
+Anonymous: false
+
+Inputs:
+  0: initiator address (indexed)
+  1: owners address[] (not indexed)
+  2: threshold uint256 (not indexed)
+  3: initializer address (not indexed)
+  4: fallbackHandler address (not indexed)
+
+Contract Sources:
+  - 0x3e5c63644e683549055b9be8653de26e0b4cd36e (contract_name: GnosisSafeL2)
+  - 0xd9db270c1b5e3bd161e8c8503c55ceabee709552 (contract_name: GnosisSafe)

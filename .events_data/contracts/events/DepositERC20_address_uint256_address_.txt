@@ -1,0 +1,28 @@
+Event Name: DepositERC20
+Signature: DepositERC20(address,uint256,address)
+Topic Hash: 0x7a90a142016f91c1467264ab2bf3d1f697661f736fc4400ffd076883a2b8d5ec
+Anonymous: false
+
+Inputs:
+  0: user address (indexed)
+  1: amount uint256 (indexed)
+  2: token address (not indexed)
+
+Contract Sources:
+  - 0x1e77398571f4e59ea7080e626231b654d23528af (contract_name: Escrow)
+  - 0x63ee3427dbb51963c42b74135a8496c7843fcf33 (contract_name: EnhancedEscrow)
+  - 0x6a56c06563ef2b4ea571f180ead54a763415eb69 (contract_name: Escrow)
+  - 0x81ffb6d4e08116338d0ed6f7d1a5f8daf4373dc8 (contract_name: EnhancedEscrow)
+  - 0xff075d0e712e771b43861659f3d128ba958f2950 (contract_name: Escrow)
+  - 0x60617073cebe71bf358fda04c1880b79364fc958 (contract_name: EnhancedEscrow)
+  - 0x58ce4ccf23612b7ab97deb9017d8c755f14c28c2 (contract_name: EnhancedEscrow)
+  - 0xce56fc03ef024008b71b389b3d53dca1ab125882 (contract_name: EnhancedEscrow)
+  - 0x7d2f0a1d763e19c3dac2494fb3ae4bcfadd19306 (contract_name: EnhancedEscrow)
+  - 0x38def18c5f16184dcc1031404b69f136f5f11d05 (contract_name: EnhancedEscrow)
+  - 0x4ba4ea1ce7e6f423c3667d38d148ce8f3560a644 (contract_name: Escrow)
+  - 0xab467b1f76e5f14a8926d3944141c400e6c88d7b (contract_name: Escrow)
+  - 0x8b2275eb06d1a14922a2043a740cdc1adc46c3df (contract_name: Escrow)
+  - 0x7c60015942290913bda3bab6f3973e7eb0db359f (contract_name: Escrow)
+  - 0x0fa299538a4360c5c3a6fc759d14dd3363d548f3 (contract_name: EnhancedEscrow)
+  - 0xf20b5528fdd2b53eb35e1411101bb1544570da4b (contract_name: Escrow)
+  - 0xc51df94f3360d8926ba869827ddc421455220ddb (contract_name: Escrow)

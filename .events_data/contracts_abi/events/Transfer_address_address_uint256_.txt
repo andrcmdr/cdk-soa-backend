@@ -1,0 +1,24 @@
+Event Name: Transfer
+Signature: Transfer(address,address,uint256)
+Topic Hash: 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
+Anonymous: false
+
+Inputs:
+  0: from address (indexed)
+  1: to address (indexed)
+  2: amount uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x29A04250ed17A0A3368Bf79DFdF463676a76Aa6A (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:21:37.598738Z)
+  - 0x2713065948d70BdC68C3008Fc8808716A7eb5c8E (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:20:38.879281Z)
+  - 0x44F67f88eA696e290C2c6cF956235c7713DB3570 (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:20:16.825940Z)
+  - 0x56c8b7F3cf654c276c4ba222064ef1beb1DCfBC2 (contract_name: Light, verified_at: 2025-09-12T04:17:53.121966Z)
+  - 0xcEF551ea0B0a41acF9865098949DACeD2df22962 (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:16:38.320277Z)
+  - 0x8D100CF0180A98b20345F5b4E3aCabc05D22888a (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:15:36.982639Z)
+  - 0x5735760014Cd023DAAE9637CA91Fb7Cf4532556e (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:15:23.516664Z)
+  - 0xc2346deaAB1F41dB27621ec0ba26507ACa0f2770 (contract_name: OwnershipERC20, verified_at: 2025-09-12T02:58:48.848010Z)
+  - 0x1a1aF9C78704D3a0Ab9e031C92E7bd808711A582 (contract_name: TokenWrapped, verified_at: 2025-09-12T02:57:26.051765Z)
+  - 0x9215195cd638D87A53Fb40D3056d5B4203caf6ce (contract_name: OwnershipERC20, verified_at: 2025-09-11T02:32:02.838962Z)
+  - 0x98E1f3D6D35E117174510b6d70C731691b6f18fD (contract_name: WETH9, verified_at: 2025-09-05T08:28:19.180025Z)
+  - 0xd1C10537f71A23E30494eA810108594dB3a03338 (contract_name: OwnershipERC20, verified_at: 2025-08-26T09:08:34.126007Z)
+  - 0xD1B37c0F6e2325F63176c3780052f318c9424941 (contract_name: Light, verified_at: 2025-08-20T01:02:48.843182Z)

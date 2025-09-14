@@ -1,0 +1,20 @@
+Event Name: DelegateChanged
+Signature: DelegateChanged(address,address,address)
+Topic Hash: 0x3134e8a2e6d97e929a7e54011ea5485d7d196dd5f0ba4d4ef95803e8e3fc257f
+Anonymous: false
+
+Inputs:
+  0: delegator address (indexed)
+  1: from address (indexed)
+  2: to address (indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x29A04250ed17A0A3368Bf79DFdF463676a76Aa6A (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:21:37.598738Z)
+  - 0x2713065948d70BdC68C3008Fc8808716A7eb5c8E (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:20:38.879281Z)
+  - 0x44F67f88eA696e290C2c6cF956235c7713DB3570 (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:20:16.825940Z)
+  - 0xcEF551ea0B0a41acF9865098949DACeD2df22962 (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:16:38.320277Z)
+  - 0x8D100CF0180A98b20345F5b4E3aCabc05D22888a (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:15:36.982639Z)
+  - 0x5735760014Cd023DAAE9637CA91Fb7Cf4532556e (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:15:23.516664Z)
+  - 0xc2346deaAB1F41dB27621ec0ba26507ACa0f2770 (contract_name: OwnershipERC20, verified_at: 2025-09-12T02:58:48.848010Z)
+  - 0x9215195cd638D87A53Fb40D3056d5B4203caf6ce (contract_name: OwnershipERC20, verified_at: 2025-09-11T02:32:02.838962Z)
+  - 0xd1C10537f71A23E30494eA810108594dB3a03338 (contract_name: OwnershipERC20, verified_at: 2025-08-26T09:08:34.126007Z)

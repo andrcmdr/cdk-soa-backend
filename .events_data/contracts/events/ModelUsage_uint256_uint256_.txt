@@ -1,0 +1,18 @@
+Event Name: ModelUsage
+Signature: ModelUsage(uint256,uint256)
+Topic Hash: 0x1fa5ad242f58a5bdd94f8d05d112d1bb12f47ba376ce7069f3857fabb1e32b05
+Anonymous: false
+
+Inputs:
+  0: usageAmount uint256 (not indexed)
+  1: apiCreditUsed uint256 (not indexed)
+
+Contract Sources:
+  - 0xfe6be49550167d4ee1610ae03db044a4f86c7350 (contract_name: EnhancedArtifact)
+  - 0x598330de4ae6e9dc686a81c27f523e591ef9838a (contract_name: EnhancedArtifact)
+  - 0xd75333f0da29618468a4baec91c08abe6317cc63 (contract_name: EnhancedArtifact)
+  - 0x84cb3431d112dfac66fa2a62cc99430f4cc45103 (contract_name: EnhancedArtifact)
+  - 0xfa236b8bd50e7abba18981540025cd5b60ae475e (contract_name: EnhancedArtifact)
+  - 0x39bddf9729d0bac364139756ff19695e2e2c379a (contract_name: EnhancedArtifact)
+  - 0xb39a363f162f69aff76dec5527da7897849cbae3 (contract_name: EnhancedArtifact)
+  - 0x793563b85df251e1d7aba6f096728c064dd37a64 (contract_name: EnhancedArtifact)

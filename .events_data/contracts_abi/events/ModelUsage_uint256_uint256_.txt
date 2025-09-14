@@ -1,0 +1,18 @@
+Event Name: ModelUsage
+Signature: ModelUsage(uint256,uint256)
+Topic Hash: 0x1fa5ad242f58a5bdd94f8d05d112d1bb12f47ba376ce7069f3857fabb1e32b05
+Anonymous: false
+
+Inputs:
+  0: usageAmount uint256 (not indexed)
+  1: apiCreditUsed uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x793563b85DF251e1d7abA6F096728c064dd37a64 (contract_name: EnhancedArtifact, verified_at: 2025-09-12T04:36:02.447338Z)
+  - 0xb39a363f162f69aFf76DEC5527dA7897849CBAe3 (contract_name: EnhancedArtifact, verified_at: 2025-09-12T04:21:05.106304Z)
+  - 0x39bdDF9729D0baC364139756FF19695e2E2c379a (contract_name: EnhancedArtifact, verified_at: 2025-09-12T04:16:51.460834Z)
+  - 0xFA236b8Bd50E7abba18981540025CD5B60aE475E (contract_name: EnhancedArtifact, verified_at: 2025-09-12T04:15:59.234549Z)
+  - 0x84Cb3431d112dFAC66fA2a62CC99430f4cc45103 (contract_name: EnhancedArtifact, verified_at: 2025-09-12T04:15:52.857876Z)
+  - 0xd75333f0dA29618468A4BaEC91c08abE6317cc63 (contract_name: EnhancedArtifact, verified_at: 2025-09-11T02:32:02.240855Z)
+  - 0x598330de4ae6e9Dc686a81c27f523E591EF9838a (contract_name: EnhancedArtifact, verified_at: 2025-09-10T21:39:55.369870Z)
+  - 0xfE6bE49550167D4Ee1610aE03Db044a4f86c7350 (contract_name: EnhancedArtifact, verified_at: 2025-08-26T09:09:13.013588Z)

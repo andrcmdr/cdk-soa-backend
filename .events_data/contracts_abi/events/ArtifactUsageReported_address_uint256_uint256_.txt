@@ -1,0 +1,21 @@
+Event Name: ArtifactUsageReported
+Signature: ArtifactUsageReported(address,uint256,uint256)
+Topic Hash: 0xce93c856d9c654eb5dd7944fe1321c5b909393589cf60d705a75e20c85a60e49
+Anonymous: false
+
+Inputs:
+  0: artifact address (indexed)
+  1: usage uint256 (not indexed)
+  2: timestamp uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0xb7429f6d0921E897Bc9B4addDD1E1998cAa4B236 (contract_name: ArtifactManager, verified_at: 2025-09-12T04:19:11.105502Z)
+  - 0x604e332e32c49dEF0430F463fC03Bff38fB72EF1 (contract_name: ArtifactManager, verified_at: 2025-09-12T04:18:58.163083Z)
+  - 0x9A5220A853EDE5ab1cfCB6517135F59E8894BDd8 (contract_name: ArtifactManager, verified_at: 2025-09-12T04:18:28.965338Z)
+  - 0x3CEEb925DF55730B83BcCd4926fA22B44Bd40BeF (contract_name: ArtifactManager, verified_at: 2025-09-12T04:15:42.986654Z)
+  - 0x1dD254De55Ac042D95D37877C51876B0152aF165 (contract_name: ArtifactManager, verified_at: 2025-09-12T02:58:07.163666Z)
+  - 0x27b304B4B8a6a6E154Cc961B2ff4ff9A704E2d0c (contract_name: ArtifactManager, verified_at: 2025-09-11T02:32:02.965561Z)
+  - 0x0d2f8934DA45296a868a6B96853bDB7e4708bE09 (contract_name: ArtifactManager, verified_at: 2025-09-11T02:31:55.436516Z)
+  - 0x74623e0F207071571747A1f6C7Cfe674D86C33f5 (contract_name: ArtifactManager, verified_at: 2025-09-04T10:31:06.129513Z)
+  - 0x2211d7Ec83017B0f8De7BEf363842be79Afa959D (contract_name: ArtifactManager, verified_at: 2025-08-27T08:22:20.167426Z)
+  - 0xb5507F0B32feDdf0CD628Ef9F2444B8074a02062 (contract_name: ArtifactManager, verified_at: 2025-08-26T09:10:01.181630Z)

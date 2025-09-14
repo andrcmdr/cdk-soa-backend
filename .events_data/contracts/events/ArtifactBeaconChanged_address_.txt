@@ -1,0 +1,19 @@
+Event Name: ArtifactBeaconChanged
+Signature: ArtifactBeaconChanged(address)
+Topic Hash: 0x8fe7f3863fac118b2d240f1e398c5c0e348092e09afecbc3a3f8595924fb14ca
+Anonymous: false
+
+Inputs:
+  0: _artifactBeacon address (indexed)
+
+Contract Sources:
+  - 0xc697edbf690b014aff6f93958d18d62547c5b809 (contract_name: ArtifactFactory)
+  - 0x4f7d66e656289263b5dc33e1f9664f06fb052c2e (contract_name: ArtifactFactory)
+  - 0xcfb541d62148defd2d0c7f4f3984603d8d0a357d (contract_name: ArtifactFactory)
+  - 0xa643f0d8ffdc2c7d7a15a46a2683953fb0bcc407 (contract_name: ArtifactFactory)
+  - 0x83e1bc5b2bf2b7e4b54c621f74fbc1f8305b0e0a (contract_name: ArtifactFactory)
+  - 0x69fe6aa509fe7ae8f348bfb25df1092809aad7b2 (contract_name: ArtifactFactory)
+  - 0x207eea90b43515d9e5f6798ce286b1af02f5eae2 (contract_name: ArtifactFactory)
+  - 0x8dca2664f61f4eb722a966b0172de27342f89780 (contract_name: ArtifactFactory)
+  - 0x1b49622e8d656ce9366e69a78bc47892510870f4 (contract_name: ArtifactFactory)
+  - 0x5354bcd502a06d73c51d2ee7a2052524a1650610 (contract_name: ArtifactFactory)

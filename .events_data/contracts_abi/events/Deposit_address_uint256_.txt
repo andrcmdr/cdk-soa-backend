@@ -1,0 +1,19 @@
+Event Name: Deposit
+Signature: Deposit(address,uint256)
+Topic Hash: 0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c
+Anonymous: false
+
+Inputs:
+  0: user address (indexed)
+  1: amount uint256 (indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x0fA299538a4360c5c3A6Fc759d14Dd3363D548F3 (contract_name: EnhancedEscrow, verified_at: 2025-09-12T04:21:28.629556Z)
+  - 0x38dEF18C5f16184DCC1031404b69F136f5F11D05 (contract_name: EnhancedEscrow, verified_at: 2025-09-12T04:17:46.700306Z)
+  - 0x7d2F0a1d763E19c3DAc2494FB3aE4BcFAdd19306 (contract_name: EnhancedEscrow, verified_at: 2025-09-12T04:17:43.423591Z)
+  - 0xCe56FC03EF024008B71B389b3d53Dca1ab125882 (contract_name: EnhancedEscrow, verified_at: 2025-09-12T04:17:27.220408Z)
+  - 0x58Ce4CCF23612b7ab97dEB9017d8C755f14C28c2 (contract_name: EnhancedEscrow, verified_at: 2025-09-12T04:16:35.140130Z)
+  - 0x60617073Cebe71bf358FDA04c1880b79364fC958 (contract_name: EnhancedEscrow, verified_at: 2025-09-11T02:32:01.838817Z)
+  - 0x81fFB6d4e08116338D0eD6f7d1A5f8Daf4373Dc8 (contract_name: EnhancedEscrow, verified_at: 2025-09-11T02:31:50.064887Z)
+  - 0x98E1f3D6D35E117174510b6d70C731691b6f18fD (contract_name: WETH9, verified_at: 2025-09-05T08:28:19.180025Z)
+  - 0x63Ee3427DBb51963C42b74135A8496c7843fcf33 (contract_name: EnhancedEscrow, verified_at: 2025-08-26T09:09:23.937808Z)

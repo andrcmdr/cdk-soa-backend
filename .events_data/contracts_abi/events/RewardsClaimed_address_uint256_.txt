@@ -1,0 +1,27 @@
+Event Name: RewardsClaimed
+Signature: RewardsClaimed(address,uint256)
+Topic Hash: 0xfc30cddea38e2bf4d6ea7d3f9ed3b6ad7f176419f4963bd81318067a4aee73fe
+Anonymous: false
+
+Inputs:
+  0: user address (indexed)
+  1: amount uint256 (indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x2e2EBb4B97B9de9d5BCA343987E3B4D76dF36D25 (contract_name: Rewards, verified_at: 2025-09-12T04:36:07.618937Z)
+  - 0x113c33E277104ef9E75eCFA93a82eB03795FD43a (contract_name: Rewards, verified_at: 2025-09-12T04:24:29.892645Z)
+  - 0x4c45119aC34C2c0e263F3DDF6BDab0783cf1A70F (contract_name: Rewards, verified_at: 2025-09-12T04:21:53.698836Z)
+  - 0xE4CDBd2Df584bFB96a4dcDe7a384510922981409 (contract_name: Rewards, verified_at: 2025-09-12T04:21:11.417927Z)
+  - 0xe38F515d8aC33E9D68669ea20a50a585caA51fB8 (contract_name: EnhancedRewards, verified_at: 2025-09-12T04:21:01.622109Z)
+  - 0x4652696284989dd5c3FECfed3D6489d0E8475dD6 (contract_name: Rewards, verified_at: 2025-09-12T04:20:22.778157Z)
+  - 0x387f1B6e081fa69754A4DE77FEABB3c15841c4CA (contract_name: EnhancedRewards, verified_at: 2025-09-12T04:19:07.866707Z)
+  - 0x9a3B03E1fb83eB18c37f09A0C73B63466Fb06EA6 (contract_name: EnhancedRewards, verified_at: 2025-09-12T04:18:25.741009Z)
+  - 0x581056EA7DEC2a5Cba941D50402D3f93b3CD9aC2 (contract_name: EnhancedRewards, verified_at: 2025-09-12T04:16:48.006030Z)
+  - 0x2685ff912c8Cd0A4787675E7CdF602E08d9F5Dc0 (contract_name: Rewards, verified_at: 2025-09-12T04:16:15.578455Z)
+  - 0x616c21506BAF6ee02f681A15219c07d997aC8982 (contract_name: EnhancedRewards, verified_at: 2025-09-12T04:15:49.352147Z)
+  - 0xaF7AF80d194eA8213A8E9EcBC5c6761e89420f94 (contract_name: EnhancedRewards, verified_at: 2025-09-11T02:32:01.131167Z)
+  - 0xe57D1ae23BE2Bcd41B07EdD6852c9f2388d45F67 (contract_name: Rewards, verified_at: 2025-09-11T02:31:50.336122Z)
+  - 0x2D9C048e8d6FC9283fb80B63a6CbBB4982A6770B (contract_name: EnhancedRewards, verified_at: 2025-09-10T21:22:30.891608Z)
+  - 0xe50351B10a011DfAE5903A4f99Ef6cA749a59c01 (contract_name: Rewards, verified_at: 2025-09-03T12:40:42.116540Z)
+  - 0x04Aaacc1eCB311e299DE7c275f28E1a184522b96 (contract_name: EnhancedRewards, verified_at: 2025-08-26T09:09:42.000315Z)
+  - 0x6C08aC820CcCf22253833894297040767Da7E776 (contract_name: Rewards, verified_at: 2025-08-26T09:08:07.357405Z)

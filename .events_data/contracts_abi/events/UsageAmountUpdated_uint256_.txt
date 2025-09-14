@@ -1,0 +1,28 @@
+Event Name: UsageAmountUpdated
+Signature: UsageAmountUpdated(uint256)
+Topic Hash: 0x27e119297d0d05035eeb18db042cddaabd4c1c5f04c7b511d168e167713a1335
+Anonymous: false
+
+Inputs:
+  0: usageAmount uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x793563b85DF251e1d7abA6F096728c064dd37a64 (contract_name: EnhancedArtifact, verified_at: 2025-09-12T04:36:02.447338Z)
+  - 0x7b56Cc3c7978b478d4E936cCdF0752b392485777 (contract_name: Artifact, verified_at: 2025-09-12T04:27:58.662446Z)
+  - 0xb39a363f162f69aFf76DEC5527dA7897849CBAe3 (contract_name: EnhancedArtifact, verified_at: 2025-09-12T04:21:05.106304Z)
+  - 0x39bdDF9729D0baC364139756FF19695e2E2c379a (contract_name: EnhancedArtifact, verified_at: 2025-09-12T04:16:51.460834Z)
+  - 0xD498C989AB0E20DC5C7c3E27B4b25adfe19E93a3 (contract_name: Artifact, verified_at: 2025-09-12T04:16:02.602783Z)
+  - 0xFA236b8Bd50E7abba18981540025CD5B60aE475E (contract_name: EnhancedArtifact, verified_at: 2025-09-12T04:15:59.234549Z)
+  - 0x6eeFD00130cD006fC5180905352867C3D1547772 (contract_name: Artifact, verified_at: 2025-09-12T04:15:56.004092Z)
+  - 0x84Cb3431d112dFAC66fA2a62CC99430f4cc45103 (contract_name: EnhancedArtifact, verified_at: 2025-09-12T04:15:52.857876Z)
+  - 0x34C99cd2B338332b89eeE7c0c162BedA8339b543 (contract_name: Artifact, verified_at: 2025-09-12T04:15:30.048396Z)
+  - 0x0FDB58407dbd62A388D0A0FF4D3bEAeDc0758e6F (contract_name: Artifact, verified_at: 2025-09-12T02:58:40.533887Z)
+  - 0x6cd4C6eB245D736794A1d320C1c1D200a96d3763 (contract_name: Artifact, verified_at: 2025-09-12T02:57:46.514640Z)
+  - 0x0de00F104593ce3bfb734cb6b41fa2fc98045Bc1 (contract_name: Artifact, verified_at: 2025-09-12T02:57:36.533590Z)
+  - 0xd75333f0dA29618468A4BaEC91c08abE6317cc63 (contract_name: EnhancedArtifact, verified_at: 2025-09-11T02:32:02.240855Z)
+  - 0x598330de4ae6e9Dc686a81c27f523E591EF9838a (contract_name: EnhancedArtifact, verified_at: 2025-09-10T21:39:55.369870Z)
+  - 0x2086Be28CE3B80FA7ec8405268A19BbA01F3b041 (contract_name: Artifact, verified_at: 2025-09-04T10:30:45.497157Z)
+  - 0x2263e66D70aa362c6058c9e04b88de14a2C4418C (contract_name: Artifact, verified_at: 2025-09-04T10:30:28.082738Z)
+  - 0xfE6bE49550167D4Ee1610aE03Db044a4f86c7350 (contract_name: EnhancedArtifact, verified_at: 2025-08-26T09:09:13.013588Z)
+  - 0x314b685BBAb14FBBBEAA5834893F392A3A58EB4e (contract_name: Artifact, verified_at: 2025-08-26T09:07:37.141550Z)
+  - 0xF590D5c64ABbe503D68B9c639Fa0203Fe9F4F27A (contract_name: Artifact, verified_at: 2025-08-22T05:06:08.496968Z)

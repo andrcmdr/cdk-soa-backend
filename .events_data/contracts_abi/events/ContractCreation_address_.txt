@@ -1,0 +1,10 @@
+Event Name: ContractCreation
+Signature: ContractCreation(address)
+Topic Hash: 0x4db17dd5e4732fb6da34a148104a592783ca119a1e7bb8829eba6cbadef0b511
+Anonymous: false
+
+Inputs:
+  0: newContract address (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x7cbB62EaA69F79e6873cD1ecB2392971036cFAa4 (contract_name: CreateCall, verified_at: 2025-09-12T04:17:57.513144Z)
