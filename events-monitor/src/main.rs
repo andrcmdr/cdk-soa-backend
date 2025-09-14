@@ -21,7 +21,16 @@ async fn main() -> anyhow::Result<()> {
     let cfg_path = std::env::args().nth(1).unwrap_or_else(|| "./config.yaml".to_string());
     let cfg = config::AppCfg::load(&cfg_path)?;
 
-    let db_schema_path = std::env::args().nth(2).ok_or_else(|| &cfg.postgres.schema).unwrap_or_else(|_path| "./init.sql".to_string());
+    let db_schema_path = if let Some(path)  = std::env::args().nth(2) {
+        path
+    } else {
+        if cfg.postgres.schema.is_empty() {
+            "./init.sql".to_string()
+        } else {
+            cfg.postgres.schema.clone()
+        }
+    };
+
     let db_schema = std::fs::read_to_string(Path::new(&db_schema_path))?;
 
     // deps

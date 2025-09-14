@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 use futures_util::StreamExt;
-use tracing::{info, error};
+use tracing::{info, error, debug};
+
 use alloy::{
     providers::{Provider, ProviderBuilder, WsConnect},
     rpc::types::{Filter, FilterBlockOption, BlockNumberOrTag, Log as RpcLog},
@@ -9,6 +10,8 @@ use alloy::{
 };
 use alloy::providers::fillers::{BlobGasFiller, ChainIdFiller, FillProvider, GasFiller, JoinFill, NonceFiller};
 use alloy::providers::{Identity, RootProvider};
+use alloy::consensus::Transaction;
+use alloy::network::TransactionResponse;
 
 use tokio_postgres::Client as DbClient;
 use async_nats::jetstream::object_store::ObjectStore;
@@ -19,9 +22,8 @@ use crate::event_decoder::EventDecoder;
 use crate::types::EventPayload;
 
 use std::ops::{Range, RangeFrom};
+use std::str::FromStr;
 use std::sync::Arc;
-use alloy::consensus::Transaction;
-use alloy::network::TransactionResponse;
 use anyhow::anyhow;
 
 type RPCProvider = FillProvider<JoinFill<Identity, JoinFill<GasFiller, JoinFill<BlobGasFiller, JoinFill<NonceFiller, ChainIdFiller>>>>, RootProvider>;
@@ -52,13 +54,15 @@ impl EventProcessor {
         let mut addr_abi_map: BTreeMap<Address, ContractAbi> = BTreeMap::new();
         for c in contracts { addr_abi_map.insert(c.address, c); }
 
-        let (ws_rpc_provider, http_rpc_provider) = build_providers(&config.chain.http_rpc_url, &config.chain.ws_rpc_url).await?;
+        let ws = WsConnect::new(&config.chain.ws_rpc_url);
+        let http_rpc = reqwest::Url::from_str(&config.chain.http_rpc_url)?;
+        let (ws_rpc_provider, http_rpc_provider) = build_providers(ws, http_rpc).await?;
 
         let chain_id = http_rpc_provider.get_chain_id().await?;
-
         if chain_id != config.chain.chain_id {
             anyhow::bail!("Chain ID mismatch: expected {}, got {}", config.chain.chain_id, chain_id);
         }
+        info!("Chain ID: {}", chain_id);
 
         Ok(Self {
             addr_abi_map,
@@ -94,11 +98,28 @@ impl EventProcessor {
                 .select(BlockRangeFrom(from_block..));
         }
 
+        // Grab logs from all contracts according to filer and subscribe to new ones
+        let logs = self.http_rpc_provider.get_logs(&filter).await?;
+        debug!("Received {} logs from {} contracts", logs.len(), addresses.len());
+        logs.iter().for_each(|log| {
+            debug!("Received log from contract: {}", log.address());
+            debug!("Log: {:?}", log);
+        });
+
+        // Grab logs from all contracts according to filer and subscribe to new ones
+        let logs = self.ws_rpc_provider.get_logs(&filter).await?;
+        debug!("Received {} logs from {} contracts", logs.len(), addresses.len());
+        logs.iter().for_each(|log| {
+            debug!("Received log from contract: {}", log.address());
+            debug!("Log: {:?}", log);
+        });
+
         let sub = provider.subscribe_logs(&filter).await?;
         info!("Subscribed to logs for {} contracts", addresses.len());
         let mut sub_stream = sub.into_stream();
-
+        info!("Subscribed to logs for {} contracts", addresses.len());
         while let Some(log) = sub_stream.next().await {
+            debug!("Received log from contract: {}", log.address());
             if let Err(e) = self.handle_log(log).await {
                 error!("Failed to handle log: {:?}", e);
                 eprintln!("Log error: {:?}", e);
@@ -112,6 +133,7 @@ impl EventProcessor {
         log: RpcLog,
     ) -> anyhow::Result<()> {
         let addr = log.address();
+        debug!("Received log from contract: {}", addr);
         let Some(contract) = self.addr_abi_map.get(&addr) else { return Ok(()); };
 
         let abi = Arc::new(contract.abi.clone());
@@ -208,6 +230,8 @@ impl EventProcessor {
             event_data: parsed_event_value,
         };
 
+        debug!("Persisting event: {:?}", payload);
+
         // Persist to Postgres
         db::insert_event(&self.db_pool, &payload).await?;
         // Persist to NATS Object Store
@@ -273,10 +297,10 @@ impl Sha3_256StdHasher {
 }
 
 /// Build HTTP and WS providers using Alloy
-pub async fn build_providers(ws_rpc_url: &str, http_rpc_url: &str) -> anyhow::Result<(RPCProvider, RPCProvider)> {
-    let ws = WsConnect::new(ws_rpc_url);
-    let ws_rpc_provider = ProviderBuilder::new().connect_ws(ws).await?;
-    let http_rpc_provider = ProviderBuilder::new().connect_http(http_rpc_url.parse()?);
+pub async fn build_providers(ws_rpc_url: WsConnect, http_rpc_url: reqwest::Url) -> anyhow::Result<(RPCProvider, RPCProvider)> {
+    let ws_rpc_provider = ProviderBuilder::new().connect_ws(ws_rpc_url.clone()).await?;
+    let http_rpc_provider = ProviderBuilder::new().connect_http(http_rpc_url.clone());
+    info!("Connecting to RPC endpoints: ws: {:?}, http: {:?}", ws_rpc_url, http_rpc_url);
 
     Ok((ws_rpc_provider, http_rpc_provider))
 }

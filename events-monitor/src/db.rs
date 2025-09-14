@@ -22,7 +22,7 @@ pub async fn insert_event(
     payload: &EventPayload,
 ) -> anyhow::Result<()> {
     let query = r#"
-        INSERT INTO contract_events (
+        INSERT INTO events_monitor_data (
             contract_name,
             contract_address,
             chain_id,
@@ -67,6 +67,8 @@ pub async fn insert_event(
             ],
         )
         .await?;
+
+    info!("Event inserted");
 
     Ok(())
 }
