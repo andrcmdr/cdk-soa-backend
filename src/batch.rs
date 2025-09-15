@@ -1,3 +1,6 @@
+use anyhow::Result;
+use crate::db::Database;
+use tracing::info;
 pub struct BatchUsageReport{
     pub artifact_address: Vec<String>,
     pub usage: Vec<i64>,
@@ -12,34 +15,54 @@ pub struct BatchRevenueReport{
 
 impl BatchUsageReport {
     pub fn new(batch_size: i32) -> Self {
-        Self { artifact_address: Vec::new(batch_size), usage: Vec::new(batch_size), timestamp: Vec::new(batch_size) }
+        Self { 
+            artifact_address: Vec::with_capacity(batch_size as usize), 
+            usage: Vec::with_capacity(batch_size as usize), 
+            timestamp: Vec::with_capacity(batch_size as usize) 
+        }
     }
 }
 
 impl BatchRevenueReport {
     pub fn new(batch_size: i32) -> Self {
-        Self { artifact_address: Vec::new(batch_size), revenue: Vec::new(batch_size), timestamp: Vec::new(batch_size) }
+        Self { 
+            artifact_address: Vec::with_capacity(batch_size as usize), 
+            revenue: Vec::with_capacity(batch_size as usize), 
+            timestamp: Vec::with_capacity(batch_size as usize) 
+        }
     }
 }
 
-pub fn get_batch_usage_report( batch_size: i32) -> BatchUsageReport {
+pub async fn get_batch_usage_report(db: &Database, batch_size: i32) -> Result<(BatchUsageReport, Vec<i32>)> {
     let rows = db.get_unsubmitted_usage_reports(batch_size).await?;
-    let mut usage_reports_batch = BatchUsageReport::new(batch_size);
+    let actual_count = rows.len();
+    info!("Found {} unsubmitted usage reports", actual_count);
+
+    let mut usage_reports_batch = BatchUsageReport::new(actual_count as i32);
+    let mut ids = Vec::with_capacity(actual_count as usize);
+    
     for row in rows {
-        usage_reports_batch.artifact_address.push(row.get(0));
-        usage_reports_batch.usage.push(row.get(1));
-        usage_reports_batch.timestamp.push(row.get(2));
+        ids.push(row.get::<_, i32>("id"));
+        usage_reports_batch.artifact_address.push(row.get::<_, String>("artifact_address"));
+        usage_reports_batch.usage.push(row.get::<_, i64>("usage"));
+        usage_reports_batch.timestamp.push(row.get::<_, i64>("timestamp"));
     }
-    usage_reports_batch
+    Ok((usage_reports_batch, ids))
 }
 
-pub fn get_batch_revenue_report(batch_size: i32) -> BatchRevenueReport {
+pub async fn get_batch_revenue_report(db: &Database, batch_size: i32) -> Result<(BatchRevenueReport, Vec<i32>)> {
     let rows = db.get_unsubmitted_revenue_reports(batch_size).await?;
+    let actual_count = rows.len();
+    info!("Found {} unsubmitted revenue reports", actual_count);  
+
     let mut revenue_reports_batch = BatchRevenueReport::new(batch_size);
+    let mut ids = Vec::with_capacity(batch_size as usize);
+    
     for row in rows {
-        revenue_reports_batch.artifact_address.push(row.get(0));
-        revenue_reports_batch.revenue.push(row.get(1));
-        revenue_reports_batch.timestamp.push(row.get(2));
+        ids.push(row.get::<_, i32>("id"));
+        revenue_reports_batch.artifact_address.push(row.get::<_, String>("artifact_address"));
+        revenue_reports_batch.revenue.push(row.get::<_, i64>("revenue"));
+        revenue_reports_batch.timestamp.push(row.get::<_, i64>("timestamp"));
     }
-    revenue_reports_batch
+    Ok((revenue_reports_batch, ids))
 }
