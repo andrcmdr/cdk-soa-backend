@@ -1,10 +1,12 @@
 mod api;
 mod config;
 mod db;
-mod models;
+mod types;
 mod mock_data;
 mod validators;
 mod miner;
+mod transaction;
+mod batch;
 
 
 use anyhow::Result;

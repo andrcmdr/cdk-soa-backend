@@ -1,21 +1,20 @@
-use crate::models::{RevenueReport, UsageReport};
+use crate::types::{BackendRevenueData, BackendUsageData};
 use serde_json;
 use std::fs;
 use anyhow::Result;
 
 
-
 /// Load mock revenue reports from JSON file
-pub fn load_mock_revenue_reports() -> Result<Vec<RevenueReport>> {
+pub fn load_mock_revenue_reports() -> Result<Vec<BackendRevenueData>> {
     let data = fs::read_to_string("tests/mock_data/revenue_reports.json")?;
-    let reports: Vec<RevenueReport> = serde_json::from_str(&data)?;
+    let reports: Vec<BackendRevenueData> = serde_json::from_str(&data)?;
     Ok(reports)
 }
 
 /// Load mock usage reports from JSON file
-pub fn load_mock_usage_reports() -> Result<Vec<UsageReport>> {
+pub fn load_mock_usage_reports() -> Result<Vec<BackendUsageData>> {
     let data = fs::read_to_string("tests/mock_data/usage_reports.json")?;
-    let reports: Vec<UsageReport> = serde_json::from_str(&data)?;
+    let reports: Vec<BackendUsageData> = serde_json::from_str(&data)?;
     Ok(reports)
 }
 

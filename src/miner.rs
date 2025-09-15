@@ -3,9 +3,9 @@ use std::sync::Arc;
 use tokio::time::{sleep, Duration};
 use tracing::{info, error};
 use crate::db::Database;
-use crate::validators::{validate_revenue_report, validate_usage_report};
+use crate::validators::{validate_revenue_data, validate_usage_data};
 use crate::mock_data::{load_mock_revenue_reports, load_mock_usage_reports};
-use crate::models::{RevenueReport, UsageReport};
+use crate::types::{BackendRevenueData, BackendUsageData};
 
 /// APIMiner handles mining data from external APIs
 /// This miner would typically fetch data from external services and store it in the database
@@ -48,14 +48,14 @@ impl APIMiner {
         // This is a placeholder implementation
         
         // Simulate fetching revenue data from external API
-        let revenue_reports = self.fetch_revenue_data().await?;
-        for report in revenue_reports {
-            match validate_revenue_report(&report) {
+        let revenue_data = self.fetch_revenue_data().await?;
+        for data in revenue_data {
+            match validate_revenue_data(&data) {
                 Ok(valid) => {
                     if valid {
-                        if let Err(e) = self.db.insert_revenue_report(&report).await {
-                            error!("Failed to insert revenue report: {}", e);
-                        }
+                        // if let Err(e) = self.db.insert_revenue_report(&data).await {
+                        //     error!("Failed to insert revenue report: {}", e);
+                        // }
                     }
                 }
                 Err(e) => {
@@ -65,14 +65,14 @@ impl APIMiner {
         }
         
         // Simulate fetching usage data from external API
-        let usage_reports = self.fetch_usage_data().await?;
-        for report in usage_reports {
-            match validate_usage_report(&report) {
+        let usage_data = self.fetch_usage_data().await?;
+        for data in usage_data {
+            match validate_usage_data(&data) {
                 Ok(valid) => {
                     if valid {
-                        if let Err(e) = self.db.insert_usage_report(&report).await {
-                            error!("Failed to insert usage report: {}", e);
-                        }
+                        // if let Err(e) = self.db.insert_usage_report(&data).await {
+                        //     error!("Failed to insert usage report: {}", e);
+                        // }
                     }
                 }
                 Err(e) => {
@@ -86,7 +86,7 @@ impl APIMiner {
     }
 
     /// Fetch revenue data from external API (placeholder)
-    async fn fetch_revenue_data(&self) -> Result<Vec<RevenueReport>> {
+    async fn fetch_revenue_data(&self) -> Result<Vec<BackendRevenueData>> {
         // TODO: Implement actual API call to external usage service
         // This would typically involve:
         // 1. Making HTTP requests to external APIs
@@ -99,7 +99,7 @@ impl APIMiner {
     }
 
     /// Fetch usage data from external API (placeholder)
-    async fn fetch_usage_data(&self) -> Result<Vec<UsageReport>> {
+    async fn fetch_usage_data(&self) -> Result<Vec<BackendUsageData>> {
         // TODO: Implement actual API call to external usage service
         // This would typically involve:
         // 1. Making HTTP requests to external APIs

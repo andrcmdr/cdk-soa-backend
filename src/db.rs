@@ -1,7 +1,7 @@
 use anyhow::Result;
 use tokio_postgres::{Client, NoTls};
 use tracing::{info, error};
-use crate::models::{RevenueReport, UsageReport};
+use crate::types::{RevenueReport, UsageReport};
 
 pub struct Database {
     client: Client,
