@@ -4,61 +4,17 @@ use alloy::{
     primitives::{Address, B256, U256},
     providers::{ProviderBuilder, RootProvider},
     signers::local::PrivateKeySigner,
-    sol,
     transports::http::{Client, Http},
     contract::ContractInstance,
+    json_abi::JsonAbi,
 };
 use alloy_provider::Provider;
 use crate::error::{AppError, AppResult};
 
-sol!(
-    #[allow(missing_docs)]
-    #[sol(rpc)]
-    AirdropContract,
-    r#"[
-        {
-            "inputs": [
-                {"internalType": "uint256", "name": "roundId", "type": "uint256"},
-                {"internalType": "bytes32", "name": "rootHash", "type": "bytes32"},
-                {"internalType": "bytes", "name": "trieData", "type": "bytes"}
-            ],
-            "name": "updateTrieRoot",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [{"internalType": "bytes32", "name": "rootHash", "type": "bytes32"}],
-            "name": "isRootHashExists",
-            "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [{"internalType": "uint256", "name": "roundId", "type": "uint256"}],
-            "name": "getTrieRoot",
-            "outputs": [{"internalType": "bytes32", "name": "", "type": "bytes32"}],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {"internalType": "uint256", "name": "roundId", "type": "uint256"},
-                {"internalType": "address", "name": "user", "type": "address"},
-                {"internalType": "uint256", "name": "amount", "type": "uint256"},
-                {"internalType": "bytes[]", "name": "proof", "type": "bytes[]"}
-            ],
-            "name": "verifyEligibility",
-            "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
-            "stateMutability": "view",
-            "type": "function"
-        }
-    ]"#
-);
-
 pub struct ContractClient {
     provider: RootProvider<Http<Client>>,
-    contract: ContractInstance<Http<Client>, RootProvider<Http<Client>>, AirdropContract::AirdropContractInstance>,
+    contract_address: Address,
+    abi: JsonAbi,
 }
 
 impl ContractClient {
@@ -66,6 +22,7 @@ impl ContractClient {
         rpc_url: &str,
         contract_address: Address,
         private_key: &str,
+        abi: JsonAbi,
     ) -> AppResult<Self> {
         let signer: PrivateKeySigner = private_key.parse()
             .map_err(|e| AppError::Blockchain(format!("Invalid private key: {}", e)))?;
@@ -77,22 +34,26 @@ impl ContractClient {
             .on_http(rpc_url.parse()
                 .map_err(|e| AppError::Blockchain(format!("Invalid RPC URL: {}", e)))?);
 
-        let contract = AirdropContract::new(contract_address, &provider);
-
         Ok(Self {
             provider,
-            contract,
+            contract_address,
+            abi,
         })
     }
 
     pub async fn is_root_hash_exists(&self, root_hash: B256) -> AppResult<bool> {
-        let result = self.contract
-            .isRootHashExists(root_hash)
-            .call()
-            .await
+        let contract = ContractInstance::new(self.contract_address, &self.provider, &self.abi);
+
+        let call = contract.function("isRootHashExists", &[root_hash.into()])
+            .map_err(|e| AppError::Blockchain(format!("Failed to create contract call: {}", e)))?;
+
+        let result = call.call().await
             .map_err(|e| AppError::Blockchain(format!("Contract call failed: {}", e)))?;
 
-        Ok(result._0)
+        let exists: bool = result[0].as_bool()
+            .ok_or_else(|| AppError::Blockchain("Invalid response format".to_string()))?;
+
+        Ok(exists)
     }
 
     pub async fn submit_trie_update(&self, round_id: u32, root_hash: B256, trie_data: Vec<u8>) -> AppResult<B256> {
@@ -102,13 +63,20 @@ impl ContractClient {
             hex::encode(root_hash)
         );
 
-        let receipt = self.contract
-            .updateTrieRoot(U256::from(round_id), root_hash, trie_data.into())
-            .send()
-            .await
+        let contract = ContractInstance::new(self.contract_address, &self.provider, &self.abi);
+
+        let call = contract.function(
+            "updateTrieRoot",
+            &[
+                U256::from(round_id).into(),
+                root_hash.into(),
+                trie_data.into(),
+            ]
+        ).map_err(|e| AppError::Blockchain(format!("Failed to create contract call: {}", e)))?;
+
+        let receipt = call.send().await
             .map_err(|e| AppError::Blockchain(format!("Transaction failed: {}", e)))?
-            .get_receipt()
-            .await
+            .get_receipt().await
             .map_err(|e| AppError::Blockchain(format!("Failed to get receipt: {}", e)))?;
 
         tracing::info!("Transaction confirmed: 0x{}", hex::encode(receipt.transaction_hash));
@@ -117,13 +85,19 @@ impl ContractClient {
     }
 
     pub async fn get_trie_root(&self, round_id: u32) -> AppResult<B256> {
-        let result = self.contract
-            .getTrieRoot(U256::from(round_id))
-            .call()
-            .await
+        let contract = ContractInstance::new(self.contract_address, &self.provider, &self.abi);
+
+        let call = contract.function("getTrieRoot", &[U256::from(round_id).into()])
+            .map_err(|e| AppError::Blockchain(format!("Failed to create contract call: {}", e)))?;
+
+        let result = call.call().await
             .map_err(|e| AppError::Blockchain(format!("Contract call failed: {}", e)))?;
 
-        Ok(result._0)
+        let root_hash: B256 = result[0].as_fixed_bytes()
+            .map(|bytes| B256::from_slice(bytes))
+            .ok_or_else(|| AppError::Blockchain("Invalid response format".to_string()))?;
+
+        Ok(root_hash)
     }
 
     pub async fn verify_eligibility(
@@ -133,14 +107,24 @@ impl ContractClient {
         amount: U256,
         proof: Vec<Vec<u8>>
     ) -> AppResult<bool> {
-        let proof_bytes: Vec<_> = proof.into_iter().map(|p| p.into()).collect();
+        let contract = ContractInstance::new(self.contract_address, &self.provider, &self.abi);
 
-        let result = self.contract
-            .verifyEligibility(U256::from(round_id), address, amount, proof_bytes)
-            .call()
-            .await
+        let call = contract.function(
+            "verifyEligibility",
+            &[
+                U256::from(round_id).into(),
+                address.into(),
+                amount.into(),
+                proof.into(),
+            ]
+        ).map_err(|e| AppError::Blockchain(format!("Failed to create contract call: {}", e)))?;
+
+        let result = call.call().await
             .map_err(|e| AppError::Blockchain(format!("Contract call failed: {}", e)))?;
 
-        Ok(result._0)
+        let is_eligible: bool = result[0].as_bool()
+            .ok_or_else(|| AppError::Blockchain("Invalid response format".to_string()))?;
+
+        Ok(is_eligible)
     }
 }

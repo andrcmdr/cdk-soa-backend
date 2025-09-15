@@ -10,6 +10,7 @@ blockchain:
   rpc_url: "https://rpc.polygon-cdk-chain.example"
   contract_address: "0x1234567890123456789012345678901234567890"
   chain_id: 1
+  abi_path: "abi/AirdropContract.json"
 
 aws:
   region: "us-east-1"
@@ -17,7 +18,8 @@ aws:
 
 wallet:
   # Encrypted private key (base64 encoded)
-  encrypted_private_key: "AQECAHi..."
+  # This will be auto-populated on first run if empty
+  encrypted_private_key: ""
 
 nats:
   url: "nats://localhost:4222"

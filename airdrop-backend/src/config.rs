@@ -1,5 +1,7 @@
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+use std::path::Path;
+use alloy_json_abi::JsonAbi;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
@@ -28,6 +30,7 @@ pub struct BlockchainConfig {
     pub rpc_url: String,
     pub contract_address: String,
     pub chain_id: u64,
+    pub abi_path: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -58,5 +61,25 @@ impl Config {
         let content = tokio::fs::read_to_string(path).await?;
         let config: Config = serde_yaml::from_str(&content)?;
         Ok(config)
+    }
+
+    pub async fn save_to_file(&self, path: &str) -> Result<()> {
+        let content = serde_yaml::to_string(self)?;
+        tokio::fs::write(path, content).await?;
+        Ok(())
+    }
+
+    pub async fn load_contract_abi(&self) -> Result<JsonAbi> {
+        let abi_content = tokio::fs::read_to_string(&self.blockchain.abi_path).await?;
+        let abi: JsonAbi = serde_json::from_str(&abi_content)?;
+        Ok(abi)
+    }
+
+    pub fn needs_key_generation(&self) -> bool {
+        self.wallet.encrypted_private_key.is_empty()
+    }
+
+    pub fn set_encrypted_private_key(&mut self, encrypted_key: String) {
+        self.wallet.encrypted_private_key = encrypted_key;
     }
 }

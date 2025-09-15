@@ -1,15 +1,17 @@
 use axum::{
-    extract::{Path, State, Multipart},
+    extract::{Path, State, Multipart, Query},
     response::Json,
     http::StatusCode,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::sync::Arc;
+use std::collections::HashMap;
 use alloy_primitives::{Address, U256};
 
 use crate::service::AirdropService;
 use crate::error::{AppError, AppResult};
+use crate::database::ProcessingLog;
 
 #[derive(Serialize, Deserialize)]
 pub struct VerifyEligibilityRequest {
@@ -30,15 +32,28 @@ pub struct VerifyEligibilityResponse {
 pub struct TrieInfoResponse {
     pub round_id: u32,
     pub root_hash: String,
-    pub entry_count: usize,
+    pub entry_count: i32,
     pub created_at: String,
     pub updated_at: String,
+}
+
+#[derive(Serialize)]
+pub struct RoundStatistics {
+    pub round_id: u32,
+    pub entry_count: i32,
+    pub last_updated: String,
+}
+
+#[derive(Deserialize)]
+pub struct LogsQuery {
+    pub round_id: Option<u32>,
 }
 
 pub async fn health_check() -> Json<serde_json::Value> {
     Json(json!({
         "status": "healthy",
-        "timestamp": chrono::Utc::now().to_rfc3339()
+        "timestamp": chrono::Utc::now().to_rfc3339(),
+        "service": "airdrop-backend"
     }))
 }
 
@@ -80,16 +95,17 @@ pub async fn upload_csv(
     Ok(Json(json!({
         "success": true,
         "message": format!("CSV data processed for round {}", round_id),
-        "round_id": round_id
+        "round_id": round_id,
+        "data_size_bytes": csv_data.len()
     })))
 }
 
+// This endpoint can be used to manually trigger trie updates
+// The trie should already be updated when CSV is processed
 pub async fn update_trie(
     Path(round_id): Path<u32>,
     State(service): State<Arc<AirdropService>>,
 ) -> AppResult<Json<serde_json::Value>> {
-    // This endpoint can be used to manually trigger trie updates
-    // The trie should already be updated when CSV is processed
     let trie_info = service.get_trie_info(round_id).await?;
 
     match trie_info {
@@ -97,8 +113,9 @@ pub async fn update_trie(
             "success": true,
             "message": format!("Trie for round {} is up to date", round_id),
             "round_id": round_id,
-            "root_hash": info.root_hash,
-            "entry_count": info.metadata.entry_count
+            "root_hash": format!("0x{}", hex::encode(info.root_hash)),
+            "entry_count": info.entry_count,
+            "last_updated": info.updated_at.to_rfc3339()
         }))),
         None => Err(AppError::NotFound(format!("No trie data found for round {}", round_id)))
     }
@@ -168,11 +185,57 @@ pub async fn get_trie_info(
     match service.get_trie_info(round_id).await? {
         Some(info) => Ok(Json(TrieInfoResponse {
             round_id,
-            root_hash: info.root_hash,
-            entry_count: info.metadata.entry_count,
-            created_at: info.metadata.created_at.to_rfc3339(),
-            updated_at: info.metadata.updated_at.to_rfc3339(),
+            root_hash: format!("0x{}", hex::encode(info.root_hash)),
+            entry_count: info.entry_count,
+            created_at: info.created_at.to_rfc3339(),
+            updated_at: info.updated_at.to_rfc3339(),
         })),
         None => Err(AppError::NotFound(format!("No trie info found for round {}", round_id)))
     }
+}
+
+pub async fn get_round_statistics(
+    State(service): State<Arc<AirdropService>>,
+) -> AppResult<Json<Vec<RoundStatistics>>> {
+    let stats = service.get_all_round_statistics().await?;
+
+    let response: Vec<RoundStatistics> = stats
+        .into_iter()
+        .map(|(round_id, entry_count, last_updated)| RoundStatistics {
+            round_id,
+            entry_count,
+            last_updated: last_updated.to_rfc3339(),
+        })
+        .collect();
+
+    Ok(Json(response))
+}
+
+pub async fn get_processing_logs(
+    Query(params): Query<LogsQuery>,
+    State(service): State<Arc<AirdropService>>,
+) -> AppResult<Json<Vec<ProcessingLog>>> {
+    let logs = service.get_processing_logs(params.round_id).await?;
+    Ok(Json(logs))
+}
+
+pub async fn get_round_processing_logs(
+    Path(round_id): Path<u32>,
+    State(service): State<Arc<AirdropService>>,
+) -> AppResult<Json<Vec<ProcessingLog>>> {
+    let logs = service.get_processing_logs(Some(round_id)).await?;
+    Ok(Json(logs))
+}
+
+pub async fn delete_round(
+    Path(round_id): Path<u32>,
+    State(service): State<Arc<AirdropService>>,
+) -> AppResult<Json<serde_json::Value>> {
+    service.delete_round(round_id).await?;
+
+    Ok(Json(json!({
+        "success": true,
+        "message": format!("Round {} deleted successfully", round_id),
+        "round_id": round_id
+    })))
 }

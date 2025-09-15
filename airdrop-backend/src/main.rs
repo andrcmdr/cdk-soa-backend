@@ -3,7 +3,7 @@ use axum::{
     extract::DefaultBodyLimit,
     http::StatusCode,
     response::Json,
-    routing::{get, post},
+    routing::{get, post, delete},
     Router,
 };
 use std::sync::Arc;
@@ -38,8 +38,10 @@ async fn main() -> Result<()> {
 
     info!("Starting Airdrop Backend Service");
 
-    let config = Config::load_from_file("config.yaml").await?;
-    let service = Arc::new(AirdropService::new(config.clone()).await?);
+    let config_path = std::env::var("CONFIG_PATH").unwrap_or_else(|_| "config.yaml".to_string());
+    let config = Config::load_from_file(&config_path).await?;
+
+    let service = Arc::new(AirdropService::new(config.clone(), config_path).await?);
 
     let app = create_app(service).await;
 
@@ -60,6 +62,10 @@ async fn create_app(service: Arc<AirdropService>) -> Router {
         .route("/api/v1/verify-eligibility", post(handlers::verify_eligibility))
         .route("/api/v1/get-eligibility/:round_id/:address", get(handlers::get_eligibility))
         .route("/api/v1/trie-info/:round_id", get(handlers::get_trie_info))
+        .route("/api/v1/rounds/statistics", get(handlers::get_round_statistics))
+        .route("/api/v1/processing-logs", get(handlers::get_processing_logs))
+        .route("/api/v1/processing-logs/:round_id", get(handlers::get_round_processing_logs))
+        .route("/api/v1/rounds/:round_id", delete(handlers::delete_round))
         .with_state(service)
         .layer(
             ServiceBuilder::new()

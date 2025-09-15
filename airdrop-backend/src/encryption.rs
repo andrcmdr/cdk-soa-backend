@@ -7,6 +7,8 @@ use aes_gcm::{
 };
 use rand::RngCore;
 use serde::{Deserialize, Serialize};
+use secp256k1::{Secp256k1, SecretKey};
+use alloy_primitives::hex;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EnvelopeEncryption {
@@ -87,12 +89,61 @@ impl KmsEnvelopeEncryption {
         Ok(plaintext)
     }
 
+    pub async fn generate_and_encrypt_private_key(&self) -> Result<String> {
+        tracing::info!("Generating new private key");
+
+        // Generate a new secp256k1 private key
+        let secp = Secp256k1::new();
+        let mut rng = rand::thread_rng();
+        let secret_key = SecretKey::new(&mut rng);
+
+        // Convert to hex string (without 0x prefix)
+        let private_key_hex = hex::encode(secret_key.secret_bytes());
+
+        tracing::info!("Encrypting private key with KMS envelope encryption");
+
+        // Encrypt the private key
+        let envelope = self.encrypt(private_key_hex.as_bytes()).await?;
+
+        // Serialize and encode as base64
+        let serialized = serde_json::to_string(&envelope)?;
+        let encoded = base64::encode(serialized.as_bytes());
+
+        tracing::info!("Private key generated and encrypted successfully");
+
+        Ok(encoded)
+    }
+
     pub async fn decrypt_private_key(&self, encrypted_key: &str) -> Result<String> {
-        let envelope: EnvelopeEncryption = serde_json::from_str(&String::from_utf8(
-            base64::decode(encrypted_key)?
-        )?)?;
+        if encrypted_key.is_empty() {
+            return Err(anyhow::anyhow!("Encrypted private key is empty"));
+        }
+
+        let decoded = base64::decode(encrypted_key)?;
+        let envelope: EnvelopeEncryption = serde_json::from_str(&String::from_utf8(decoded)?)?;
 
         let decrypted = self.decrypt(&envelope).await?;
-        Ok(String::from_utf8(decrypted)?)
+        let private_key = String::from_utf8(decrypted)?;
+
+        // Validate the private key format (should be 64 hex characters)
+        if private_key.len() != 64 {
+            return Err(anyhow::anyhow!("Invalid private key length"));
+        }
+
+        // Validate hex format
+        hex::decode(&private_key)
+            .map_err(|_| anyhow::anyhow!("Invalid private key format"))?;
+
+        Ok(format!("0x{}", private_key))
+    }
+
+    pub async fn get_or_create_private_key(&self, encrypted_key: &str) -> Result<String> {
+        if encrypted_key.is_empty() {
+            tracing::info!("No encrypted private key found, generating new one");
+            return self.generate_and_encrypt_private_key().await;
+        }
+
+        tracing::info!("Decrypting existing private key");
+        self.decrypt_private_key(encrypted_key).await
     }
 }
