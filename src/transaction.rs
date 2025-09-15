@@ -232,10 +232,6 @@ mod tests {
                     info!("Artifact is active");
                 }
                 Err(e) => {
-                    // If you later add errors to sol!, try:
-                    // if let Some(errs) = e.as_decoded_interface_error::<ArtifactManager::ArtifactManagerErrors>() {
-                    //     info!("Custom error: {:?}", errs);
-                    // } else 
                     if let Some(data) = e.as_revert_data() {
                         info!("Revert data: 0x{}", alloy::primitives::hex::encode(data));
                     } else {

@@ -88,7 +88,7 @@ impl Database {
     // Gets unsubmitted revenue reports from the database
     pub async fn get_unsubmitted_revenue_reports(&self, limit: i32) -> Result<Vec<tokio_postgres::Row>> {
         let query = r#"
-            SELECT artifact_address, revenue, timestamp
+            SELECT id, artifact_address, revenue, timestamp
             FROM revenue_reports
             WHERE submitted_to_chain = FALSE
             ORDER BY timestamp ASC
@@ -102,7 +102,7 @@ impl Database {
     // Gets unsubmitted usage reports from the database
     pub async fn get_unsubmitted_usage_reports(&self, limit: i32) -> Result<Vec<tokio_postgres::Row>> {
         let query = r#"
-            SELECT artifact_address, usage, timestamp
+            SELECT id, artifact_address, usage, timestamp
             FROM usage_reports
             WHERE submitted_to_chain = FALSE
             ORDER BY timestamp ASC
@@ -111,6 +111,26 @@ impl Database {
 
         let rows = self.client.query(query, &[&limit]).await?;
         Ok(rows)
+    }
+
+    pub async fn update_revenue_report_submitted_to_chain(&self, id: Vec<i32>) -> Result<()> {
+        let query = r#"
+            UPDATE revenue_reports
+            SET submitted_to_chain = TRUE
+            WHERE id = ANY($1)
+        "#;
+        self.client.execute(query, &[&id]).await?;
+        Ok(())
+    }
+
+    pub async fn update_usage_report_submitted_to_chain(&self, id: Vec<i32>) -> Result<()> {
+        let query = r#"
+            UPDATE usage_reports
+            SET submitted_to_chain = TRUE
+            WHERE id = ANY($1)
+        "#;
+        self.client.execute(query, &[&id]).await?;
+        Ok(())
     }
 
 }
