@@ -208,54 +208,51 @@ mod tests {
             .with_max_level(tracing::Level::INFO)
             .try_init();
 
-            dotenv::dotenv().ok();
-        
-            // read the private key from the .env file
-            let private_key = std::env::var("PRIVATE_KEY").unwrap();
-            let rpc_url = std::env::var("RPC_URL").unwrap();
-            let contract_address = std::env::var("CONTRACT_ADDRESS").unwrap();
-            let chain_id = std::env::var("CHAIN_ID").unwrap();
-        
-            let contract_addr = Address::from_str(&contract_address).unwrap();
-            let chain_id_num = chain_id.parse::<u64>().unwrap();
-            let client = ContractClient::new(rpc_url, private_key, contract_addr, chain_id_num).await.unwrap();
+        dotenv::dotenv().ok();
+    
+        // read the private key from the .env file
+        let private_key = std::env::var("PRIVATE_KEY").unwrap();
+        let rpc_url = std::env::var("RPC_URL").unwrap();
+        let contract_address = std::env::var("CONTRACT_ADDRESS").unwrap();
+        let chain_id = std::env::var("CHAIN_ID").unwrap();
+    
+        let contract_addr = Address::from_str(&contract_address).unwrap();
+        let chain_id_num = chain_id.parse::<u64>().unwrap();
+        let client = ContractClient::new(rpc_url, private_key, contract_addr, chain_id_num).await.unwrap();
 
-            let artifact_address = std::env::var("ARTIFACT_ADDRESS").unwrap();
-            let artifact_address = Address::from_str(&artifact_address).unwrap();
-            info!("Artifact address: {:?}", artifact_address);
+        let artifact_address = std::env::var("ARTIFACT_ADDRESS").unwrap();
+        let artifact_address = Address::from_str(&artifact_address).unwrap();
+        info!("Artifact address: {:?}", artifact_address);
 
-            let contract = ArtifactManager::new(contract_addr, &client.provider);
-            let call = contract.isArtifactActive(artifact_address);
+        let contract = ArtifactManager::new(contract_addr, &client.provider);
+        let call = contract.isArtifactActive(artifact_address);
 
-            match call.call().await {
-                Ok(_) => {
-                    info!("Artifact is active");
-                }
-                Err(e) => {
-                    if let Some(data) = e.as_revert_data() {
-                        info!("Revert data: 0x{}", alloy::primitives::hex::encode(data));
-                    } else {
-                        info!("Other error: {e:?}");
-                    }
-                    return;
-                }
+        match call.call().await {
+            Ok(_) => {
+                info!("Artifact is active");
             }
-
-            let artifacts = vec![artifact_address];
-            let revenues = vec![U256::from(100)];
-            let timestamp = Utc::now().timestamp() - 60;
-            let timestamps = vec![U256::from(timestamp)];
-            match client.batch_report_artifact_revenue(artifacts, revenues, timestamps).await {
-                Ok(tx_hash) => {
-                    info!("ContractClient: Batch revenue report submitted with tx hash: {:?}", tx_hash);
-                    assert!(!tx_hash.is_zero());
-                },
-                Err(e) => {
-                    info!("Failed to submit revenue report: {:?}", e);
+            Err(e) => {
+                if let Some(data) = e.as_revert_data() {
+                    info!("Revert data: 0x{}", alloy::primitives::hex::encode(data));
+                } else {
+                    info!("Other error: {e:?}");
                 }
+                return;
             }
+        }
 
-
-            
+        let artifacts = vec![artifact_address];
+        let revenues = vec![U256::from(100)];
+        let timestamp = Utc::now().timestamp() - 60;
+        let timestamps = vec![U256::from(timestamp)];
+        match client.batch_report_artifact_revenue(artifacts, revenues, timestamps).await {
+            Ok(tx_hash) => {
+                info!("ContractClient: Batch revenue report submitted with tx hash: {:?}", tx_hash);
+                assert!(!tx_hash.is_zero());
+            },
+            Err(e) => {
+                info!("Failed to submit revenue report: {:?}", e);
+            }
+        }            
     }
 }
