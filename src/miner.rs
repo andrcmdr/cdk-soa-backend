@@ -51,7 +51,18 @@ impl APIMiner {
     }
 
     /// Fetch revenue and usage data from external API with pagination support
-    async fn fetch_data(&self, start_at: i64, end_at: i64) -> Result<Vec<BackendData>> {
+    pub async fn fetch_data(&self, start_at: i64, end_at: i64) -> Result<Vec<BackendData>> {
+        Self::fetch_data_from_api(&self.http_client, &self.api_key, &self.api_url, start_at, end_at).await
+    }
+
+    /// Standalone function to fetch data from API (useful for testing)
+    pub async fn fetch_data_from_api(
+        http_client: &Client,
+        api_key: &str,
+        api_url: &str,
+        start_at: i64,
+        end_at: i64,
+    ) -> Result<Vec<BackendData>> {
         let mut all_data = Vec::new();
         let mut page = 1;
         let page_size = 100; // Current page size
@@ -61,14 +72,20 @@ impl APIMiner {
             info!("Fetching data from backend API - page: {}", page);
             
             let url = format!("{}?page={}&limit={}&start_at={}&end_at={}", 
-                self.api_url, page, page_size, start_at, end_at);
+                api_url, page, page_size, start_at, end_at);
+
+            info!("Fetching data from backend API - url: {}", url);
             
-            let response = self.http_client
+            let mut request = http_client
                 .get(&url)
-                .header("Authorization", format!("Bearer {}", self.api_key))
-                .header("Content-Type", "application/json")
-                .send()
-                .await?;
+                .header("Content-Type", "application/json");
+            
+            // Only add API key header if provided
+            if !api_key.is_empty() {
+                request = request.header("x-api-key", api_key);
+            }
+            
+            let response = request.send().await?;
 
             if !response.status().is_success() {
                 error!("Failed to fetch data from backend API. Status: {}", response.status());
@@ -142,8 +159,46 @@ impl APIMiner {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+    use reqwest::Client;
+
     #[tokio::test]
-    async fn test_api_miner_creation() {
-        assert!(true);
+    async fn test_fetch_data_from_api() {
+        let _ = tracing_subscriber::fmt()
+            .with_max_level(tracing::Level::INFO)
+            .try_init();
+
+        dotenv::dotenv().ok();
+        if std::env::var("API_URL").is_ok() && std::env::var("API_KEY").is_ok() {
+            let api_url = std::env::var("API_URL").unwrap();
+            let api_key = std::env::var("API_KEY").unwrap();
+            let http_client = Client::new();
+             
+            //  delay is 5 minutes
+            let delay =  300;
+
+            let start_at = chrono::Utc::now().timestamp() - 60 - delay;
+            let end_at = chrono::Utc::now().timestamp() - delay ;
+            let result = APIMiner::fetch_data_from_api(
+                &http_client,
+                &api_key,
+                &api_url,
+                start_at,
+                end_at,
+            ).await;
+            
+            // Just test that it doesn't panic and returns a result
+            match result {
+                Ok(data) => {
+                    info!("Fetched {} items", data.len());
+                    for item in data {
+                        info!("Item: {:?}", item);
+                    }
+                }
+                Err(e) => error!("API test failed (expected in CI): {}", e),
+            }
+        } else {
+            error!("Skipping API test - no API_URL or API_KEY set");
+        }
     }
 }

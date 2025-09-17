@@ -2,7 +2,6 @@ mod api;
 mod config;
 mod db;
 mod types;
-mod mock_data;
 mod validators;
 mod miner;
 mod transaction;
@@ -61,13 +60,13 @@ async fn main() -> Result<()> {
     let db_for_api_miner = db_handle.clone();
     
     // Spawn API miner task
-    let api_miner_handle = tokio::spawn(async move {
-        info!("Starting API miner...");
-        let api_miner = APIMiner::new(db_for_api_miner, 60);
-        if let Err(e) = api_miner.start().await {
-            error!("API miner failed: {}", e);
-        }
-    });
+    // let api_miner_handle = tokio::spawn(async move {
+    //     info!("Starting API miner...");
+    //     let api_miner = APIMiner::new(db_for_api_miner, 60);
+    //     if let Err(e) = api_miner.start().await {
+    //         error!("API miner failed: {}", e);
+    //     }
+    // });
     
     // Start the HTTP server
     let server_handle = tokio::spawn(async move {
@@ -77,14 +76,14 @@ async fn main() -> Result<()> {
     });
     
     // Wait for any of the tasks to complete (they should run indefinitely)
-    tokio::select! {
-        result = api_miner_handle => {
-            error!("API miner task ended: {:?}", result);
-        }
-        result = server_handle => {
-            error!("HTTP server task ended: {:?}", result);
-        }
-    }
+    // tokio::select! {
+    //     result = api_miner_handle => {
+    //         error!("API miner task ended: {:?}", result);
+    //     }
+    //     result = server_handle => {
+    //         error!("HTTP server task ended: {:?}", result);
+    //     }
+    // }
 
 
 
