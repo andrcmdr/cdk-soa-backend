@@ -39,39 +39,69 @@ impl UsageReport {
 
 // These structs would be used to store received data from the backend
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BackendRevenueData {
+pub struct BackendData {
     pub artifact_address: String,
     pub revenue: String,
-    pub timestamp_eff_from: i64,
-    pub timestamp_eff_to: i64,
+    pub usage: String,
+    pub timestamp: i64,
+}
+// pub struct BackendRevenueData {
+//     pub artifact_address: String,
+//     pub revenue: String,
+//     pub timestamp_eff_from: i64,
+//     pub timestamp_eff_to: i64,
+// }
+
+// #[derive(Debug, Clone, Serialize, Deserialize)]
+// pub struct BackendUsageData {
+//     pub artifact_address: String,
+//     pub usage: String,
+//     pub timestamp_eff_from: i64,
+//     pub timestamp_eff_to: i64,
+// }
+
+// impl BackendRevenueData {
+//     pub fn new(artifact_address: String, revenue: String, timestamp_eff_from: i64, timestamp_eff_to: i64) -> Self {
+//         Self { 
+//             artifact_address, 
+//             revenue, 
+//             timestamp_eff_from, 
+//             timestamp_eff_to,
+//         }
+//     }
+// }
+
+// impl BackendUsageData {
+//     pub fn new(artifact_address: String, usage: String, timestamp_eff_from: i64, timestamp_eff_to: i64) -> Self {
+//         Self { 
+//             artifact_address, 
+//             usage, 
+//             timestamp_eff_from, 
+//             timestamp_eff_to
+//         }
+//     }
+// }
+
+// Structs for backend API response format
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BackendApiResponse {
+    pub art_address: String,
+    pub usage: ValueData,
+    pub revenue: ValueData,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BackendUsageData {
-    pub artifact_address: String,
-    pub usage: String,
-    pub timestamp_eff_from: i64,
-    pub timestamp_eff_to: i64,
+pub struct ValueData {
+    pub value: i64,
 }
 
-impl BackendRevenueData {
-    pub fn new(artifact_address: String, revenue: String, timestamp_eff_from: i64, timestamp_eff_to: i64) -> Self {
-        Self { 
-            artifact_address, 
-            revenue, 
-            timestamp_eff_from, 
-            timestamp_eff_to,
-        }
-    }
-}
-
-impl BackendUsageData {
-    pub fn new(artifact_address: String, usage: String, timestamp_eff_from: i64, timestamp_eff_to: i64) -> Self {
-        Self { 
-            artifact_address, 
-            usage, 
-            timestamp_eff_from, 
-            timestamp_eff_to
+impl BackendApiResponse {
+    pub fn to_backend_data(&self, timestamp: i64) -> BackendData {
+        BackendData {
+            artifact_address: self.art_address.clone(),
+            revenue: self.revenue.value.to_string(),
+            usage: self.usage.value.to_string(),
+            timestamp,
         }
     }
 }
