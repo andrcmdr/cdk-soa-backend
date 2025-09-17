@@ -1,43 +1,51 @@
 version: '3.9'
 
 services:
-  # Events Monitor Service
-  events-monitor:
+  # Airdrop Backend Service
+  airdrop-backend:
     build:
       context: .
       dockerfile: cdk-soa-backend.dockerfile
       target: apps_runtime
-    container_name: events_monitor
-    command: ["./events-monitor", "./.config/events_monitor.config.yaml", "./.config/init_table.sql"]
+    container_name: airdrop_backend
+    command: ["./airdrop-backend", "./.config/airdrop_backend.config.yaml"]
     environment:
-      RUST_LOG: debug
-      RUST_BACKTRACE: full
+      - CONFIG_PATH=/apps/.config/airdrop_backend.config.yaml
+      - RUST_LOG=debug
+      - RUST_BACKTRACE=full
     volumes:
-      - ./.config/events_monitor.config.yaml:/apps/.config/events_monitor.config.yaml:ro
-      - ./init_table.sql:/apps/init_table.sql:ro
+      - ./.config/airdrop_backend.config.yaml:/apps/.config/airdrop_backend.config.yaml:ro
       - ./abi/:/apps/abi/:ro
+    ports:
+      - "3000:3000"
     depends_on:
       postgres:
         condition: service_healthy
       nats:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     restart: unless-stopped
     networks:
-      - events-monitor-network
+      - airdrop-network
 
   # PostgreSQL Database
   postgres:
     image: postgres:17
-    container_name: events_monitor_postgres
+    container_name: airdrop_postgres
     environment:
-      POSTGRES_DB: events_monitor_db
-      POSTGRES_USER: postgres
+      POSTGRES_DB: airdrop_db
+      POSTGRES_USER: airdrop_user
       POSTGRES_PASSWORD_FILE: /run/secrets/pg-passwd
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ./.secret/pg-passwd:/run/secrets/pg-passwd:ro
       - ./.pgdata/:/var/lib/postgresql/data/pgdata/
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./initial_schema.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "5432:5432"
     healthcheck:
@@ -47,7 +55,7 @@ services:
       retries: 5
     restart: unless-stopped
     networks:
-      - events-monitor-network
+      - airdrop-network
 
   # NATS with JetStream
   nats:
@@ -55,7 +63,7 @@ services:
       context: .
       dockerfile: cdk-soa-backend.dockerfile
       target: apps_runtime
-    container_name: events_monitor_nats
+    container_name: airdrop_nats
     command: ["CMD", "./nats-server --name 'events_monitor_bus_nats_server' --addr 127.0.0.1 --port 4222 --http_port 4242 --config ./.config/nats.config --log_size_limit 1073741824 --jetstream"]
     volumes:
       - ./.natsdata/:/apps/nats.db/
@@ -73,7 +81,7 @@ services:
       retries: 3
     restart: unless-stopped
     networks:
-      - events-monitor-network
+      - airdrop-network
 
 volumes:
   .pgdata:
@@ -82,8 +90,8 @@ volumes:
     driver: local
 
 networks:
-  events-monitor-network:
+  airdrop-network:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.22.0.0/16
+        - subnet: 172.20.0.0/16

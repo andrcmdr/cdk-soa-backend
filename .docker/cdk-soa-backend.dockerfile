@@ -97,7 +97,7 @@ EOF
 
 
 # Stage 3: Runtime
-FROM debian:testing-slim AS events_monitor_app
+FROM debian:testing-slim AS apps_runtime
 
 ENV SHELL="/usr/bin/env bash"
 
