@@ -10,7 +10,12 @@ blockchain:
   rpc_url: "https://rpc.polygon-cdk-chain.example"
   contract_address: "0x1234567890123456789012345678901234567890"
   chain_id: 1
-  abi_path: "abi/AirdropContract.json"
+  # Contract interface configuration
+  contract_interface:
+    # Options: "json_abi" or "inline_sol"
+    type: "json_abi"
+    # Main contract interface definitions as ABI in JSON format
+    abi_path: "abi/AirdropContract.json"
 
 aws:
   region: "us-east-1"

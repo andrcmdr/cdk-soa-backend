@@ -66,6 +66,10 @@ async fn create_app(service: Arc<AirdropService>) -> Router {
         .route("/api/v1/processing-logs", get(handlers::get_processing_logs))
         .route("/api/v1/processing-logs/:round_id", get(handlers::get_round_processing_logs))
         .route("/api/v1/rounds/:round_id", delete(handlers::delete_round))
+        .route("/api/v1/contract/info", get(handlers::get_contract_info))
+        .route("/api/v1/rounds/:round_id/active", get(handlers::check_round_active))
+        .route("/api/v1/rounds/:round_id/metadata", get(handlers::get_round_metadata))
+        .route("/api/v1/rounds/:round_id/validate-consistency", get(handlers::validate_consistency))
         .with_state(service)
         .layer(
             ServiceBuilder::new()

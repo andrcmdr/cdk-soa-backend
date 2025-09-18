@@ -30,7 +30,21 @@ pub struct BlockchainConfig {
     pub rpc_url: String,
     pub contract_address: String,
     pub chain_id: u64,
-    pub abi_path: String,
+    pub contract_interface: ContractInterfaceConfig,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ContractInterfaceConfig {
+    #[serde(rename = "type")]
+    pub interface_type: ContractInterfaceType,
+    pub abi_path: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ContractInterfaceType {
+    JsonAbi,
+    InlineSol,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -69,10 +83,22 @@ impl Config {
         Ok(())
     }
 
-    pub async fn load_contract_abi(&self) -> Result<JsonAbi> {
-        let abi_content = tokio::fs::read_to_string(&self.blockchain.abi_path).await?;
-        let abi: JsonAbi = serde_json::from_str(&abi_content)?;
-        Ok(abi)
+    pub async fn load_contract_abi(&self) -> Result<Option<JsonAbi>> {
+        match self.blockchain.contract_interface.interface_type {
+            ContractInterfaceType::JsonAbi => {
+                if let Some(abi_path) = &self.blockchain.contract_interface.abi_path {
+                    let abi_content = tokio::fs::read_to_string(abi_path).await?;
+                    let abi: JsonAbi = serde_json::from_str(&abi_content)?;
+                    Ok(Some(abi))
+                } else {
+                    Err(anyhow::anyhow!("ABI path is required for json_abi interface type"))
+                }
+            }
+            ContractInterfaceType::InlineSol => {
+                // Return None for inline sol usage
+                Ok(None)
+            }
+        }
     }
 
     pub fn needs_key_generation(&self) -> bool {
@@ -81,5 +107,9 @@ impl Config {
 
     pub fn set_encrypted_private_key(&mut self, encrypted_key: String) {
         self.wallet.encrypted_private_key = encrypted_key;
+    }
+
+    pub fn uses_inline_sol(&self) -> bool {
+        matches!(self.blockchain.contract_interface.interface_type, ContractInterfaceType::InlineSol)
     }
 }

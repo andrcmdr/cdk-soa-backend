@@ -12,6 +12,7 @@ use alloy_primitives::{Address, U256};
 use crate::service::AirdropService;
 use crate::error::{AppError, AppResult};
 use crate::database::ProcessingLog;
+use crate::contract_client::RoundMetadata;
 
 #[derive(Serialize, Deserialize)]
 pub struct VerifyEligibilityRequest {
@@ -42,6 +43,26 @@ pub struct RoundStatistics {
     pub round_id: u32,
     pub entry_count: i32,
     pub last_updated: String,
+}
+
+#[derive(Serialize)]
+pub struct ContractInfoResponse {
+    pub contract_address: String,
+    pub contract_version: String,
+    pub round_count: String,
+    pub interface_type: String,
+}
+
+#[derive(Serialize)]
+pub struct RoundMetadataResponse {
+    pub round_id: String,
+    pub root_hash: String,
+    pub total_eligible: String,
+    pub total_amount: String,
+    pub start_time: String,
+    pub end_time: String,
+    pub is_active: bool,
+    pub metadata_uri: String,
 }
 
 #[derive(Deserialize)]
@@ -237,5 +258,67 @@ pub async fn delete_round(
         "success": true,
         "message": format!("Round {} deleted successfully", round_id),
         "round_id": round_id
+    })))
+}
+
+// New contract information endpoints
+pub async fn get_contract_info(
+    State(service): State<Arc<AirdropService>>,
+) -> AppResult<Json<ContractInfoResponse>> {
+    let contract_version = service.get_contract_version().await?;
+    let round_count = service.get_round_count().await?;
+
+    Ok(Json(ContractInfoResponse {
+        contract_address: format!("0x{}", hex::encode(service.get_contract_address())),
+        contract_version,
+        round_count: round_count.to_string(),
+        interface_type: service.get_contract_interface_type().to_string(),
+    }))
+}
+
+pub async fn check_round_active(
+    Path(round_id): Path<u32>,
+    State(service): State<Arc<AirdropService>>,
+) -> AppResult<Json<serde_json::Value>> {
+    let is_active = service.is_round_active(round_id).await?;
+
+    Ok(Json(json!({
+        "round_id": round_id,
+        "is_active": is_active
+    })))
+}
+
+pub async fn get_round_metadata(
+    Path(round_id): Path<u32>,
+    State(service): State<Arc<AirdropService>>,
+) -> AppResult<Json<RoundMetadataResponse>> {
+    let metadata = service.get_round_metadata(round_id).await?;
+
+    Ok(Json(RoundMetadataResponse {
+        round_id: metadata.round_id.to_string(),
+        root_hash: format!("0x{}", hex::encode(metadata.root_hash)),
+        total_eligible: metadata.total_eligible.to_string(),
+        total_amount: metadata.total_amount.to_string(),
+        start_time: metadata.start_time.to_string(),
+        end_time: metadata.end_time.to_string(),
+        is_active: metadata.is_active,
+        metadata_uri: metadata.metadata_uri,
+    }))
+}
+
+pub async fn validate_consistency(
+    Path(round_id): Path<u32>,
+    State(service): State<Arc<AirdropService>>,
+) -> AppResult<Json<serde_json::Value>> {
+    let is_consistent = service.validate_on_chain_consistency(round_id).await?;
+
+    Ok(Json(json!({
+        "round_id": round_id,
+        "is_consistent": is_consistent,
+        "message": if is_consistent {
+            "Local trie root matches on-chain root"
+        } else {
+            "Local trie root does not match on-chain root"
+        }
     })))
 }

@@ -7,7 +7,7 @@ use crate::config::Config;
 use crate::database::{Database, TrieState, EligibilityRecord, ProcessingLog};
 use crate::merkle_trie::MerklePatriciaTrie;
 use crate::csv_processor::CsvProcessor;
-use crate::contract_client::ContractClient;
+use crate::contract_client::{ContractClient, RoundMetadata};
 use crate::encryption::KmsEnvelopeEncryption;
 use crate::nats_storage::{NatsObjectStorage, StoredTrieData, TrieMetadata};
 use crate::error::{AppError, AppResult};
@@ -55,11 +55,6 @@ impl AirdropService {
                 .map_err(|e| AppError::Encryption(format!("Failed to decrypt private key: {}", e)))?
         };
 
-        // Load contract ABI
-        let abi = config.load_contract_abi()
-            .await
-            .map_err(|e| AppError::Internal(anyhow::anyhow!("Failed to load contract ABI: {}", e)))?;
-
         // Initialize components
         let database = Database::new(&config.database.url)
             .await
@@ -72,7 +67,7 @@ impl AirdropService {
             &config.blockchain.rpc_url,
             contract_address,
             &private_key,
-            abi,
+            &config,
         ).await?;
 
         let nats_storage = NatsObjectStorage::new(
@@ -382,5 +377,30 @@ impl AirdropService {
 
         info!("Deleted all data for round {}", round_id);
         Ok(())
+    }
+
+    // New contract metadata functions
+    pub async fn get_contract_version(&self) -> AppResult<String> {
+        self.contract_client.get_contract_version().await
+    }
+
+    pub async fn get_round_count(&self) -> AppResult<U256> {
+        self.contract_client.get_round_count().await
+    }
+
+    pub async fn is_round_active(&self, round_id: u32) -> AppResult<bool> {
+        self.contract_client.is_round_active(round_id).await
+    }
+
+    pub async fn get_round_metadata(&self, round_id: u32) -> AppResult<RoundMetadata> {
+        self.contract_client.get_round_metadata(round_id).await
+    }
+
+    pub fn get_contract_interface_type(&self) -> &str {
+        self.contract_client.get_interface_type()
+    }
+
+    pub fn get_contract_address(&self) -> Address {
+        self.contract_client.get_contract_address()
     }
 }

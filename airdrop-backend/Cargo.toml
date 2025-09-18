@@ -45,6 +45,8 @@ tower = "0.5.1"
 tower-http = { version = "0.6.2", features = ["fs", "cors"] }
 
 openssl = { version = "0.10", features = ["vendored"] }
+chrono = "0.4"
+bincode = "2.0"
 
 # NATS
 async-nats = "0.42.0"
@@ -63,7 +65,7 @@ base64 = "0.22.1"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
 
 # Multipart for file uploads
-axum-typed-multipart = "0.12.2"
+axum_typed_multipart = "0.12.2"
 
 # Error handling
 thiserror = "1.0.69"
