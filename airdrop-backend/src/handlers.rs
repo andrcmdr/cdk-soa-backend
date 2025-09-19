@@ -1,13 +1,15 @@
 use axum::{
     extract::{Path, State, Multipart, Query},
     response::Json,
-    http::StatusCode,
+    http::{StatusCode, header},
+    body::Body,
+    response::{Response, IntoResponse},
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::sync::Arc;
 use std::collections::HashMap;
-use alloy_primitives::{Address, U256};
+use alloy_primitives::{Address, U256, B256};
 
 use crate::service::AirdropService;
 use crate::error::{AppError, AppResult};
@@ -27,6 +29,41 @@ pub struct VerifyEligibilityResponse {
     pub round_id: u32,
     pub address: String,
     pub amount: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct EligibilityDataJson {
+    pub eligibility: HashMap<String, String>, // address -> amount as strings
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct TrieDataRequest {
+    pub round_id: u32,
+    pub root_hash: String,
+    pub trie_data: String,
+    pub format: String, // "hex", "base64", or "json"
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct TrieDataResponse {
+    pub round_id: u32,
+    pub root_hash: String,
+    pub trie_data: String,
+    pub format: String,
+    pub merkle_proofs: HashMap<String, Vec<String>>, // address -> proof
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ExternalDataRequest {
+    pub external_url: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ComparisonResult {
+    pub matches: bool,
+    pub local_root_hash: String,
+    pub external_root_hash: String,
+    pub differences: Vec<String>,
 }
 
 #[derive(Serialize)]
@@ -68,6 +105,11 @@ pub struct RoundMetadataResponse {
 #[derive(Deserialize)]
 pub struct LogsQuery {
     pub round_id: Option<u32>,
+}
+
+#[derive(Deserialize)]
+pub struct FormatQuery {
+    pub format: Option<String>, // "json", "hex", "base64"
 }
 
 pub async fn health_check() -> Json<serde_json::Value> {
@@ -118,6 +160,206 @@ pub async fn upload_csv(
         "message": format!("CSV data processed for round {}", round_id),
         "round_id": round_id,
         "data_size_bytes": csv_data.len()
+    })))
+}
+
+pub async fn download_csv(
+    Path(round_id): Path<u32>,
+    State(service): State<Arc<AirdropService>>,
+) -> AppResult<Response<Body>> {
+    let csv_data = service.get_round_csv_data(round_id).await?;
+
+    let response = Response::builder()
+        .status(StatusCode::OK)
+        .header(header::CONTENT_TYPE, "text/csv")
+        .header(header::CONTENT_DISPOSITION,
+                format!("attachment; filename=\"round_{}_eligibility.csv\"", round_id))
+        .body(Body::from(csv_data))
+        .map_err(|e| AppError::Internal(anyhow::anyhow!("Failed to create response: {}", e)))?;
+
+    Ok(response)
+}
+
+pub async fn upload_json_eligibility(
+    Path(round_id): Path<u32>,
+    State(service): State<Arc<AirdropService>>,
+    Json(payload): Json<EligibilityDataJson>,
+) -> AppResult<Json<serde_json::Value>> {
+    // Convert string addresses and amounts to proper types
+    let mut eligibility_data = HashMap::new();
+    for (address_str, amount_str) in payload.eligibility {
+        let address: Address = address_str.parse()
+            .map_err(|e| AppError::InvalidInput(format!("Invalid address '{}': {}", address_str, e)))?;
+
+        let amount: U256 = amount_str.parse()
+            .map_err(|e| AppError::InvalidInput(format!("Invalid amount '{}': {}", amount_str, e)))?;
+
+        eligibility_data.insert(address, amount);
+    }
+
+    service.process_json_eligibility_data(eligibility_data, round_id).await?;
+
+    Ok(Json(json!({
+        "success": true,
+        "message": format!("JSON eligibility data processed for round {}", round_id),
+        "round_id": round_id
+    })))
+}
+
+pub async fn download_json_eligibility(
+    Path(round_id): Path<u32>,
+    State(service): State<Arc<AirdropService>>,
+) -> AppResult<Json<EligibilityDataJson>> {
+    let eligibility_data = service.get_round_eligibility_records(round_id).await?;
+
+    // Convert to string format for JSON
+    let mut string_data = HashMap::new();
+    for (address, amount) in eligibility_data {
+        string_data.insert(format!("0x{}", hex::encode(address)), amount.to_string());
+    }
+
+    Ok(Json(EligibilityDataJson {
+        eligibility: string_data,
+    }))
+}
+
+pub async fn download_trie_data(
+    Path(round_id): Path<u32>,
+    Query(params): Query<FormatQuery>,
+    State(service): State<Arc<AirdropService>>,
+) -> AppResult<Json<TrieDataResponse>> {
+    let format = params.format.unwrap_or_else(|| "json".to_string());
+
+    let trie_state = service.get_trie_info(round_id).await?
+        .ok_or_else(|| AppError::NotFound(format!("No trie data found for round {}", round_id)))?;
+
+    // Generate merkle proofs for all addresses
+    let eligibility_data = service.get_round_eligibility_records(round_id).await?;
+    let mut merkle_proofs = HashMap::new();
+
+    for address in eligibility_data.keys() {
+        match service.get_merkle_proof_for_address(round_id, *address).await {
+            Ok(proof) => {
+                let proof_strings: Vec<String> = proof.iter()
+                    .map(|p| format!("0x{}", hex::encode(p)))
+                    .collect();
+                merkle_proofs.insert(format!("0x{}", hex::encode(address)), proof_strings);
+            }
+            Err(e) => {
+                tracing::warn!("Failed to generate proof for address {}: {}", address, e);
+            }
+        }
+    }
+
+    let trie_data_formatted = match format.as_str() {
+        "hex" => format!("0x{}", hex::encode(&trie_state.trie_data)),
+        "base64" => base64::encode(&trie_state.trie_data),
+        "json" => serde_json::to_string(&trie_state.trie_data)
+            .map_err(|e| AppError::Serialization(e))?,
+        _ => return Err(AppError::InvalidInput(format!("Unsupported format: {}", format)))
+    };
+
+    Ok(Json(TrieDataResponse {
+        round_id,
+        root_hash: format!("0x{}", hex::encode(trie_state.root_hash)),
+        trie_data: trie_data_formatted,
+        format,
+        merkle_proofs,
+    }))
+}
+
+pub async fn upload_and_compare_trie_data(
+    Path(round_id): Path<u32>,
+    State(service): State<Arc<AirdropService>>,
+    Json(payload): Json<TrieDataRequest>,
+) -> AppResult<Json<ComparisonResult>> {
+    if payload.round_id != round_id {
+        return Err(AppError::InvalidInput("Round ID mismatch".to_string()));
+    }
+
+    // Parse external root hash
+    let external_root_hash = if payload.root_hash.starts_with("0x") {
+        B256::from_slice(&hex::decode(&payload.root_hash[2..])
+            .map_err(|e| AppError::InvalidInput(format!("Invalid root hash hex: {}", e)))?)
+    } else {
+        B256::from_slice(&hex::decode(&payload.root_hash)
+            .map_err(|e| AppError::InvalidInput(format!("Invalid root hash hex: {}", e)))?)
+    };
+
+    // Parse external trie data based on format
+    let external_trie_data = match payload.format.as_str() {
+        "hex" => {
+            if payload.trie_data.starts_with("0x") {
+                hex::decode(&payload.trie_data[2..])
+                    .map_err(|e| AppError::InvalidInput(format!("Invalid hex data: {}", e)))?
+            } else {
+                hex::decode(&payload.trie_data)
+                    .map_err(|e| AppError::InvalidInput(format!("Invalid hex data: {}", e)))?
+            }
+        }
+        "base64" => {
+            base64::decode(&payload.trie_data)
+                .map_err(|e| AppError::InvalidInput(format!("Invalid base64 data: {}", e)))?
+        }
+        "json" => {
+            let json_data: Vec<u8> = serde_json::from_str(&payload.trie_data)
+                .map_err(|e| AppError::InvalidInput(format!("Invalid JSON data: {}", e)))?;
+            json_data
+        }
+        _ => return Err(AppError::InvalidInput(format!("Unsupported format: {}", payload.format)))
+    };
+
+    // Compare with local data
+    let matches = service.compare_external_trie_data(round_id, &external_trie_data, external_root_hash).await?;
+
+    // Get local data for comparison details
+    let local_trie_state = service.get_trie_info(round_id).await?
+        .ok_or_else(|| AppError::NotFound(format!("No local trie data found for round {}", round_id)))?;
+
+    let mut differences = Vec::new();
+    if local_trie_state.root_hash != external_root_hash {
+        differences.push("Root hash mismatch".to_string());
+    }
+    if local_trie_state.trie_data != external_trie_data {
+        differences.push("Trie data mismatch".to_string());
+    }
+
+    Ok(Json(ComparisonResult {
+        matches,
+        local_root_hash: format!("0x{}", hex::encode(local_trie_state.root_hash)),
+        external_root_hash: format!("0x{}", hex::encode(external_root_hash)),
+        differences,
+    }))
+}
+
+pub async fn fetch_external_data_and_update(
+    Path(round_id): Path<u32>,
+    State(service): State<Arc<AirdropService>>,
+    Json(payload): Json<ExternalDataRequest>,
+) -> AppResult<Json<serde_json::Value>> {
+    service.fetch_and_update_from_external(round_id, &payload.external_url).await?;
+
+    Ok(Json(json!({
+        "success": true,
+        "message": format!("Successfully updated round {} with external data", round_id),
+        "round_id": round_id,
+        "external_url": payload.external_url
+    })))
+}
+
+pub async fn fetch_and_compare_external_trie(
+    Path(round_id): Path<u32>,
+    State(service): State<Arc<AirdropService>>,
+    Json(payload): Json<ExternalDataRequest>,
+) -> AppResult<Json<serde_json::Value>> {
+    let matches = service.fetch_and_compare_external_trie(round_id, &payload.external_url).await?;
+
+    Ok(Json(json!({
+        "success": true,
+        "comparison_result": matches,
+        "message": if matches { "Trie data matches" } else { "Trie data differs" },
+        "round_id": round_id,
+        "external_url": payload.external_url
     })))
 }
 
@@ -261,7 +503,7 @@ pub async fn delete_round(
     })))
 }
 
-// New contract information endpoints
+// Contract information endpoints
 pub async fn get_contract_info(
     State(service): State<Arc<AirdropService>>,
 ) -> AppResult<Json<ContractInfoResponse>> {

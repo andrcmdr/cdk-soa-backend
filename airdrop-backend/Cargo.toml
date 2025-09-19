@@ -1,6 +1,6 @@
 [package]
 name = "airdrop-backend"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 
 [dependencies]
@@ -44,9 +44,8 @@ axum-macros = "0.4.2"
 tower = "0.5.1"
 tower-http = { version = "0.6.2", features = ["fs", "cors"] }
 
-openssl = { version = "0.10", features = ["vendored"] }
-chrono = "0.4"
-bincode = "2.0"
+# HTTP client
+reqwest = { version = "0.12.23", features = ["json", "stream"] }
 
 # NATS
 async-nats = "0.42.0"
@@ -72,6 +71,15 @@ thiserror = "1.0.69"
 
 # Secp256k1 for key generation
 secp256k1 = { version = "0.29.0", features = ["rand-std"] }
+
+# SHA-256 hashing
+sha2 = "0.10.8"
+
+openssl = { version = "0.10", features = ["vendored"] }
+chrono = "0.4"
+
+# Binary encoding
+bincode = "2.0"
 
 [profile.release]
 strip = true

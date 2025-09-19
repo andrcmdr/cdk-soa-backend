@@ -22,6 +22,7 @@ mod handlers;
 mod encryption;
 mod nats_storage;
 mod error;
+mod external_client;
 
 use crate::config::Config;
 use crate::service::AirdropService;
@@ -56,7 +57,19 @@ async fn main() -> Result<()> {
 async fn create_app(service: Arc<AirdropService>) -> Router {
     Router::new()
         .route("/health", get(handlers::health_check))
+        // CSV endpoints
         .route("/api/v1/upload-csv", post(handlers::upload_csv))
+        .route("/api/v1/download-csv/:round_id", get(handlers::download_csv))
+        // JSON eligibility endpoints
+        .route("/api/v1/upload-json-eligibility/:round_id", post(handlers::upload_json_eligibility))
+        .route("/api/v1/download-json-eligibility/:round_id", get(handlers::download_json_eligibility))
+        // Trie data endpoints
+        .route("/api/v1/download-trie-data/:round_id", get(handlers::download_trie_data))
+        .route("/api/v1/upload-compare-trie/:round_id", post(handlers::upload_and_compare_trie_data))
+        // External data endpoints
+        .route("/api/v1/fetch-external-data/:round_id", post(handlers::fetch_external_data_and_update))
+        .route("/api/v1/compare-external-trie/:round_id", post(handlers::fetch_and_compare_external_trie))
+        // Original endpoints
         .route("/api/v1/update-trie/:round_id", post(handlers::update_trie))
         .route("/api/v1/submit-trie/:round_id", post(handlers::submit_trie))
         .route("/api/v1/verify-eligibility", post(handlers::verify_eligibility))
@@ -66,6 +79,7 @@ async fn create_app(service: Arc<AirdropService>) -> Router {
         .route("/api/v1/processing-logs", get(handlers::get_processing_logs))
         .route("/api/v1/processing-logs/:round_id", get(handlers::get_round_processing_logs))
         .route("/api/v1/rounds/:round_id", delete(handlers::delete_round))
+        // Contract endpoints
         .route("/api/v1/contract/info", get(handlers::get_contract_info))
         .route("/api/v1/rounds/:round_id/active", get(handlers::check_round_active))
         .route("/api/v1/rounds/:round_id/metadata", get(handlers::get_round_metadata))

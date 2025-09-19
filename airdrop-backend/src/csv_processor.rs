@@ -1,5 +1,5 @@
 use anyhow::Result;
-use csv::ReaderBuilder;
+use csv::{ReaderBuilder, WriterBuilder};
 use alloy_primitives::{Address, U256};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -37,6 +37,31 @@ impl CsvProcessor {
         }
 
         Ok(eligibility_data)
+    }
+
+    pub fn generate_csv_bytes(eligibility_data: &HashMap<Address, U256>) -> AppResult<Vec<u8>> {
+        let mut writer = WriterBuilder::new()
+            .has_headers(true)
+            .from_writer(Vec::new());
+
+        // Write header
+        writer.write_record(&["address", "amount"])
+            .map_err(|e| AppError::CsvProcessing(e))?;
+
+        // Write data
+        for (address, amount) in eligibility_data {
+            let record = EligibilityRow {
+                address: format!("0x{}", hex::encode(address)),
+                amount: amount.to_string(),
+            };
+            writer.serialize(&record)
+                .map_err(|e| AppError::CsvProcessing(e))?;
+        }
+
+        let csv_data = writer.into_inner()
+            .map_err(|e| AppError::CsvProcessing(e))?;
+
+        Ok(csv_data)
     }
 
     pub fn validate_csv_data(data: &HashMap<Address, U256>) -> AppResult<()> {
