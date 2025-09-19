@@ -153,4 +153,14 @@ impl Database {
         Ok(())
     }
 
+    /// Mark usage reports as submitted to blockchain
+    pub async fn mark_usage_reports_submitted(&self, ids: Vec<i32>) -> Result<()> {
+        self.update_usage_report_submitted_to_chain(ids).await
+    }
+
+    /// Mark revenue reports as submitted to blockchain
+    pub async fn mark_revenue_reports_submitted(&self, ids: Vec<i32>) -> Result<()> {
+        self.update_revenue_report_submitted_to_chain(ids).await
+    }
+
 }
