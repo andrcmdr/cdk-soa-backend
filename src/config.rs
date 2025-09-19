@@ -1,13 +1,15 @@
 use anyhow::Result;
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Config {
     pub database: DatabaseConfig,
     pub service: ServiceConfig,
+    pub mining: MiningConfig,
+    pub contract: ContractConfig,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct DatabaseConfig {
     pub host: String,
     pub port: u16,
@@ -16,11 +18,23 @@ pub struct DatabaseConfig {
     pub password: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct ServiceConfig {
     pub host: String,
     pub port: u16,
     pub log_level: String,
+}
+
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct MiningConfig {
+    pub mining_interval_seconds: u64,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct ContractConfig {
+    pub batch_size: i32,
+    pub batch_interval_seconds: u64,
 }
 
 impl Config {
@@ -47,5 +61,42 @@ impl Config {
             self.database.port,
             self.database.name
         )
+    }
+
+    /// Load blockchain RPC URL from environment variable
+    pub fn blockchain_rpc_url(&self) -> Result<String> {
+        std::env::var("RPC_URL")
+            .map_err(|_| anyhow::anyhow!("RPC_URL environment variable not set"))
+    }
+
+    /// Load blockchain private key from environment variable
+    pub fn blockchain_private_key(&self) -> Result<String> {
+        std::env::var("PRIVATE_KEY")
+            .map_err(|_| anyhow::anyhow!("PRIVATE_KEY environment variable not set"))
+    }
+
+    /// Load blockchain contract address from environment variable
+    pub fn blockchain_contract_address(&self) -> Result<String> {
+        std::env::var("CONTRACT_ADDRESS")
+            .map_err(|_| anyhow::anyhow!("CONTRACT_ADDRESS environment variable not set"))
+    }
+
+    /// Load mining API URL from environment variable
+    pub fn mining_api_url(&self) -> Result<String> {
+        std::env::var("API_URL")
+            .map_err(|_| anyhow::anyhow!("API_URL environment variable not set"))
+    }
+
+    /// Load mining API key from environment variable
+    pub fn mining_api_key(&self) -> Result<String> {
+        std::env::var("API_KEY")
+            .map_err(|_| anyhow::anyhow!("API_KEY environment variable not set"))
+    }
+
+    /// Load blockchain chain ID from environment variable
+    pub fn blockchain_chain_id(&self) -> Result<u64> {
+        std::env::var("CHAIN_ID")
+            .map_err(|_| anyhow::anyhow!("CHAIN_ID environment variable not set"))
+            .and_then(|id| id.parse::<u64>().map_err(|e| anyhow::anyhow!("Invalid CHAIN_ID: {}", e)))
     }
 }

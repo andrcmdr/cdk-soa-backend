@@ -1,0 +1,26 @@
+# Oracle Service Configuration
+
+[database]
+# Placeholder configuration. Should be changed for deployment
+host = "db"
+port = 5432
+name = "oracle_service"
+user = "oracle_user"
+password = "oracle_password"
+
+[service]
+host = "0.0.0.0"
+port = 8080
+log_level = "info"
+
+[blockchain]
+# Sensitive data loaded from environment variables: RPC_URL, PRIVATE_KEY, CONTRACT_ADDRESS, CHAIN_ID
+
+[mining]
+# Sensitive data loaded from environment variables: API_URL, API_KEY
+mining_interval_seconds = 300
+
+[contract]
+# Contract interaction configuration
+batch_size = 100
+batch_interval_seconds = 600
