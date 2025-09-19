@@ -27,6 +27,7 @@ docker compose up --build
 
 docker pull postgres:17
 docker pull nats:2-scratch
+DOCKER_BUILDKIT=1 docker build --no-cache -f ./cdk-soa-backend.dockerfile -t "cdk-soa-backend" ./
 
 mkdir -vp ./.secret/; pwgen -1cnys 20 1 | tr -d "\n" > ./.secret/pg-passwd
 docker stop postgres_17 ; docker rm postgres_17
@@ -42,7 +43,7 @@ docker run --name abi-fetcher -v ./.events_data/contracts_abi/:/apps/contracts_a
 docker cp abi-fetcher:/apps/contracts_abi/ ./.events_data/
 
 docker stop contracts-fetcher; docker rm contracts-fetcher
-docker run --name contracts-fetcher -v ./.events_data/contracts/:/apps/contracts/ -v ./.config/json_rpc_fetcher.config.yaml:/apps/.config/json_rpc_fetcher.config.yaml:ro cdk-soa-backend ./json-rpc-fetcher ./.config/json_rpc_fetcher.config.yaml
+docker run --name contracts-fetcher -v ./.events_data/contracts/:/apps/contracts/ -v ./.config/contracts_fetcher.config.yaml:/apps/.config/contracts_fetcher.config.yaml:ro cdk-soa-backend ./conracts-fetcher ./.config/contracts_fetcher.config.yaml
 docker cp contracts-fetcher:/apps/contracts/ ./.events_data/
 
 docker stop events_monitor; docker rm events_monitor

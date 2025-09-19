@@ -35,14 +35,15 @@ set -f
 
 cd /app-builder/cdk-soa-backend
 # git checkout v${VERSION}
-cargo build --release --all
+# cargo build --release --all
+cargo build --all
 mv -T /app-builder/cdk-soa-backend/target/release/events-monitor /app-builder/events-monitor
 mv -T /app-builder/cdk-soa-backend/events-monitor/.config/events_monitor.config.yaml /app-builder/.config/events_monitor.config.yaml
 mv -T /app-builder/cdk-soa-backend/target/release/abi-fetcher /app-builder/abi-fetcher
 mv -T /app-builder/cdk-soa-backend/abi-fetcher/.config/abi_fetcher.config.yaml /app-builder/.config/abi_fetcher.config.yaml
 cp -vrf /app-builder/cdk-soa-backend/events-monitor/abi/ -T /app-builder/abi/
-mv -T /app-builder/cdk-soa-backend/target/release/json-rpc-fetcher /app-builder/json-rpc-fetcher
-mv -T /app-builder/cdk-soa-backend/abi-fetcher/.config/json_rpc_fetcher.config.yaml /app-builder/.config/json_rpc_fetcher.config.yaml
+mv -T /app-builder/cdk-soa-backend/target/release/contracts-fetcher /app-builder/contracts-fetcher
+mv -T /app-builder/cdk-soa-backend/abi-fetcher/.config/contracts_fetcher.config.yaml /app-builder/.config/contracts_fetcher.config.yaml
 EOF
 
 # COPY --link abi-fetcher/abi/ /app-builder/abi/
@@ -61,8 +62,11 @@ WORKDIR /app-builder
 
 RUN mkdir -vp /app-builder
 
-RUN wget -c --trust-server-names --content-disposition https://go.dev/dl/go1.25.1.linux-amd64.tar.gz
-RUN rm -rf /opt/go && tar -C /opt/ -xzf go1.25.1.linux-amd64.tar.gz
+ARG GO_VERSION=1.25.1
+ENV GO_VERSION=${GO_VERSION}
+
+RUN wget -c --trust-server-names --content-disposition https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
+RUN rm -rf /opt/go && tar -C /opt/ -xzf go${GO_VERSION}.linux-amd64.tar.gz
 
 ENV PATH="$PATH:/opt/go/bin"
 
@@ -107,8 +111,8 @@ COPY --from=rust_builder /app-builder/.config/events_monitor.config.yaml /apps/.
 COPY --from=rust_builder /app-builder/abi-fetcher /apps/abi-fetcher
 COPY --from=rust_builder /app-builder/.config/abi_fetcher.config.yaml /apps/.config/abi_fetcher.config.yaml
 COPY --from=rust_builder /app-builder/abi/ /apps/abi/
-COPY --from=rust_builder /app-builder/json-rpc-fetcher /apps/json-rpc-fetcher
-COPY --from=rust_builder /app-builder/.config/json_rpc_fetcher.config.yaml /apps/.config/json_rpc_fetcher.config.yaml
+COPY --from=rust_builder /app-builder/contracts-fetcher /apps/contracts-fetcher
+COPY --from=rust_builder /app-builder/.config/contracts_fetcher.config.yaml /apps/.config/contracts_fetcher.config.yaml
 
 COPY --from=go_builder /app-builder/nats/nats-server /apps/nats-server
 
