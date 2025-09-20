@@ -36,3 +36,5 @@ vergen = { version = "8", features = ["build", "cargo", "git"] }
 lto = true
 codegen-units = 1
 opt-level = "z"
+
+[workspace]

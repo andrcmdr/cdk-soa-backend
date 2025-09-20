@@ -8,8 +8,8 @@ name = "abi-fetcher"
 path = "src/abi-fetcher.rs"
 
 [[bin]]
-name = "json-rpc-fetcher"
-path = "src/json-rpc-fetcher.rs"
+name = "contracts-fetcher"
+path = "src/contracts-fetcher.rs"
 
 [dependencies]
 anyhow = "1"
