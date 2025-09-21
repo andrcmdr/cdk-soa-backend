@@ -37,12 +37,12 @@ cd /app-builder/cdk-soa-backend
 # git checkout v${VERSION}
 # cargo build --release --all
 cargo build --all
-mv -T /app-builder/cdk-soa-backend/target/release/events-monitor /app-builder/events-monitor
+mv -T /app-builder/cdk-soa-backend/target/debug/events-monitor /app-builder/events-monitor
 mv -T /app-builder/cdk-soa-backend/events-monitor/.config/events_monitor.config.yaml /app-builder/.config/events_monitor.config.yaml
-mv -T /app-builder/cdk-soa-backend/target/release/abi-fetcher /app-builder/abi-fetcher
+mv -T /app-builder/cdk-soa-backend/target/debug/abi-fetcher /app-builder/abi-fetcher
 mv -T /app-builder/cdk-soa-backend/abi-fetcher/.config/abi_fetcher.config.yaml /app-builder/.config/abi_fetcher.config.yaml
 cp -vrf /app-builder/cdk-soa-backend/events-monitor/abi/ -T /app-builder/abi/
-mv -T /app-builder/cdk-soa-backend/target/release/contracts-fetcher /app-builder/contracts-fetcher
+mv -T /app-builder/cdk-soa-backend/target/debug/contracts-fetcher /app-builder/contracts-fetcher
 mv -T /app-builder/cdk-soa-backend/abi-fetcher/.config/contracts_fetcher.config.yaml /app-builder/.config/contracts_fetcher.config.yaml
 EOF
 
