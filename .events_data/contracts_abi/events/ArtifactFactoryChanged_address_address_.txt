@@ -8,4 +8,5 @@ Inputs:
   1: newArtifactFactory address (indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A (contract_name: ArtifactManager, verified_at: 2025-09-18T06:55:08.037987Z)
   - 0x74623e0F207071571747A1f6C7Cfe674D86C33f5 (contract_name: ArtifactManager, verified_at: 2025-09-04T10:31:06.129513Z)

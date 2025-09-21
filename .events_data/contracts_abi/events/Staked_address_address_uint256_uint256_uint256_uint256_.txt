@@ -12,5 +12,6 @@ Inputs:
   5: stakeWeight uint256 (not indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F (contract_name: ArtifactStaking, verified_at: 2025-09-18T07:24:23.057792Z)
   - 0xC22a05711ef9f3e59baF8ae48F59896715D49fAF (contract_name: ArtifactStaking, verified_at: 2025-09-04T13:37:15.481994Z)
   - 0xeB739B5b19281679BAFA2E8c8406B6C2D2b31394 (contract_name: ArtifactStaking, verified_at: 2025-08-28T14:06:35.407984Z)

@@ -1,8 +1,21 @@
 contracts:
+- name: AirdropVault
+  address:
+  - address: 0x76e1e992e5a19e676011e100f0665f513ba4f299
+  events:
+  - event: AirdropApproved(address indexed airdropContract, address indexed token, uint256 amount)
+  - event: AirdropContractSet(address indexed airdropContract, address indexed newAirdropContract)
+  - event: Paused(address account)
+  - event: RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+  - event: RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: TokensWithdrawn(address indexed token, address indexed to, uint256 amount)
+  - event: Unpaused(address account)
 - name: Artifact
   address:
   - address: 0x0de00f104593ce3bfb734cb6b41fa2fc98045bc1
   - address: 0x0fdb58407dbd62a388d0a0ff4d3beaedc0758e6f
+  - address: 0x1c4208db3ad579efdc4b3a613dc442e796fec28b
   - address: 0x2086be28ce3b80fa7ec8405268a19bba01f3b041
   - address: 0x2263e66d70aa362c6058c9e04b88de14a2c4418c
   - address: 0x314b685bbab14fbbbeaa5834893f392a3a58eb4e
@@ -11,6 +24,7 @@ contracts:
   - address: 0x6eefd00130cd006fc5180905352867c3d1547772
   - address: 0x7b56cc3c7978b478d4e936ccdf0752b392485777
   - address: 0xd498c989ab0e20dc5c7c3e27b4b25adfe19e93a3
+  - address: 0xecc03b0c21ac523923adaa7cd914ab3f180848b2
   - address: 0xf590d5c64abbe503d68b9c639fa0203fe9f4f27a
   events:
   - event: Initialized(uint64 version)
@@ -27,6 +41,7 @@ contracts:
   address:
   - address: 0x1b49622e8d656ce9366e69a78bc47892510870f4
   - address: 0x207eea90b43515d9e5f6798ce286b1af02f5eae2
+  - address: 0x293910bf6cb4370e6bef7c1d838ed4fb2f571112
   - address: 0x4f7d66e656289263b5dc33e1f9664f06fb052c2e
   - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
   - address: 0x69fe6aa509fe7ae8f348bfb25df1092809aad7b2
@@ -60,6 +75,7 @@ contracts:
   - address: 0x1dd254de55ac042d95d37877c51876b0152af165
   - address: 0x2211d7ec83017b0f8de7bef363842be79afa959d
   - address: 0x27b304b4b8a6a6e154cc961b2ff4ff9a704e2d0c
+  - address: 0x34f8458ebcff41cdfd9745cb87b7276a62750d4a
   - address: 0x3ceeb925df55730b83bccd4926fa22b44bd40bef
   - address: 0x604e332e32c49def0430f463fc03bff38fb72ef1
   - address: 0x74623e0f207071571747a1f6c7cfe674d86c33f5
@@ -87,6 +103,7 @@ contracts:
   - event: Upgraded(address indexed implementation)
 - name: ArtifactStaking
   address:
+  - address: 0x2d87d4a017ef7907879a817c57b84bed25ef3e5f
   - address: 0x9052deaaf20d183c2d64006508ed8f63f76fbf58
   - address: 0xc22a05711ef9f3e59baf8ae48f59896715d49faf
   - address: 0xeb739b5b19281679bafa2e8c8406b6c2d2b31394
@@ -120,6 +137,7 @@ contracts:
   - address: 0x0fed05b0e63e3fac90ee7785663d184279604e25
   - address: 0x108f00a7667b88e86339c3919a7bf8b0ca55b58d
   - address: 0x11c3d35c36e0a76a5d354289f5a9702a8d304907
+  - address: 0x125e0aa5df704ed1bbc82c72d96e31f4dea4510d
   - address: 0x12744d13df43d4b6fe24023f693a9780ff7f7353
   - address: 0x14ed7019e68bd080120ee206befff2316e03a008
   - address: 0x151356bc0c1e4611586410cee5744a23fbb6c5a1
@@ -180,6 +198,7 @@ contracts:
   - address: 0x71edf9e78e9689b880b3d2e8f5425808e6460c81
   - address: 0x729903d29f4235f1527f5bce59480e222622aca3
   - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+  - address: 0x77cfe4fd410ccd2fc78aa85ff21279581ba038be
   - address: 0x79181bedf94b01f0afeedcd9724af12edf2888a2
   - address: 0x7a45e2ef82c5c1e94605d7a215ceed2104f9a584
   - address: 0x7ba1032fec51d84c76db3036bf774d72c94369f2
@@ -200,9 +219,11 @@ contracts:
   - address: 0x9991bf16a615f99b8d6e71cc2090adeac20584b7
   - address: 0x9b19b674886b4673c690ce3ce95ce04101176f4c
   - address: 0x9c246032b1009ae95d6e23cf69536e394aa8cc4c
+  - address: 0x9d19b274891d940bf01b671de6066c4f805ee8e2
   - address: 0x9e8c1ce104948daccbda546b2a823886a6a7253a
   - address: 0xa16516cbaf167ce006d739946237512aadc62802
   - address: 0xa29823c10979078ff89ce331dee99fbf6decbbf6
+  - address: 0xa29ce39b894923f84d32c71cb9235cda6179c8f4
   - address: 0xa2b795e52bfe67a111c9af0e13fc452c291f86c2
   - address: 0xa388f1b55ad15db847e96297307c5fb85fa5ddeb
   - address: 0xa3e8a67ddb2869d83254a1dce0634e83a38d437d
@@ -215,6 +236,7 @@ contracts:
   - address: 0xac03d0175b4babdd853cdf1a8ed577a0e68516b8
   - address: 0xaca1ee9334e971b800ab5d1ade8e0adf8e824194
   - address: 0xaed451a0d3c8114864d336e95208e78938a99eef
+  - address: 0xb224bd75fd71f0b70a1da78b436407a833f65d03
   - address: 0xb25001fd103cfd3d9492073dae86881d79341b03
   - address: 0xb569004187fb377eec7400c10d217be8b00d9ab5
   - address: 0xb5a7dce30f3c6b90b349d2a5a06dc5288633ad0c
@@ -224,6 +246,7 @@ contracts:
   - address: 0xbdc93a5d171cd7f7c9aad4b59bced43658685b14
   - address: 0xbe66af45d5ae719548094a27b7150f7b3afb3737
   - address: 0xbfec4568a10ac2aacf95e36a09e7902803994264
+  - address: 0xc186b95ce38042e080ba97050c1bde16d054ee9f
   - address: 0xc2d7e5330d8fcb5a783ae0870211067a7f7c2a8f
   - address: 0xc40e4aaf0211822337f234aaf1e87b83aa8cf54c
   - address: 0xc50eda63f4250d9d4b1af46b7841961201e86d5e
@@ -244,6 +267,7 @@ contracts:
   - address: 0xda93e458bfbffcb607e2408949355f8d0a5879ba
   - address: 0xdaf2ed3c1b9befbcb06c5c005a3fea25f6a830bc
   - address: 0xdbde2efb569e72fb8797d80615410f1384e92ec7
+  - address: 0xde5f1972b969a3ee6f79f29616f86a7539470842
   - address: 0xdeaf6583ef005f37c6484ed0d4ee0c531ebb9420
   - address: 0xdf14845dfa28df08135fe38b18ee2899cb71c093
   - address: 0xe16dd457e729a1299b750d9606a7eeff1639c876
@@ -390,6 +414,7 @@ contracts:
   - address: 0x5dbfbb78453719189f153c10b484de23d70b7f22
   - address: 0x6ae23326039d030fa018d9081e0c48669749f3f6
   - address: 0xa115f8af20849ce295cebb56230111f82d8850ee
+  - address: 0xaf478e2e51efefb0334b8d948c432c7c2012214d
   events:
   - event: ArtifactWeightsUpdated(uint256 indexed newLambda, uint256 indexed newX)
   - event: EmissionRateUpdated(uint256 indexed newRate)
@@ -414,14 +439,17 @@ contracts:
 - name: NativeDistributor
   address:
   - address: 0x81112d4a0389afbe159f39a5b048602ceb221285
+  - address: 0xbbd29811627914cd561bf3a066468c32a171dd33
   events:
   - event: AirdropClaimed(address indexed account, bytes32 indexed root, uint256 amount)
+  - event: FeeSet(bytes32 indexed root, uint256 fee)
   - event: FeeSet(uint256 fee)
   - event: MerkleConfigurationUpdate(bytes32 indexed root, bytes32 indexed configurator)
   - event: OwnershipHandoverCanceled(address indexed pendingOwner)
   - event: OwnershipHandoverRequested(address indexed pendingOwner)
   - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
   - event: RolesUpdated(address indexed user, uint256 indexed roles)
+  - event: SingleTierFeeRateSet(bytes32 indexed root, uint256 feeRate, uint256 minFee, uint256 maxFee)
   - event: VaultSet(address indexed vault)
   - event: Withdraw(address indexed to, uint256 amount)
 - name: OwnershipERC20
@@ -457,6 +485,7 @@ contracts:
 - name: Registry
   address:
   - address: 0x6421ed6b21ad276e1d77a0635df4fd839980654a
+  - address: 0x658f8fdf4bb1ff668e2d93c26a87b24f7b89d61c
   - address: 0xb52beb65d2f59801c272ea99b0d3fd227c54185e
   events:
   - event: ArtifactManagerUpdated(address indexed oldAddress, address indexed newAddress)
@@ -483,6 +512,7 @@ contracts:
   - address: 0x4c45119ac34c2c0e263f3ddf6bdab0783cf1a70f
   - address: 0x64ec59f979fcd0f97ef0618dfe751e15cb631612
   - address: 0x6c08ac820cccf22253833894297040767da7e776
+  - address: 0xc110649a70ebee2efffce0ab49aea700ddc9c089
   - address: 0xdac1fe96fc3fa5bb9bd4a3ada9fa44d4a44be9e2
   - address: 0xe4cdbd2df584bfb96a4dcde7a384510922981409
   - address: 0xe50351b10a011dfae5903a4f99ef6ca749a59c01
@@ -519,8 +549,10 @@ contracts:
   address:
   - address: 0x1a3329e7813a35c7e5b4189bb3b21bd112ec6536
   - address: 0x4ab5e8fc41ed0bb2f6f0bc8c83e57bc385e390c1
+  - address: 0x6d11a25fe882a00222fb8c708411309888ecb544
   - address: 0x7ab7ab179cd819756d1e31876a4d22722100f826
   - address: 0x80e6f0937fe177415a868e78e00e2e1d768b8533
+  - address: 0x9c7c28d5a38505f0bc736afd011b3863d9138fae
   - address: 0xbcaf7a004f0e16e8fa5db44079cb5236e1e06d3d
   events:
   - event: AllowlistAdded(address indexed account)
@@ -538,6 +570,8 @@ contracts:
   - event: RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
   - event: RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
   - event: TokensTransferred(address indexed token, address indexed to, uint256 amount)
+  - event: TokensTransferred(address indexed token, address indexed to, uint256 amount, bytes data)
+  - event: TokensWithdrawn(address indexed token, address indexed to, uint256 amount)
   - event: TreasuryFunded(address indexed token, uint256 amount)
   - event: Unpaused(address account)
   - event: Upgraded(address indexed implementation)
@@ -562,6 +596,7 @@ contracts:
   - address: 0x6945de0f82b073ca13e17de88fc5691a2e38a88a
   - address: 0x6a0809fe9f48341c8af2d1d74c2cccb9b6f04560
   - address: 0x71ac73716a923d3060ab1fa5bad6617620833448
+  - address: 0x7ac27060c9698ef01631c4bbcfcd0179724aa544
   - address: 0x7d607c4bbf98815664b8f47003cc7fe73518035d
   - address: 0x81bf08a6dd72b9fd1ea22f40b58e8d49a640911e
   - address: 0x871524c88d7f67d449dce942a6bae18b1605e34c
@@ -584,6 +619,12 @@ contracts:
   events:
   - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
   - event: Upgraded(address indexed implementation)
+- name: WETH
+  address:
+  - address: 0xa56ce076c2b1d2ebec7603168a01ce98a41c3a76
+  events:
+  - event: Approval(address indexed owner, address indexed spender, uint256 amount)
+  - event: Transfer(address indexed from, address indexed to, uint256 amount)
 - name: WETH9
   address:
   - address: 0x98e1f3d6d35e117174510b6d70c731691b6f18fd

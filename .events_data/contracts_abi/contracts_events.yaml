@@ -1,6 +1,23 @@
 contracts:
+- name: AirdropVault
+  address:
+  - address: 0x76e1E992e5A19E676011E100F0665F513bA4F299
+    verified_at: 2025-09-19T04:54:47.402598Z
+  events:
+  - event: AirdropApproved(address indexed airdropContract, address indexed token, uint256 amount)
+  - event: AirdropContractSet(address indexed airdropContract, address indexed newAirdropContract)
+  - event: Paused(address account)
+  - event: RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+  - event: RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: TokensWithdrawn(address indexed token, address indexed to, uint256 amount)
+  - event: Unpaused(address account)
 - name: Artifact
   address:
+  - address: 0x1C4208Db3Ad579EfDc4b3A613dc442E796FEc28B
+    verified_at: 2025-09-18T06:54:47.828375Z
+  - address: 0xecc03B0C21ac523923AdAA7cD914ab3F180848B2
+    verified_at: 2025-09-18T06:54:27.623813Z
   - address: 0x7b56Cc3c7978b478d4E936cCdF0752b392485777
     verified_at: 2025-09-12T04:27:58.662446Z
   - address: 0xD498C989AB0E20DC5C7c3E27B4b25adfe19E93a3
@@ -36,6 +53,8 @@ contracts:
   - event: UsageAmountUpdated(uint256 usageAmount)
 - name: ArtifactFactory
   address:
+  - address: 0x293910bf6Cb4370e6bEF7C1d838ed4fB2F571112
+    verified_at: 2025-09-18T06:55:27.056704Z
   - address: 0x5354BCD502A06d73C51d2EE7a2052524A1650610
     verified_at: 2025-09-12T04:17:33.836945Z
   - address: 0x1b49622e8D656CE9366e69a78Bc47892510870f4
@@ -77,6 +96,8 @@ contracts:
   - event: Upgraded(address indexed implementation)
 - name: ArtifactManager
   address:
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
   - address: 0xb7429f6d0921E897Bc9B4addDD1E1998cAa4B236
     verified_at: 2025-09-12T04:19:11.105502Z
   - address: 0x604e332e32c49dEF0430F463fC03Bff38fB72EF1
@@ -118,6 +139,8 @@ contracts:
   - event: Upgraded(address indexed implementation)
 - name: ArtifactStaking
   address:
+  - address: 0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F
+    verified_at: 2025-09-18T07:24:23.057792Z
   - address: 0xC22a05711ef9f3e59baF8ae48F59896715D49fAF
     verified_at: 2025-09-04T13:37:15.481994Z
   - address: 0xeB739B5b19281679BAFA2E8c8406B6C2D2b31394
@@ -143,6 +166,20 @@ contracts:
   - event: ContractCreation(address newContract)
 - name: ERC1967Proxy
   address:
+  - address: 0x125E0aA5DF704ED1BbC82c72d96E31f4dea4510d
+    verified_at: 2025-09-18T07:24:59.254450Z
+  - address: 0x77cFE4fD410ccd2fC78aA85ff21279581Ba038be
+    verified_at: 2025-09-18T07:24:39.555295Z
+  - address: 0xB224bd75fD71f0b70a1Da78B436407A833f65d03
+    verified_at: 2025-09-18T07:24:18.705409Z
+  - address: 0xc186B95ce38042e080BA97050c1Bde16D054eE9F
+    verified_at: 2025-09-18T07:23:59.054074Z
+  - address: 0x9D19b274891D940bf01B671De6066c4f805EE8E2
+    verified_at: 2025-09-18T07:23:39.128736Z
+  - address: 0xDe5F1972B969a3EE6f79F29616f86a7539470842
+    verified_at: 2025-09-18T06:55:42.169545Z
+  - address: 0xa29cE39B894923f84D32c71cB9235cDa6179c8F4
+    verified_at: 2025-09-18T06:55:22.268974Z
   - address: 0x7a45E2Ef82c5C1e94605d7A215ceed2104f9A584
     verified_at: 2025-09-12T04:36:22.594580Z
   - address: 0x5dA4f77C70e6Ce833446edB815785c98238A3465
@@ -611,6 +648,8 @@ contracts:
   - event: ProxyCreation(address proxy, address singleton)
 - name: Governance
   address:
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
   - address: 0xA115F8af20849ce295CebB56230111f82d8850ee
     verified_at: 2025-09-12T04:16:05.966120Z
   - address: 0x4f46d08569B6d96DFC576cFdEa02023284c8Ea46
@@ -644,16 +683,20 @@ contracts:
   - event: Transfer(address indexed from, address indexed to, uint256 value)
 - name: NativeDistributor
   address:
+  - address: 0xBBd29811627914Cd561bf3A066468c32A171dd33
+    verified_at: 2025-09-19T05:01:01.901951Z
   - address: 0x81112D4A0389AFBE159F39a5b048602cEb221285
     verified_at: 2025-09-05T08:57:43.048427Z
   events:
   - event: AirdropClaimed(address indexed account, bytes32 indexed root, uint256 amount)
+  - event: FeeSet(bytes32 indexed root, uint256 fee)
   - event: FeeSet(uint256 fee)
   - event: MerkleConfigurationUpdate(bytes32 indexed root, bytes32 indexed configurator)
   - event: OwnershipHandoverCanceled(address indexed pendingOwner)
   - event: OwnershipHandoverRequested(address indexed pendingOwner)
   - event: OwnershipTransferred(address indexed oldOwner, address indexed newOwner)
   - event: RolesUpdated(address indexed user, uint256 indexed roles)
+  - event: SingleTierFeeRateSet(bytes32 indexed root, uint256 feeRate, uint256 minFee, uint256 maxFee)
   - event: VaultSet(address indexed vault)
   - event: Withdraw(address indexed to, uint256 amount)
 - name: OwnershipERC20
@@ -698,6 +741,8 @@ contracts:
   - event: NewWrappedToken(uint32 originNetwork, address originTokenAddress, address wrappedTokenAddress, bytes metadata)
 - name: Registry
   address:
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
   - address: 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
     verified_at: 2025-09-04T13:35:39.732065Z
   - address: 0xb52BEB65d2f59801c272eA99b0d3Fd227c54185E
@@ -719,6 +764,8 @@ contracts:
   - event: Upgraded(address indexed implementation)
 - name: Rewards
   address:
+  - address: 0xc110649a70eBEe2eFffcE0ab49aea700DdC9C089
+    verified_at: 2025-09-18T07:24:44.888495Z
   - address: 0x2e2EBb4B97B9de9d5BCA343987E3B4D76dF36D25
     verified_at: 2025-09-12T04:36:07.618937Z
   - address: 0x113c33E277104ef9E75eCFA93a82eB03795FD43a
@@ -776,6 +823,10 @@ contracts:
   - event: Upgraded(address indexed implementation)
 - name: Treasury
   address:
+  - address: 0x6d11a25Fe882a00222fB8C708411309888eCb544
+    verified_at: 2025-09-19T04:41:54.568597Z
+  - address: 0x9c7c28D5a38505f0Bc736aFd011b3863D9138fAe
+    verified_at: 2025-09-18T07:24:02.352147Z
   - address: 0x1A3329E7813a35c7E5B4189BB3b21bd112eC6536
     verified_at: 2025-09-10T21:40:35.346460Z
   - address: 0x7aB7ab179cD819756D1E31876a4d22722100F826
@@ -802,12 +853,16 @@ contracts:
   - event: RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
   - event: RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
   - event: TokensTransferred(address indexed token, address indexed to, uint256 amount)
+  - event: TokensTransferred(address indexed token, address indexed to, uint256 amount, bytes data)
+  - event: TokensWithdrawn(address indexed token, address indexed to, uint256 amount)
   - event: TreasuryFunded(address indexed token, uint256 amount)
   - event: Unpaused(address account)
   - event: Upgraded(address indexed implementation)
   - event: VaultFunded(address indexed vault, address indexed token, uint256 amount)
 - name: UpgradeableBeacon
   address:
+  - address: 0x7aC27060c9698ef01631C4bbCfCD0179724aA544
+    verified_at: 2025-09-18T06:54:45.285121Z
   - address: 0xa50356c71578eFf287c8a3eae82240914965aB19
     verified_at: 2025-09-12T04:33:00.872453Z
   - address: 0x3571f702990856B5B99A5fB4188D5466B9664E1F
@@ -885,6 +940,13 @@ contracts:
   events:
   - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
   - event: Upgraded(address indexed implementation)
+- name: WETH
+  address:
+  - address: 0xa56cE076C2B1D2eBEC7603168a01CE98A41C3A76
+    verified_at: 2025-09-19T04:59:44.164293Z
+  events:
+  - event: Approval(address indexed owner, address indexed spender, uint256 amount)
+  - event: Transfer(address indexed from, address indexed to, uint256 amount)
 - name: WETH9
   address:
   - address: 0x98E1f3D6D35E117174510b6d70C731691b6f18fD

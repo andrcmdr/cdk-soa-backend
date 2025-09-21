@@ -1,0 +1,12 @@
+Event Name: AirdropApproved
+Signature: AirdropApproved(address,address,uint256)
+Topic Hash: 0x8cfb167e9809ee227859c59309b2428e48f590be50980a730257b8d6bb9cfa94
+Anonymous: false
+
+Inputs:
+  0: airdropContract address (indexed)
+  1: token address (indexed)
+  2: amount uint256 (not indexed)
+
+Contract Sources:
+  - 0x76e1e992e5a19e676011e100f0665f513ba4f299 (contract_name: AirdropVault)

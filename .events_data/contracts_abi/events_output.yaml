@@ -1,8 +1,8 @@
 metadata:
-  generated_at: 2025-09-14T21:35:09.931732Z
+  generated_at: 2025-09-20T19:43:38.211779Z
   blockscout_server: https://sentient-testnet-blockscout.eu-north-2.gateway.fm
-  total_events: 110
-  total_unique_signatures: 110
+  total_events: 116
+  total_unique_signatures: 116
   events_directory: ./contracts_abi/events
 events:
 - name: AddedOwner
@@ -74,6 +74,25 @@ events:
     verified_at: 2025-08-22T05:11:37.070316Z
     contract_name: ArtifactFactory
   signature_file: AirdropAddressChanged_address_.txt
+- name: AirdropApproved
+  signature: AirdropApproved(address,address,uint256)
+  topic_hash: 0x8cfb167e9809ee227859c59309b2428e48f590be50980a730257b8d6bb9cfa94
+  anonymous: false
+  inputs:
+  - name: airdropContract
+    input_type: address
+    indexed: true
+  - name: token
+    input_type: address
+    indexed: true
+  - name: amount
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x76e1E992e5A19E676011E100F0665F513bA4F299
+    verified_at: 2025-09-19T04:54:47.402598Z
+    contract_name: AirdropVault
+  signature_file: AirdropApproved_address_address_uint256_.txt
 - name: AirdropClaimed
   signature: AirdropClaimed(address,bytes32,uint256)
   topic_hash: 0x286b28c8571c73086fa8d8852b677537690a70b51e1a76820fe50db64e127779
@@ -89,10 +108,29 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0xBBd29811627914Cd561bf3A066468c32A171dd33
+    verified_at: 2025-09-19T05:01:01.901951Z
+    contract_name: NativeDistributor
   - address: 0x81112D4A0389AFBE159F39a5b048602cEb221285
     verified_at: 2025-09-05T08:57:43.048427Z
     contract_name: NativeDistributor
   signature_file: AirdropClaimed_address_bytes32_uint256_.txt
+- name: AirdropContractSet
+  signature: AirdropContractSet(address,address)
+  topic_hash: 0x5562ad87627376b22ca0e142a8ed65af969cd0d80f588206731470cca3910c6d
+  anonymous: false
+  inputs:
+  - name: airdropContract
+    input_type: address
+    indexed: true
+  - name: newAirdropContract
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x76e1E992e5A19E676011E100F0665F513bA4F299
+    verified_at: 2025-09-19T04:54:47.402598Z
+    contract_name: AirdropVault
+  signature_file: AirdropContractSet_address_address_.txt
 - name: AllowlistAdded
   signature: AllowlistAdded(address)
   topic_hash: 0x28f54e0b69489ad5fd27625e6fcff58faff5da96f8a077d08bb09af25bb41d54
@@ -102,6 +140,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x9c7c28D5a38505f0Bc736aFd011b3863D9138fAe
+    verified_at: 2025-09-18T07:24:02.352147Z
+    contract_name: Treasury
   - address: 0x7aB7ab179cD819756D1E31876a4d22722100F826
     verified_at: 2025-09-04T13:36:39.523777Z
     contract_name: Treasury
@@ -121,6 +162,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x9c7c28D5a38505f0Bc736aFd011b3863D9138fAe
+    verified_at: 2025-09-18T07:24:02.352147Z
+    contract_name: Treasury
   - address: 0x7aB7ab179cD819756D1E31876a4d22722100F826
     verified_at: 2025-09-04T13:36:39.523777Z
     contract_name: Treasury
@@ -146,6 +190,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0xa56cE076C2B1D2eBEC7603168a01CE98A41C3A76
+    verified_at: 2025-09-19T04:59:44.164293Z
+    contract_name: WETH
   - address: 0x29A04250ed17A0A3368Bf79DFdF463676a76Aa6A
     verified_at: 2025-09-12T04:21:37.598738Z
     contract_name: OwnershipERC20
@@ -213,10 +260,13 @@ events:
   - name: artifact
     input_type: address
     indexed: true
-  - name: metadataURI
+  - name: metadataUri
     input_type: string
     indexed: false
   contract_sources:
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
+    contract_name: ArtifactManager
   - address: 0xb7429f6d0921E897Bc9B4addDD1E1998cAa4B236
     verified_at: 2025-09-12T04:19:11.105502Z
     contract_name: ArtifactManager
@@ -263,6 +313,9 @@ events:
     input_type: uint256[]
     indexed: false
   contract_sources:
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
+    contract_name: ArtifactManager
   - address: 0xb7429f6d0921E897Bc9B4addDD1E1998cAa4B236
     verified_at: 2025-09-12T04:19:11.105502Z
     contract_name: ArtifactManager
@@ -309,6 +362,9 @@ events:
     input_type: uint256[]
     indexed: false
   contract_sources:
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
+    contract_name: ArtifactManager
   - address: 0xb7429f6d0921E897Bc9B4addDD1E1998cAa4B236
     verified_at: 2025-09-12T04:19:11.105502Z
     contract_name: ArtifactManager
@@ -349,6 +405,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x293910bf6Cb4370e6bEF7C1d838ed4fB2F571112
+    verified_at: 2025-09-18T06:55:27.056704Z
+    contract_name: ArtifactFactory
   - address: 0x5354BCD502A06d73C51d2EE7a2052524A1650610
     verified_at: 2025-09-12T04:17:33.836945Z
     contract_name: ArtifactFactory
@@ -380,6 +439,59 @@ events:
     verified_at: 2025-08-22T05:11:37.070316Z
     contract_name: ArtifactFactory
   signature_file: ArtifactBeaconChanged_address_.txt
+- name: ArtifactCreated
+  signature: ArtifactCreated(bytes32,string,uint8,address,tuple[])
+  topic_hash: 0x0c37ce1cf2c26ae420f94121125644faa814137c44a77ffb446af4b614de8c27
+  anonymous: false
+  inputs:
+  - name: artifactID
+    input_type: bytes32
+    indexed: true
+  - name: artifactName
+    input_type: string
+    indexed: false
+  - name: artifactType
+    input_type: uint8
+    indexed: true
+  - name: artifactAddress
+    input_type: address
+    indexed: true
+  - name: artifactOwners
+    input_type: tuple[]
+    indexed: false
+  contract_sources:
+  - address: 0xcFB541d62148DEFd2D0C7f4f3984603d8D0a357d
+    verified_at: 2025-08-26T09:10:21.788605Z
+    contract_name: ArtifactFactory
+  signature_file: ArtifactCreated_bytes32_string_uint8_address_tuple___.txt
+- name: ArtifactCreated
+  signature: ArtifactCreated(bytes32,string,string,address,address)
+  topic_hash: 0x61f6226016fbc1388bd2cf935f481665a0181f423f71c10b537f6604aa7bbe6c
+  anonymous: false
+  inputs:
+  - name: artifactId
+    input_type: bytes32
+    indexed: true
+  - name: artifactName
+    input_type: string
+    indexed: false
+  - name: artifactType
+    input_type: string
+    indexed: false
+  - name: artifactAddress
+    input_type: address
+    indexed: true
+  - name: owner
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x293910bf6Cb4370e6bEF7C1d838ed4fB2F571112
+    verified_at: 2025-09-18T06:55:27.056704Z
+    contract_name: ArtifactFactory
+  - address: 0xA643f0D8FFDC2C7d7A15A46a2683953fB0bCc407
+    verified_at: 2025-09-04T10:31:28.479422Z
+    contract_name: ArtifactFactory
+  signature_file: ArtifactCreated_bytes32_string_string_address_address_.txt
 - name: ArtifactCreated
   signature: ArtifactCreated(bytes32,address)
   topic_hash: 0xdc723ddd9f108c62f91fce655c012a626d9567fb664b0027679b001834896513
@@ -417,56 +529,6 @@ events:
     verified_at: 2025-08-22T05:11:37.070316Z
     contract_name: ArtifactFactory
   signature_file: ArtifactCreated_bytes32_address_.txt
-- name: ArtifactCreated
-  signature: ArtifactCreated(bytes32,string,string,address,address)
-  topic_hash: 0x61f6226016fbc1388bd2cf935f481665a0181f423f71c10b537f6604aa7bbe6c
-  anonymous: false
-  inputs:
-  - name: artifactId
-    input_type: bytes32
-    indexed: true
-  - name: artifactName
-    input_type: string
-    indexed: false
-  - name: artifactType
-    input_type: string
-    indexed: false
-  - name: artifactAddress
-    input_type: address
-    indexed: true
-  - name: owner
-    input_type: address
-    indexed: true
-  contract_sources:
-  - address: 0xA643f0D8FFDC2C7d7A15A46a2683953fB0bCc407
-    verified_at: 2025-09-04T10:31:28.479422Z
-    contract_name: ArtifactFactory
-  signature_file: ArtifactCreated_bytes32_string_string_address_address_.txt
-- name: ArtifactCreated
-  signature: ArtifactCreated(bytes32,string,uint8,address,tuple[])
-  topic_hash: 0x0c37ce1cf2c26ae420f94121125644faa814137c44a77ffb446af4b614de8c27
-  anonymous: false
-  inputs:
-  - name: artifactID
-    input_type: bytes32
-    indexed: true
-  - name: artifactName
-    input_type: string
-    indexed: false
-  - name: artifactType
-    input_type: uint8
-    indexed: true
-  - name: artifactAddress
-    input_type: address
-    indexed: true
-  - name: artifactOwners
-    input_type: tuple[]
-    indexed: false
-  contract_sources:
-  - address: 0xcFB541d62148DEFd2D0C7f4f3984603d8D0a357d
-    verified_at: 2025-08-26T09:10:21.788605Z
-    contract_name: ArtifactFactory
-  signature_file: ArtifactCreated_bytes32_string_uint8_address_tuple___.txt
 - name: ArtifactFactoryChanged
   signature: ArtifactFactoryChanged(address,address)
   topic_hash: 0xfd3c30401caba6e86edd3ad95d896de1028d5787fee934dee51a134bd7cff8f6
@@ -479,6 +541,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
+    contract_name: ArtifactManager
   - address: 0x74623e0F207071571747A1f6C7Cfe674D86C33f5
     verified_at: 2025-09-04T10:31:06.129513Z
     contract_name: ArtifactManager
@@ -495,6 +560,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
   - address: 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
     verified_at: 2025-09-04T13:35:39.732065Z
     contract_name: Registry
@@ -510,10 +578,13 @@ events:
   - name: artifact
     input_type: address
     indexed: true
-  - name: newMetadataURI
+  - name: newMetadataUri
     input_type: string
     indexed: false
   contract_sources:
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
+    contract_name: ArtifactManager
   - address: 0xb7429f6d0921E897Bc9B4addDD1E1998cAa4B236
     verified_at: 2025-09-12T04:19:11.105502Z
     contract_name: ArtifactManager
@@ -554,6 +625,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
+    contract_name: ArtifactManager
   - address: 0xb7429f6d0921E897Bc9B4addDD1E1998cAa4B236
     verified_at: 2025-09-12T04:19:11.105502Z
     contract_name: ArtifactManager
@@ -600,6 +674,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
+    contract_name: ArtifactManager
   - address: 0xb7429f6d0921E897Bc9B4addDD1E1998cAa4B236
     verified_at: 2025-09-12T04:19:11.105502Z
     contract_name: ArtifactManager
@@ -643,6 +720,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
   - address: 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
     verified_at: 2025-09-04T13:35:39.732065Z
     contract_name: Registry
@@ -659,6 +739,9 @@ events:
     input_type: string
     indexed: true
   contract_sources:
+  - address: 0x293910bf6Cb4370e6bEF7C1d838ed4fB2F571112
+    verified_at: 2025-09-18T06:55:27.056704Z
+    contract_name: ArtifactFactory
   - address: 0xA643f0D8FFDC2C7d7A15A46a2683953fB0bCc407
     verified_at: 2025-09-04T10:31:28.479422Z
     contract_name: ArtifactFactory
@@ -672,6 +755,9 @@ events:
     input_type: string
     indexed: true
   contract_sources:
+  - address: 0x293910bf6Cb4370e6bEF7C1d838ed4fB2F571112
+    verified_at: 2025-09-18T06:55:27.056704Z
+    contract_name: ArtifactFactory
   - address: 0xA643f0D8FFDC2C7d7A15A46a2683953fB0bCc407
     verified_at: 2025-09-04T10:31:28.479422Z
     contract_name: ArtifactFactory
@@ -691,6 +777,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
+    contract_name: ArtifactManager
   - address: 0xb7429f6d0921E897Bc9B4addDD1E1998cAa4B236
     verified_at: 2025-09-12T04:19:11.105502Z
     contract_name: ArtifactManager
@@ -734,6 +823,9 @@ events:
     input_type: uint256
     indexed: true
   contract_sources:
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
+    contract_name: Governance
   - address: 0xA115F8af20849ce295CebB56230111f82d8850ee
     verified_at: 2025-09-12T04:16:05.966120Z
     contract_name: Governance
@@ -892,6 +984,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
   - address: 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
     verified_at: 2025-09-04T13:35:39.732065Z
     contract_name: Registry
@@ -911,6 +1006,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
   - address: 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
     verified_at: 2025-09-04T13:35:39.732065Z
     contract_name: Registry
@@ -933,6 +1031,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
   - address: 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
     verified_at: 2025-09-04T13:35:39.732065Z
     contract_name: Registry
@@ -1221,6 +1322,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0x9c7c28D5a38505f0Bc736aFd011b3863D9138fAe
+    verified_at: 2025-09-18T07:24:02.352147Z
+    contract_name: Treasury
   - address: 0x7aB7ab179cD819756D1E31876a4d22722100F826
     verified_at: 2025-09-04T13:36:39.523777Z
     contract_name: Treasury
@@ -1240,6 +1344,9 @@ events:
     input_type: uint256
     indexed: true
   contract_sources:
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
+    contract_name: Governance
   - address: 0xA115F8af20849ce295CebB56230111f82d8850ee
     verified_at: 2025-09-12T04:16:05.966120Z
     contract_name: Governance
@@ -1389,6 +1496,22 @@ events:
     verified_at: 2025-09-05T08:57:43.048427Z
     contract_name: NativeDistributor
   signature_file: FeeSet_uint256_.txt
+- name: FeeSet
+  signature: FeeSet(bytes32,uint256)
+  topic_hash: 0xdb12e4938bdc4407b4fe2690102950fb54b88ef08ca2e9f4f4ba4783367ed780
+  anonymous: false
+  inputs:
+  - name: root
+    input_type: bytes32
+    indexed: true
+  - name: fee
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0xBBd29811627914Cd561bf3A066468c32A171dd33
+    verified_at: 2025-09-19T05:01:01.901951Z
+    contract_name: NativeDistributor
+  signature_file: FeeSet_bytes32_uint256_.txt
 - name: FundsDeposited
   signature: FundsDeposited(address,uint256)
   topic_hash: 0x543ba50a5eec5e6178218e364b1d0f396157b3c8fa278522c2cb7fd99407d474
@@ -1401,6 +1524,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0x9c7c28D5a38505f0Bc736aFd011b3863D9138fAe
+    verified_at: 2025-09-18T07:24:02.352147Z
+    contract_name: Treasury
   - address: 0x7aB7ab179cD819756D1E31876a4d22722100F826
     verified_at: 2025-09-04T13:36:39.523777Z
     contract_name: Treasury
@@ -1423,6 +1549,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0x9c7c28D5a38505f0Bc736aFd011b3863D9138fAe
+    verified_at: 2025-09-18T07:24:02.352147Z
+    contract_name: Treasury
   - address: 0x7aB7ab179cD819756D1E31876a4d22722100F826
     verified_at: 2025-09-04T13:36:39.523777Z
     contract_name: Treasury
@@ -1445,6 +1574,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
   - address: 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
     verified_at: 2025-09-04T13:35:39.732065Z
     contract_name: Registry
@@ -1452,6 +1584,19 @@ events:
     verified_at: 2025-08-28T14:05:39.250725Z
     contract_name: Registry
   signature_file: GovernanceUpdated_address_address_.txt
+- name: Initialized
+  signature: Initialized(uint8)
+  topic_hash: 0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
+  anonymous: false
+  inputs:
+  - name: version
+    input_type: uint8
+    indexed: false
+  contract_sources:
+  - address: 0x8BD36ca1A55e389335004872aA3C3Be0969D3aA7
+    verified_at: 2025-09-05T11:03:47.278888Z
+    contract_name: PolygonZkEVMBridgeV2
+  signature_file: Initialized_uint8_.txt
 - name: Initialized
   signature: Initialized(uint64)
   topic_hash: 0xc7f505b2f371ae2175ee4913f4499e1f2633a7b5936321eed1cdaeb6115181d2
@@ -1461,6 +1606,33 @@ events:
     input_type: uint64
     indexed: false
   contract_sources:
+  - address: 0xc110649a70eBEe2eFffcE0ab49aea700DdC9C089
+    verified_at: 2025-09-18T07:24:44.888495Z
+    contract_name: Rewards
+  - address: 0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F
+    verified_at: 2025-09-18T07:24:23.057792Z
+    contract_name: ArtifactStaking
+  - address: 0x9c7c28D5a38505f0Bc736aFd011b3863D9138fAe
+    verified_at: 2025-09-18T07:24:02.352147Z
+    contract_name: Treasury
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
+    contract_name: Governance
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
+  - address: 0x293910bf6Cb4370e6bEF7C1d838ed4fB2F571112
+    verified_at: 2025-09-18T06:55:27.056704Z
+    contract_name: ArtifactFactory
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
+    contract_name: ArtifactManager
+  - address: 0x1C4208Db3Ad579EfDc4b3A613dc442E796FEc28B
+    verified_at: 2025-09-18T06:54:47.828375Z
+    contract_name: Artifact
+  - address: 0xecc03B0C21ac523923AdAA7cD914ab3F180848B2
+    verified_at: 2025-09-18T06:54:27.623813Z
+    contract_name: Artifact
   - address: 0x2e2EBb4B97B9de9d5BCA343987E3B4D76dF36D25
     verified_at: 2025-09-12T04:36:07.618937Z
     contract_name: Rewards
@@ -1753,19 +1925,6 @@ events:
     verified_at: 2025-08-22T05:06:08.496968Z
     contract_name: Artifact
   signature_file: Initialized_uint64_.txt
-- name: Initialized
-  signature: Initialized(uint8)
-  topic_hash: 0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
-  anonymous: false
-  inputs:
-  - name: version
-    input_type: uint8
-    indexed: false
-  contract_sources:
-  - address: 0x8BD36ca1A55e389335004872aA3C3Be0969D3aA7
-    verified_at: 2025-09-05T11:03:47.278888Z
-    contract_name: PolygonZkEVMBridgeV2
-  signature_file: Initialized_uint8_.txt
 - name: LockDurationsUpdated
   signature: LockDurationsUpdated(uint256,uint256)
   topic_hash: 0xfb6643f1917d4ac31b0c062fdf49db2da21205d50d01ffd6c07ed5e73389f600
@@ -1778,6 +1937,9 @@ events:
     input_type: uint256
     indexed: true
   contract_sources:
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
+    contract_name: Governance
   - address: 0xA115F8af20849ce295CebB56230111f82d8850ee
     verified_at: 2025-09-12T04:16:05.966120Z
     contract_name: Governance
@@ -1803,6 +1965,9 @@ events:
     input_type: bytes32
     indexed: true
   contract_sources:
+  - address: 0xBBd29811627914Cd561bf3A066468c32A171dd33
+    verified_at: 2025-09-19T05:01:01.901951Z
+    contract_name: NativeDistributor
   - address: 0x81112D4A0389AFBE159F39a5b048602cEb221285
     verified_at: 2025-09-05T08:57:43.048427Z
     contract_name: NativeDistributor
@@ -1875,6 +2040,28 @@ events:
     contract_name: Artifact
   signature_file: MerkleRootUpdated_bytes32_.txt
 - name: ModelUsage
+  signature: ModelUsage(address,uint256,uint256)
+  topic_hash: 0x13807030a34436b32919810fc44cbce6cd53ca63523a750b957bee98dc49a7a3
+  anonymous: false
+  inputs:
+  - name: contributor
+    input_type: address
+    indexed: true
+  - name: usageAmount
+    input_type: uint256
+    indexed: false
+  - name: apiCreditUsed
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x2086Be28CE3B80FA7ec8405268A19BbA01F3b041
+    verified_at: 2025-09-04T10:30:45.497157Z
+    contract_name: Artifact
+  - address: 0x2263e66D70aa362c6058c9e04b88de14a2C4418C
+    verified_at: 2025-09-04T10:30:28.082738Z
+    contract_name: Artifact
+  signature_file: ModelUsage_address_uint256_uint256_.txt
+- name: ModelUsage
   signature: ModelUsage(uint256,uint256)
   topic_hash: 0x1fa5ad242f58a5bdd94f8d05d112d1bb12f47ba376ce7069f3857fabb1e32b05
   anonymous: false
@@ -1911,28 +2098,6 @@ events:
     verified_at: 2025-08-26T09:09:13.013588Z
     contract_name: EnhancedArtifact
   signature_file: ModelUsage_uint256_uint256_.txt
-- name: ModelUsage
-  signature: ModelUsage(address,uint256,uint256)
-  topic_hash: 0x13807030a34436b32919810fc44cbce6cd53ca63523a750b957bee98dc49a7a3
-  anonymous: false
-  inputs:
-  - name: contributor
-    input_type: address
-    indexed: true
-  - name: usageAmount
-    input_type: uint256
-    indexed: false
-  - name: apiCreditUsed
-    input_type: uint256
-    indexed: false
-  contract_sources:
-  - address: 0x2086Be28CE3B80FA7ec8405268A19BbA01F3b041
-    verified_at: 2025-09-04T10:30:45.497157Z
-    contract_name: Artifact
-  - address: 0x2263e66D70aa362c6058c9e04b88de14a2C4418C
-    verified_at: 2025-09-04T10:30:28.082738Z
-    contract_name: Artifact
-  signature_file: ModelUsage_address_uint256_uint256_.txt
 - name: NewWrappedToken
   signature: NewWrappedToken(uint32,address,address,bytes)
   topic_hash: 0x490e59a1701b938786ac72570a1efeac994a3dbe96e2e883e19e902ace6e6a39
@@ -1964,6 +2129,30 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0xBBd29811627914Cd561bf3A066468c32A171dd33
+    verified_at: 2025-09-19T05:01:01.901951Z
+    contract_name: NativeDistributor
+  - address: 0xc110649a70eBEe2eFffcE0ab49aea700DdC9C089
+    verified_at: 2025-09-18T07:24:44.888495Z
+    contract_name: Rewards
+  - address: 0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F
+    verified_at: 2025-09-18T07:24:23.057792Z
+    contract_name: ArtifactStaking
+  - address: 0x9c7c28D5a38505f0Bc736aFd011b3863D9138fAe
+    verified_at: 2025-09-18T07:24:02.352147Z
+    contract_name: Treasury
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
+    contract_name: Governance
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
+  - address: 0x1C4208Db3Ad579EfDc4b3A613dc442E796FEc28B
+    verified_at: 2025-09-18T06:54:47.828375Z
+    contract_name: Artifact
+  - address: 0xecc03B0C21ac523923AdAA7cD914ab3F180848B2
+    verified_at: 2025-09-18T06:54:27.623813Z
+    contract_name: Artifact
   - address: 0x793563b85DF251e1d7abA6F096728c064dd37a64
     verified_at: 2025-09-12T04:36:02.447338Z
     contract_name: EnhancedArtifact
@@ -2205,6 +2394,30 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0xBBd29811627914Cd561bf3A066468c32A171dd33
+    verified_at: 2025-09-19T05:01:01.901951Z
+    contract_name: NativeDistributor
+  - address: 0xc110649a70eBEe2eFffcE0ab49aea700DdC9C089
+    verified_at: 2025-09-18T07:24:44.888495Z
+    contract_name: Rewards
+  - address: 0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F
+    verified_at: 2025-09-18T07:24:23.057792Z
+    contract_name: ArtifactStaking
+  - address: 0x9c7c28D5a38505f0Bc736aFd011b3863D9138fAe
+    verified_at: 2025-09-18T07:24:02.352147Z
+    contract_name: Treasury
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
+    contract_name: Governance
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
+  - address: 0x1C4208Db3Ad579EfDc4b3A613dc442E796FEc28B
+    verified_at: 2025-09-18T06:54:47.828375Z
+    contract_name: Artifact
+  - address: 0xecc03B0C21ac523923AdAA7cD914ab3F180848B2
+    verified_at: 2025-09-18T06:54:27.623813Z
+    contract_name: Artifact
   - address: 0x793563b85DF251e1d7abA6F096728c064dd37a64
     verified_at: 2025-09-12T04:36:02.447338Z
     contract_name: EnhancedArtifact
@@ -2486,6 +2699,33 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0xBBd29811627914Cd561bf3A066468c32A171dd33
+    verified_at: 2025-09-19T05:01:01.901951Z
+    contract_name: NativeDistributor
+  - address: 0xc110649a70eBEe2eFffcE0ab49aea700DdC9C089
+    verified_at: 2025-09-18T07:24:44.888495Z
+    contract_name: Rewards
+  - address: 0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F
+    verified_at: 2025-09-18T07:24:23.057792Z
+    contract_name: ArtifactStaking
+  - address: 0x9c7c28D5a38505f0Bc736aFd011b3863D9138fAe
+    verified_at: 2025-09-18T07:24:02.352147Z
+    contract_name: Treasury
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
+    contract_name: Governance
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
+  - address: 0x1C4208Db3Ad579EfDc4b3A613dc442E796FEc28B
+    verified_at: 2025-09-18T06:54:47.828375Z
+    contract_name: Artifact
+  - address: 0x7aC27060c9698ef01631C4bbCfCD0179724aA544
+    verified_at: 2025-09-18T06:54:45.285121Z
+    contract_name: UpgradeableBeacon
+  - address: 0xecc03B0C21ac523923AdAA7cD914ab3F180848B2
+    verified_at: 2025-09-18T06:54:27.623813Z
+    contract_name: Artifact
   - address: 0x793563b85DF251e1d7abA6F096728c064dd37a64
     verified_at: 2025-09-12T04:36:02.447338Z
     contract_name: EnhancedArtifact
@@ -2838,6 +3078,12 @@ events:
     input_type: address
     indexed: false
   contract_sources:
+  - address: 0x76e1E992e5A19E676011E100F0665F513bA4F299
+    verified_at: 2025-09-19T04:54:47.402598Z
+    contract_name: AirdropVault
+  - address: 0x6d11a25Fe882a00222fB8C708411309888eCb544
+    verified_at: 2025-09-19T04:41:54.568597Z
+    contract_name: Treasury
   - address: 0x1A3329E7813a35c7E5B4189BB3b21bd112eC6536
     verified_at: 2025-09-10T21:40:35.346460Z
     contract_name: Treasury
@@ -2857,6 +3103,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0x6d11a25Fe882a00222fB8C708411309888eCb544
+    verified_at: 2025-09-19T04:41:54.568597Z
+    contract_name: Treasury
   - address: 0x1A3329E7813a35c7E5B4189BB3b21bd112eC6536
     verified_at: 2025-09-10T21:40:35.346460Z
     contract_name: Treasury
@@ -2905,6 +3154,9 @@ events:
     input_type: uint256
     indexed: true
   contract_sources:
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
+    contract_name: Governance
   - address: 0xA115F8af20849ce295CebB56230111f82d8850ee
     verified_at: 2025-09-12T04:16:05.966120Z
     contract_name: Governance
@@ -2927,6 +3179,9 @@ events:
     input_type: uint256
     indexed: true
   contract_sources:
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
+    contract_name: Governance
   - address: 0xA115F8af20849ce295CebB56230111f82d8850ee
     verified_at: 2025-09-12T04:16:05.966120Z
     contract_name: Governance
@@ -2952,6 +3207,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
   - address: 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
     verified_at: 2025-09-04T13:35:39.732065Z
     contract_name: Registry
@@ -2968,6 +3226,9 @@ events:
     input_type: bool
     indexed: true
   contract_sources:
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
+    contract_name: Governance
   - address: 0xA115F8af20849ce295CebB56230111f82d8850ee
     verified_at: 2025-09-12T04:16:05.966120Z
     contract_name: Governance
@@ -2996,6 +3257,9 @@ events:
     input_type: uint256
     indexed: true
   contract_sources:
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
+    contract_name: Governance
   - address: 0xA115F8af20849ce295CebB56230111f82d8850ee
     verified_at: 2025-09-12T04:16:05.966120Z
     contract_name: Governance
@@ -3021,6 +3285,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F
+    verified_at: 2025-09-18T07:24:23.057792Z
+    contract_name: ArtifactStaking
   - address: 0xC22a05711ef9f3e59baF8ae48F59896715D49fAF
     verified_at: 2025-09-04T13:37:15.481994Z
     contract_name: ArtifactStaking
@@ -3080,6 +3347,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0xc110649a70eBEe2eFffcE0ab49aea700DdC9C089
+    verified_at: 2025-09-18T07:24:44.888495Z
+    contract_name: Rewards
   - address: 0x64eC59f979FCd0F97Ef0618DfE751e15cb631612
     verified_at: 2025-09-04T13:37:47.288773Z
     contract_name: Rewards
@@ -3166,6 +3436,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
   - address: 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
     verified_at: 2025-09-04T13:35:39.732065Z
     contract_name: Registry
@@ -3188,6 +3461,18 @@ events:
     input_type: bytes32
     indexed: true
   contract_sources:
+  - address: 0x76e1E992e5A19E676011E100F0665F513bA4F299
+    verified_at: 2025-09-19T04:54:47.402598Z
+    contract_name: AirdropVault
+  - address: 0x6d11a25Fe882a00222fB8C708411309888eCb544
+    verified_at: 2025-09-19T04:41:54.568597Z
+    contract_name: Treasury
+  - address: 0x293910bf6Cb4370e6bEF7C1d838ed4fB2F571112
+    verified_at: 2025-09-18T06:55:27.056704Z
+    contract_name: ArtifactFactory
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
+    contract_name: ArtifactManager
   - address: 0x1A3329E7813a35c7E5B4189BB3b21bd112eC6536
     verified_at: 2025-09-10T21:40:35.346460Z
     contract_name: Treasury
@@ -3219,6 +3504,18 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x76e1E992e5A19E676011E100F0665F513bA4F299
+    verified_at: 2025-09-19T04:54:47.402598Z
+    contract_name: AirdropVault
+  - address: 0x6d11a25Fe882a00222fB8C708411309888eCb544
+    verified_at: 2025-09-19T04:41:54.568597Z
+    contract_name: Treasury
+  - address: 0x293910bf6Cb4370e6bEF7C1d838ed4fB2F571112
+    verified_at: 2025-09-18T06:55:27.056704Z
+    contract_name: ArtifactFactory
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
+    contract_name: ArtifactManager
   - address: 0x1A3329E7813a35c7E5B4189BB3b21bd112eC6536
     verified_at: 2025-09-10T21:40:35.346460Z
     contract_name: Treasury
@@ -3250,6 +3547,18 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x76e1E992e5A19E676011E100F0665F513bA4F299
+    verified_at: 2025-09-19T04:54:47.402598Z
+    contract_name: AirdropVault
+  - address: 0x6d11a25Fe882a00222fB8C708411309888eCb544
+    verified_at: 2025-09-19T04:41:54.568597Z
+    contract_name: Treasury
+  - address: 0x293910bf6Cb4370e6bEF7C1d838ed4fB2F571112
+    verified_at: 2025-09-18T06:55:27.056704Z
+    contract_name: ArtifactFactory
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
+    contract_name: ArtifactManager
   - address: 0x1A3329E7813a35c7E5B4189BB3b21bd112eC6536
     verified_at: 2025-09-10T21:40:35.346460Z
     contract_name: Treasury
@@ -3278,6 +3587,9 @@ events:
     input_type: uint256
     indexed: true
   contract_sources:
+  - address: 0xBBd29811627914Cd561bf3A066468c32A171dd33
+    verified_at: 2025-09-19T05:01:01.901951Z
+    contract_name: NativeDistributor
   - address: 0x81112D4A0389AFBE159F39a5b048602cEb221285
     verified_at: 2025-09-05T08:57:43.048427Z
     contract_name: NativeDistributor
@@ -3416,6 +3728,28 @@ events:
     verified_at: 2025-09-11T02:31:51.954226Z
     contract_name: GnosisSafeL2
   signature_file: SignMsg_bytes32_.txt
+- name: SingleTierFeeRateSet
+  signature: SingleTierFeeRateSet(bytes32,uint256,uint256,uint256)
+  topic_hash: 0xf15b3734f84fd5be93889964ca805694f2d85a5380f00b4b0638a16d838a0768
+  anonymous: false
+  inputs:
+  - name: root
+    input_type: bytes32
+    indexed: true
+  - name: feeRate
+    input_type: uint256
+    indexed: false
+  - name: minFee
+    input_type: uint256
+    indexed: false
+  - name: maxFee
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0xBBd29811627914Cd561bf3A066468c32A171dd33
+    verified_at: 2025-09-19T05:01:01.901951Z
+    contract_name: NativeDistributor
+  signature_file: SingleTierFeeRateSet_bytes32_uint256_uint256_uint256_.txt
 - name: SnapshotRegistered
   signature: SnapshotRegistered(uint256,uint256,uint256)
   topic_hash: 0x4f754550a3181f2503de59eca71f13be3c95c9a6632425cbe9b87a647a117e09
@@ -3532,6 +3866,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F
+    verified_at: 2025-09-18T07:24:23.057792Z
+    contract_name: ArtifactStaking
   - address: 0xC22a05711ef9f3e59baF8ae48F59896715D49fAF
     verified_at: 2025-09-04T13:37:15.481994Z
     contract_name: ArtifactStaking
@@ -3684,6 +4021,28 @@ events:
     contract_name: EnhancedArtifact
   signature_file: SubscriptionTransferred_address_address_bytes32_.txt
 - name: TokensTransferred
+  signature: TokensTransferred(address,address,uint256,bytes)
+  topic_hash: 0xee4e25c0af5a87a6eae736c2253f1285a404e9a5d788abfb811c5ffbc817fa07
+  anonymous: false
+  inputs:
+  - name: token
+    input_type: address
+    indexed: true
+  - name: to
+    input_type: address
+    indexed: true
+  - name: amount
+    input_type: uint256
+    indexed: false
+  - name: data
+    input_type: bytes
+    indexed: false
+  contract_sources:
+  - address: 0x6d11a25Fe882a00222fB8C708411309888eCb544
+    verified_at: 2025-09-19T04:41:54.568597Z
+    contract_name: Treasury
+  signature_file: TokensTransferred_address_address_uint256_bytes_.txt
+- name: TokensTransferred
   signature: TokensTransferred(address,address,uint256)
   topic_hash: 0x1b89874203ff7f0bba87c969ada3f32fda22ed38a6706d35199d21280c7811b1
   anonymous: false
@@ -3705,6 +4064,28 @@ events:
     verified_at: 2025-08-19T09:21:35.153826Z
     contract_name: Treasury
   signature_file: TokensTransferred_address_address_uint256_.txt
+- name: TokensWithdrawn
+  signature: TokensWithdrawn(address,address,uint256)
+  topic_hash: 0x6337ed398c0e8467698c581374fdce4db14922df487b5a39483079f5f59b60a4
+  anonymous: false
+  inputs:
+  - name: token
+    input_type: address
+    indexed: true
+  - name: to
+    input_type: address
+    indexed: true
+  - name: amount
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x76e1E992e5A19E676011E100F0665F513bA4F299
+    verified_at: 2025-09-19T04:54:47.402598Z
+    contract_name: AirdropVault
+  - address: 0x6d11a25Fe882a00222fB8C708411309888eCb544
+    verified_at: 2025-09-19T04:41:54.568597Z
+    contract_name: Treasury
+  signature_file: TokensWithdrawn_address_address_uint256_.txt
 - name: TotalSupplyUpdated
   signature: TotalSupplyUpdated(uint256)
   topic_hash: 0xf8cbdbee6d402ad22cddbc250098e39cd0d24f0fad122f64794577167c605df9
@@ -3714,6 +4095,9 @@ events:
     input_type: uint256
     indexed: true
   contract_sources:
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
+    contract_name: Governance
   - address: 0xA115F8af20849ce295CebB56230111f82d8850ee
     verified_at: 2025-09-12T04:16:05.966120Z
     contract_name: Governance
@@ -3742,6 +4126,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0xa56cE076C2B1D2eBEC7603168a01CE98A41C3A76
+    verified_at: 2025-09-19T04:59:44.164293Z
+    contract_name: WETH
   - address: 0x29A04250ed17A0A3368Bf79DFdF463676a76Aa6A
     verified_at: 2025-09-12T04:21:37.598738Z
     contract_name: OwnershipERC20
@@ -3794,6 +4181,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0x6d11a25Fe882a00222fB8C708411309888eCb544
+    verified_at: 2025-09-19T04:41:54.568597Z
+    contract_name: Treasury
   - address: 0x1A3329E7813a35c7E5B4189BB3b21bd112eC6536
     verified_at: 2025-09-10T21:40:35.346460Z
     contract_name: Treasury
@@ -3813,6 +4203,9 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
   - address: 0x6421Ed6b21AD276E1d77a0635df4fD839980654A
     verified_at: 2025-09-04T13:35:39.732065Z
     contract_name: Registry
@@ -3829,6 +4222,12 @@ events:
     input_type: address
     indexed: false
   contract_sources:
+  - address: 0x76e1E992e5A19E676011E100F0665F513bA4F299
+    verified_at: 2025-09-19T04:54:47.402598Z
+    contract_name: AirdropVault
+  - address: 0x6d11a25Fe882a00222fB8C708411309888eCb544
+    verified_at: 2025-09-19T04:41:54.568597Z
+    contract_name: Treasury
   - address: 0x1A3329E7813a35c7E5B4189BB3b21bd112eC6536
     verified_at: 2025-09-10T21:40:35.346460Z
     contract_name: Treasury
@@ -3851,6 +4250,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F
+    verified_at: 2025-09-18T07:24:23.057792Z
+    contract_name: ArtifactStaking
   - address: 0xC22a05711ef9f3e59baF8ae48F59896715D49fAF
     verified_at: 2025-09-04T13:37:15.481994Z
     contract_name: ArtifactStaking
@@ -3870,6 +4272,51 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0x125E0aA5DF704ED1BbC82c72d96E31f4dea4510d
+    verified_at: 2025-09-18T07:24:59.254450Z
+    contract_name: ERC1967Proxy
+  - address: 0xc110649a70eBEe2eFffcE0ab49aea700DdC9C089
+    verified_at: 2025-09-18T07:24:44.888495Z
+    contract_name: Rewards
+  - address: 0x77cFE4fD410ccd2fC78aA85ff21279581Ba038be
+    verified_at: 2025-09-18T07:24:39.555295Z
+    contract_name: ERC1967Proxy
+  - address: 0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F
+    verified_at: 2025-09-18T07:24:23.057792Z
+    contract_name: ArtifactStaking
+  - address: 0xB224bd75fD71f0b70a1Da78B436407A833f65d03
+    verified_at: 2025-09-18T07:24:18.705409Z
+    contract_name: ERC1967Proxy
+  - address: 0x9c7c28D5a38505f0Bc736aFd011b3863D9138fAe
+    verified_at: 2025-09-18T07:24:02.352147Z
+    contract_name: Treasury
+  - address: 0xc186B95ce38042e080BA97050c1Bde16D054eE9F
+    verified_at: 2025-09-18T07:23:59.054074Z
+    contract_name: ERC1967Proxy
+  - address: 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D
+    verified_at: 2025-09-18T07:23:42.568145Z
+    contract_name: Governance
+  - address: 0x9D19b274891D940bf01B671De6066c4f805EE8E2
+    verified_at: 2025-09-18T07:23:39.128736Z
+    contract_name: ERC1967Proxy
+  - address: 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c
+    verified_at: 2025-09-18T07:23:23.311738Z
+    contract_name: Registry
+  - address: 0xDe5F1972B969a3EE6f79F29616f86a7539470842
+    verified_at: 2025-09-18T06:55:42.169545Z
+    contract_name: ERC1967Proxy
+  - address: 0x293910bf6Cb4370e6bEF7C1d838ed4fB2F571112
+    verified_at: 2025-09-18T06:55:27.056704Z
+    contract_name: ArtifactFactory
+  - address: 0xa29cE39B894923f84D32c71cB9235cDa6179c8F4
+    verified_at: 2025-09-18T06:55:22.268974Z
+    contract_name: ERC1967Proxy
+  - address: 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A
+    verified_at: 2025-09-18T06:55:08.037987Z
+    contract_name: ArtifactManager
+  - address: 0x7aC27060c9698ef01631C4bbCfCD0179724aA544
+    verified_at: 2025-09-18T06:54:45.285121Z
+    contract_name: UpgradeableBeacon
   - address: 0x7a45E2Ef82c5C1e94605d7A215ceed2104f9A584
     verified_at: 2025-09-12T04:36:22.594580Z
     contract_name: ERC1967Proxy
@@ -4706,6 +5153,9 @@ events:
     input_type: uint256
     indexed: false
   contract_sources:
+  - address: 0x6d11a25Fe882a00222fB8C708411309888eCb544
+    verified_at: 2025-09-19T04:41:54.568597Z
+    contract_name: Treasury
   - address: 0x1A3329E7813a35c7E5B4189BB3b21bd112eC6536
     verified_at: 2025-09-10T21:40:35.346460Z
     contract_name: Treasury
@@ -4722,50 +5172,13 @@ events:
     input_type: address
     indexed: true
   contract_sources:
+  - address: 0xBBd29811627914Cd561bf3A066468c32A171dd33
+    verified_at: 2025-09-19T05:01:01.901951Z
+    contract_name: NativeDistributor
   - address: 0x81112D4A0389AFBE159F39a5b048602cEb221285
     verified_at: 2025-09-05T08:57:43.048427Z
     contract_name: NativeDistributor
   signature_file: VaultSet_address_.txt
-- name: Withdraw
-  signature: Withdraw(address,uint256)
-  topic_hash: 0x884edad9ce6fa2440d8a54cc123490eb96d2768479d49ff9c7366125a9424364
-  anonymous: false
-  inputs:
-  - name: user
-    input_type: address
-    indexed: true
-  - name: amount
-    input_type: uint256
-    indexed: true
-  contract_sources:
-  - address: 0x0fA299538a4360c5c3A6Fc759d14Dd3363D548F3
-    verified_at: 2025-09-12T04:21:28.629556Z
-    contract_name: EnhancedEscrow
-  - address: 0x38dEF18C5f16184DCC1031404b69F136f5F11D05
-    verified_at: 2025-09-12T04:17:46.700306Z
-    contract_name: EnhancedEscrow
-  - address: 0x7d2F0a1d763E19c3DAc2494FB3aE4BcFAdd19306
-    verified_at: 2025-09-12T04:17:43.423591Z
-    contract_name: EnhancedEscrow
-  - address: 0xCe56FC03EF024008B71B389b3d53Dca1ab125882
-    verified_at: 2025-09-12T04:17:27.220408Z
-    contract_name: EnhancedEscrow
-  - address: 0x58Ce4CCF23612b7ab97dEB9017d8C755f14C28c2
-    verified_at: 2025-09-12T04:16:35.140130Z
-    contract_name: EnhancedEscrow
-  - address: 0x60617073Cebe71bf358FDA04c1880b79364fC958
-    verified_at: 2025-09-11T02:32:01.838817Z
-    contract_name: EnhancedEscrow
-  - address: 0x81fFB6d4e08116338D0eD6f7d1A5f8Daf4373Dc8
-    verified_at: 2025-09-11T02:31:50.064887Z
-    contract_name: EnhancedEscrow
-  - address: 0x81112D4A0389AFBE159F39a5b048602cEb221285
-    verified_at: 2025-09-05T08:57:43.048427Z
-    contract_name: NativeDistributor
-  - address: 0x63Ee3427DBb51963C42b74135A8496c7843fcf33
-    verified_at: 2025-08-26T09:09:23.937808Z
-    contract_name: EnhancedEscrow
-  signature_file: Withdraw_address_uint256_.txt
 - name: Withdraw
   signature: Withdraw(address,uint256,address)
   topic_hash: 0x56c54ba9bd38d8fd62012e42c7ee564519b09763c426d331b3661b537ead19b2
@@ -4809,6 +5222,49 @@ events:
     verified_at: 2025-08-26T09:07:48.679081Z
     contract_name: Escrow
   signature_file: Withdraw_address_uint256_address_.txt
+- name: Withdraw
+  signature: Withdraw(address,uint256)
+  topic_hash: 0x884edad9ce6fa2440d8a54cc123490eb96d2768479d49ff9c7366125a9424364
+  anonymous: false
+  inputs:
+  - name: to
+    input_type: address
+    indexed: true
+  - name: amount
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0xBBd29811627914Cd561bf3A066468c32A171dd33
+    verified_at: 2025-09-19T05:01:01.901951Z
+    contract_name: NativeDistributor
+  - address: 0x0fA299538a4360c5c3A6Fc759d14Dd3363D548F3
+    verified_at: 2025-09-12T04:21:28.629556Z
+    contract_name: EnhancedEscrow
+  - address: 0x38dEF18C5f16184DCC1031404b69F136f5F11D05
+    verified_at: 2025-09-12T04:17:46.700306Z
+    contract_name: EnhancedEscrow
+  - address: 0x7d2F0a1d763E19c3DAc2494FB3aE4BcFAdd19306
+    verified_at: 2025-09-12T04:17:43.423591Z
+    contract_name: EnhancedEscrow
+  - address: 0xCe56FC03EF024008B71B389b3d53Dca1ab125882
+    verified_at: 2025-09-12T04:17:27.220408Z
+    contract_name: EnhancedEscrow
+  - address: 0x58Ce4CCF23612b7ab97dEB9017d8C755f14C28c2
+    verified_at: 2025-09-12T04:16:35.140130Z
+    contract_name: EnhancedEscrow
+  - address: 0x60617073Cebe71bf358FDA04c1880b79364fC958
+    verified_at: 2025-09-11T02:32:01.838817Z
+    contract_name: EnhancedEscrow
+  - address: 0x81fFB6d4e08116338D0eD6f7d1A5f8Daf4373Dc8
+    verified_at: 2025-09-11T02:31:50.064887Z
+    contract_name: EnhancedEscrow
+  - address: 0x81112D4A0389AFBE159F39a5b048602cEb221285
+    verified_at: 2025-09-05T08:57:43.048427Z
+    contract_name: NativeDistributor
+  - address: 0x63Ee3427DBb51963C42b74135A8496c7843fcf33
+    verified_at: 2025-08-26T09:09:23.937808Z
+    contract_name: EnhancedEscrow
+  signature_file: Withdraw_address_uint256_.txt
 - name: Withdrawal
   signature: Withdrawal(address,uint256)
   topic_hash: 0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65

@@ -1,0 +1,11 @@
+Event Name: FeeSet
+Signature: FeeSet(bytes32,uint256)
+Topic Hash: 0xdb12e4938bdc4407b4fe2690102950fb54b88ef08ca2e9f4f4ba4783367ed780
+Anonymous: false
+
+Inputs:
+  0: root bytes32 (indexed)
+  1: fee uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0xBBd29811627914Cd561bf3A066468c32A171dd33 (contract_name: NativeDistributor, verified_at: 2025-09-19T05:01:01.901951Z)

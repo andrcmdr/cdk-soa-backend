@@ -14,3 +14,7 @@ Contract Sources:
   - 0x74623e0f207071571747a1f6c7cfe674d86c33f5 (contract_name: ArtifactManager)
   - 0xa643f0d8ffdc2c7d7a15a46a2683953fb0bcc407 (contract_name: ArtifactFactory)
   - 0x1a3329e7813a35c7e5b4189bb3b21bd112ec6536 (contract_name: Treasury)
+  - 0x34f8458ebcff41cdfd9745cb87b7276a62750d4a (contract_name: ArtifactManager)
+  - 0x293910bf6cb4370e6bef7c1d838ed4fb2f571112 (contract_name: ArtifactFactory)
+  - 0x6d11a25fe882a00222fb8c708411309888ecb544 (contract_name: Treasury)
+  - 0x76e1e992e5a19e676011e100f0665f513ba4f299 (contract_name: AirdropVault)

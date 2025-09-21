@@ -11,3 +11,4 @@ Inputs:
 Contract Sources:
   - 0xb52beb65d2f59801c272ea99b0d3fd227c54185e (contract_name: Registry)
   - 0x6421ed6b21ad276e1d77a0635df4fd839980654a (contract_name: Registry)
+  - 0x658f8fdf4bb1ff668e2d93c26a87b24f7b89d61c (contract_name: Registry)

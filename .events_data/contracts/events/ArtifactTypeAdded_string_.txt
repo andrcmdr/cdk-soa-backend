@@ -8,3 +8,4 @@ Inputs:
 
 Contract Sources:
   - 0xa643f0d8ffdc2c7d7a15a46a2683953fb0bcc407 (contract_name: ArtifactFactory)
+  - 0x293910bf6cb4370e6bef7c1d838ed4fb2f571112 (contract_name: ArtifactFactory)

@@ -14,3 +14,4 @@ Inputs:
 Contract Sources:
   - 0xeb739b5b19281679bafa2e8c8406b6c2d2b31394 (contract_name: ArtifactStaking)
   - 0xc22a05711ef9f3e59baf8ae48f59896715d49faf (contract_name: ArtifactStaking)
+  - 0x2d87d4a017ef7907879a817c57b84bed25ef3e5f (contract_name: ArtifactStaking)

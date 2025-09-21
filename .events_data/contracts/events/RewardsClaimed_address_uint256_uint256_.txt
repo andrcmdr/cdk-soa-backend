@@ -12,3 +12,4 @@ Contract Sources:
   - 0xdac1fe96fc3fa5bb9bd4a3ada9fa44d4a44be9e2 (contract_name: Rewards)
   - 0x16d846093cac3d92f124a181fbb44cd17b85cc95 (contract_name: Rewards)
   - 0x64ec59f979fcd0f97ef0618dfe751e15cb631612 (contract_name: Rewards)
+  - 0xc110649a70ebee2efffce0ab49aea700ddc9c089 (contract_name: Rewards)

@@ -1,0 +1,11 @@
+Event Name: AirdropContractSet
+Signature: AirdropContractSet(address,address)
+Topic Hash: 0x5562ad87627376b22ca0e142a8ed65af969cd0d80f588206731470cca3910c6d
+Anonymous: false
+
+Inputs:
+  0: airdropContract address (indexed)
+  1: newAirdropContract address (indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x76e1E992e5A19E676011E100F0665F513bA4F299 (contract_name: AirdropVault, verified_at: 2025-09-19T04:54:47.402598Z)

@@ -11,4 +11,5 @@ Inputs:
   4: owner address (indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0x293910bf6Cb4370e6bEF7C1d838ed4fB2F571112 (contract_name: ArtifactFactory, verified_at: 2025-09-18T06:55:27.056704Z)
   - 0xA643f0D8FFDC2C7d7A15A46a2683953fB0bCc407 (contract_name: ArtifactFactory, verified_at: 2025-09-04T10:31:28.479422Z)

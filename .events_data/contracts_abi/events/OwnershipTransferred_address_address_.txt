@@ -8,6 +8,15 @@ Inputs:
   1: newOwner address (indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0xBBd29811627914Cd561bf3A066468c32A171dd33 (contract_name: NativeDistributor, verified_at: 2025-09-19T05:01:01.901951Z)
+  - 0xc110649a70eBEe2eFffcE0ab49aea700DdC9C089 (contract_name: Rewards, verified_at: 2025-09-18T07:24:44.888495Z)
+  - 0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F (contract_name: ArtifactStaking, verified_at: 2025-09-18T07:24:23.057792Z)
+  - 0x9c7c28D5a38505f0Bc736aFd011b3863D9138fAe (contract_name: Treasury, verified_at: 2025-09-18T07:24:02.352147Z)
+  - 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D (contract_name: Governance, verified_at: 2025-09-18T07:23:42.568145Z)
+  - 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c (contract_name: Registry, verified_at: 2025-09-18T07:23:23.311738Z)
+  - 0x1C4208Db3Ad579EfDc4b3A613dc442E796FEc28B (contract_name: Artifact, verified_at: 2025-09-18T06:54:47.828375Z)
+  - 0x7aC27060c9698ef01631C4bbCfCD0179724aA544 (contract_name: UpgradeableBeacon, verified_at: 2025-09-18T06:54:45.285121Z)
+  - 0xecc03B0C21ac523923AdAA7cD914ab3F180848B2 (contract_name: Artifact, verified_at: 2025-09-18T06:54:27.623813Z)
   - 0x793563b85DF251e1d7abA6F096728c064dd37a64 (contract_name: EnhancedArtifact, verified_at: 2025-09-12T04:36:02.447338Z)
   - 0xa50356c71578eFf287c8a3eae82240914965aB19 (contract_name: UpgradeableBeacon, verified_at: 2025-09-12T04:33:00.872453Z)
   - 0x3571f702990856B5B99A5fB4188D5466B9664E1F (contract_name: UpgradeableBeacon, verified_at: 2025-09-12T04:30:57.412450Z)

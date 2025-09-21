@@ -9,5 +9,6 @@ Inputs:
   2: amount uint256 (not indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0x6d11a25Fe882a00222fB8C708411309888eCb544 (contract_name: Treasury, verified_at: 2025-09-19T04:41:54.568597Z)
   - 0x1A3329E7813a35c7E5B4189BB3b21bd112eC6536 (contract_name: Treasury, verified_at: 2025-09-10T21:40:35.346460Z)
   - 0x80e6f0937fE177415A868e78e00E2e1D768B8533 (contract_name: Treasury, verified_at: 2025-08-19T09:21:35.153826Z)

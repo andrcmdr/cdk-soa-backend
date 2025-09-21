@@ -1,9 +1,9 @@
 metadata:
-  generated_at: 2025-09-14T21:35:39.930909Z
+  generated_at: 2025-09-20T19:46:16.748178Z
   blockscout_server: https://sentient-testnet-blockscout.eu-north-2.gateway.fm
-  total_verified: 314
-  total_unverified: 199
-  total_with_abi: 314
+  total_verified: 335
+  total_unverified: 204
+  total_with_abi: 335
   abi_directory: ./contracts/abi
 verified_contracts:
 - name: ERC1967Proxy
@@ -91,6 +91,10 @@ verified_contracts:
   abi_file: ERC1967Proxy_0x11c3d35c36e0a76a5d354289f5a9702a8d304907.json
   is_verified: true
 - name: ERC1967Proxy
+  address: 0x125e0aa5df704ed1bbc82c72d96e31f4dea4510d
+  abi_file: ERC1967Proxy_0x125e0aa5df704ed1bbc82c72d96e31f4dea4510d.json
+  is_verified: true
+- name: ERC1967Proxy
   address: 0x12744d13df43d4b6fe24023f693a9780ff7f7353
   abi_file: ERC1967Proxy_0x12744d13df43d4b6fe24023f693a9780ff7f7353.json
   is_verified: true
@@ -145,6 +149,10 @@ verified_contracts:
 - name: ArtifactFactory
   address: 0x1b49622e8d656ce9366e69a78bc47892510870f4
   abi_file: ArtifactFactory_0x1b49622e8d656ce9366e69a78bc47892510870f4.json
+  is_verified: true
+- name: Artifact
+  address: 0x1c4208db3ad579efdc4b3a613dc442e796fec28b
+  abi_file: Artifact_0x1c4208db3ad579efdc4b3a613dc442e796fec28b.json
   is_verified: true
 - name: ArtifactManager
   address: 0x1dd254de55ac042d95d37877c51876b0152af165
@@ -242,6 +250,10 @@ verified_contracts:
   address: 0x28b25efaf830728c9f4257d72a981ba1c7de4567
   abi_file: ERC1967Proxy_0x28b25efaf830728c9f4257d72a981ba1c7de4567.json
   is_verified: true
+- name: ArtifactFactory
+  address: 0x293910bf6cb4370e6bef7c1d838ed4fb2f571112
+  abi_file: ArtifactFactory_0x293910bf6cb4370e6bef7c1d838ed4fb2f571112.json
+  is_verified: true
 - name: OwnershipERC20
   address: 0x29a04250ed17a0a3368bf79dfdf463676a76aa6a
   abi_file: OwnershipERC20_0x29a04250ed17a0a3368bf79dfdf463676a76aa6a.json
@@ -265,6 +277,10 @@ verified_contracts:
 - name: ERC1967Proxy
   address: 0x2d645911c033b9a46a9b2073898f2883a19be81f
   abi_file: ERC1967Proxy_0x2d645911c033b9a46a9b2073898f2883a19be81f.json
+  is_verified: true
+- name: ArtifactStaking
+  address: 0x2d87d4a017ef7907879a817c57b84bed25ef3e5f
+  abi_file: ArtifactStaking_0x2d87d4a017ef7907879a817c57b84bed25ef3e5f.json
   is_verified: true
 - name: EnhancedRewards
   address: 0x2d9c048e8d6fc9283fb80b63a6cbbb4982a6770b
@@ -293,6 +309,10 @@ verified_contracts:
 - name: Artifact
   address: 0x34c99cd2b338332b89eee7c0c162beda8339b543
   abi_file: Artifact_0x34c99cd2b338332b89eee7c0c162beda8339b543.json
+  is_verified: true
+- name: ArtifactManager
+  address: 0x34f8458ebcff41cdfd9745cb87b7276a62750d4a
+  abi_file: ArtifactManager_0x34f8458ebcff41cdfd9745cb87b7276a62750d4a.json
   is_verified: true
 - name: UpgradeableBeacon
   address: 0x3571f702990856b5b99a5fb4188d5466b9664e1f
@@ -538,6 +558,10 @@ verified_contracts:
   address: 0x64ec59f979fcd0f97ef0618dfe751e15cb631612
   abi_file: Rewards_0x64ec59f979fcd0f97ef0618dfe751e15cb631612.json
   is_verified: true
+- name: Registry
+  address: 0x658f8fdf4bb1ff668e2d93c26a87b24f7b89d61c
+  abi_file: Registry_0x658f8fdf4bb1ff668e2d93c26a87b24f7b89d61c.json
+  is_verified: true
 - name: ERC1967Proxy
   address: 0x6645485d50b0aa05ee202b7c906cebd4f58e1543
   abi_file: ERC1967Proxy_0x6645485d50b0aa05ee202b7c906cebd4f58e1543.json
@@ -586,6 +610,10 @@ verified_contracts:
   address: 0x6cd4c6eb245d736794a1d320c1c1d200a96d3763
   abi_file: Artifact_0x6cd4c6eb245d736794a1d320c1c1d200a96d3763.json
   is_verified: true
+- name: Treasury
+  address: 0x6d11a25fe882a00222fb8c708411309888ecb544
+  abi_file: Treasury_0x6d11a25fe882a00222fb8c708411309888ecb544.json
+  is_verified: true
 - name: Artifact
   address: 0x6eefd00130cd006fc5180905352867c3d1547772
   abi_file: Artifact_0x6eefd00130cd006fc5180905352867c3d1547772.json
@@ -618,9 +646,17 @@ verified_contracts:
   address: 0x74623e0f207071571747a1f6c7cfe674d86c33f5
   abi_file: ArtifactManager_0x74623e0f207071571747a1f6c7cfe674d86c33f5.json
   is_verified: true
+- name: AirdropVault
+  address: 0x76e1e992e5a19e676011e100f0665f513ba4f299
+  abi_file: AirdropVault_0x76e1e992e5a19e676011e100f0665f513ba4f299.json
+  is_verified: true
 - name: ERC1967Proxy
   address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
   abi_file: ERC1967Proxy_0x77100ba0182042aea9ec29f9257bcb2efec94d0c.json
+  is_verified: true
+- name: ERC1967Proxy
+  address: 0x77cfe4fd410ccd2fc78aa85ff21279581ba038be
+  abi_file: ERC1967Proxy_0x77cfe4fd410ccd2fc78aa85ff21279581ba038be.json
   is_verified: true
 - name: GnosisSafeProxy
   address: 0x789ed427515c1ce1f2778494964116a66531d0e9
@@ -641,6 +677,10 @@ verified_contracts:
 - name: Treasury
   address: 0x7ab7ab179cd819756d1e31876a4d22722100f826
   abi_file: Treasury_0x7ab7ab179cd819756d1e31876a4d22722100f826.json
+  is_verified: true
+- name: UpgradeableBeacon
+  address: 0x7ac27060c9698ef01631c4bbcfcd0179724aa544
+  abi_file: UpgradeableBeacon_0x7ac27060c9698ef01631c4bbcfcd0179724aa544.json
   is_verified: true
 - name: Artifact
   address: 0x7b56cc3c7978b478d4e936ccdf0752b392485777
@@ -806,6 +846,14 @@ verified_contracts:
   address: 0x9c246032b1009ae95d6e23cf69536e394aa8cc4c
   abi_file: ERC1967Proxy_0x9c246032b1009ae95d6e23cf69536e394aa8cc4c.json
   is_verified: true
+- name: Treasury
+  address: 0x9c7c28d5a38505f0bc736afd011b3863d9138fae
+  abi_file: Treasury_0x9c7c28d5a38505f0bc736afd011b3863d9138fae.json
+  is_verified: true
+- name: ERC1967Proxy
+  address: 0x9d19b274891d940bf01b671de6066c4f805ee8e2
+  abi_file: ERC1967Proxy_0x9d19b274891d940bf01b671de6066c4f805ee8e2.json
+  is_verified: true
 - name: ERC1967Proxy
   address: 0x9e8c1ce104948daccbda546b2a823886a6a7253a
   abi_file: ERC1967Proxy_0x9e8c1ce104948daccbda546b2a823886a6a7253a.json
@@ -825,6 +873,10 @@ verified_contracts:
 - name: ERC1967Proxy
   address: 0xa29823c10979078ff89ce331dee99fbf6decbbf6
   abi_file: ERC1967Proxy_0xa29823c10979078ff89ce331dee99fbf6decbbf6.json
+  is_verified: true
+- name: ERC1967Proxy
+  address: 0xa29ce39b894923f84d32c71cb9235cda6179c8f4
+  abi_file: ERC1967Proxy_0xa29ce39b894923f84d32c71cb9235cda6179c8f4.json
   is_verified: true
 - name: ERC1967Proxy
   address: 0xa2b795e52bfe67a111c9af0e13fc452c291f86c2
@@ -849,6 +901,10 @@ verified_contracts:
 - name: UpgradeableBeacon
   address: 0xa50356c71578eff287c8a3eae82240914965ab19
   abi_file: UpgradeableBeacon_0xa50356c71578eff287c8a3eae82240914965ab19.json
+  is_verified: true
+- name: WETH
+  address: 0xa56ce076c2b1d2ebec7603168a01ce98a41c3a76
+  abi_file: WETH_0xa56ce076c2b1d2ebec7603168a01ce98a41c3a76.json
   is_verified: true
 - name: ArtifactFactory
   address: 0xa643f0d8ffdc2c7d7a15a46a2683953fb0bcc407
@@ -906,6 +962,10 @@ verified_contracts:
   address: 0xaed451a0d3c8114864d336e95208e78938a99eef
   abi_file: ERC1967Proxy_0xaed451a0d3c8114864d336e95208e78938a99eef.json
   is_verified: true
+- name: Governance
+  address: 0xaf478e2e51efefb0334b8d948c432c7c2012214d
+  abi_file: Governance_0xaf478e2e51efefb0334b8d948c432c7c2012214d.json
+  is_verified: true
 - name: EnhancedRewards
   address: 0xaf7af80d194ea8213a8e9ecbc5c6761e89420f94
   abi_file: EnhancedRewards_0xaf7af80d194ea8213a8e9ecbc5c6761e89420f94.json
@@ -913,6 +973,10 @@ verified_contracts:
 - name: UpgradeableBeacon
   address: 0xb037d5308f96ab78e37eedec946ed5550d1dcb88
   abi_file: UpgradeableBeacon_0xb037d5308f96ab78e37eedec946ed5550d1dcb88.json
+  is_verified: true
+- name: ERC1967Proxy
+  address: 0xb224bd75fd71f0b70a1da78b436407a833f65d03
+  abi_file: ERC1967Proxy_0xb224bd75fd71f0b70a1da78b436407a833f65d03.json
   is_verified: true
 - name: ERC1967Proxy
   address: 0xb25001fd103cfd3d9492073dae86881d79341b03
@@ -954,6 +1018,10 @@ verified_contracts:
   address: 0xbb56e681639fa9ba24c5fa14d8ed078ee822ddcc
   abi_file: ERC1967Proxy_0xbb56e681639fa9ba24c5fa14d8ed078ee822ddcc.json
   is_verified: true
+- name: NativeDistributor
+  address: 0xbbd29811627914cd561bf3a066468c32a171dd33
+  abi_file: NativeDistributor_0xbbd29811627914cd561bf3a066468c32a171dd33.json
+  is_verified: true
 - name: Treasury
   address: 0xbcaf7a004f0e16e8fa5db44079cb5236e1e06d3d
   abi_file: Treasury_0xbcaf7a004f0e16e8fa5db44079cb5236e1e06d3d.json
@@ -977,6 +1045,14 @@ verified_contracts:
 - name: UpgradeableBeacon
   address: 0xc04d4b0cc065b95162f2982a896bf24a7c0d2af5
   abi_file: UpgradeableBeacon_0xc04d4b0cc065b95162f2982a896bf24a7c0d2af5.json
+  is_verified: true
+- name: Rewards
+  address: 0xc110649a70ebee2efffce0ab49aea700ddc9c089
+  abi_file: Rewards_0xc110649a70ebee2efffce0ab49aea700ddc9c089.json
+  is_verified: true
+- name: ERC1967Proxy
+  address: 0xc186b95ce38042e080ba97050c1bde16d054ee9f
+  abi_file: ERC1967Proxy_0xc186b95ce38042e080ba97050c1bde16d054ee9f.json
   is_verified: true
 - name: ArtifactStaking
   address: 0xc22a05711ef9f3e59baf8ae48f59896715d49faf
@@ -1115,6 +1191,10 @@ verified_contracts:
   abi_file: ERC1967Proxy_0xdbde2efb569e72fb8797d80615410f1384e92ec7.json
   is_verified: true
 - name: ERC1967Proxy
+  address: 0xde5f1972b969a3ee6f79f29616f86a7539470842
+  abi_file: ERC1967Proxy_0xde5f1972b969a3ee6f79f29616f86a7539470842.json
+  is_verified: true
+- name: ERC1967Proxy
   address: 0xdeaf6583ef005f37c6484ed0d4ee0c531ebb9420
   abi_file: ERC1967Proxy_0xdeaf6583ef005f37c6484ed0d4ee0c531ebb9420.json
   is_verified: true
@@ -1173,6 +1253,10 @@ verified_contracts:
 - name: ArtifactStaking
   address: 0xeb739b5b19281679bafa2e8c8406b6c2d2b31394
   abi_file: ArtifactStaking_0xeb739b5b19281679bafa2e8c8406b6c2d2b31394.json
+  is_verified: true
+- name: Artifact
+  address: 0xecc03b0c21ac523923adaa7cd914ab3f180848b2
+  abi_file: Artifact_0xecc03b0c21ac523923adaa7cd914ab3f180848b2.json
   is_verified: true
 - name: ERC1967Proxy
   address: 0xed7e7b47c810b8d6f21c9e784d6e86af87e4989e
@@ -1328,6 +1412,10 @@ unverified_contracts:
   abi_file: null
   is_verified: false
 - name: null
+  address: 0x1ea460dc170737ab0d1bf9249bcd39cf3f89ff51
+  abi_file: null
+  is_verified: false
+- name: null
   address: 0x1ece03528d7b67fc4c59fe7aa2450dc9e35d7a56
   abi_file: null
   is_verified: false
@@ -1373,6 +1461,10 @@ unverified_contracts:
   is_verified: false
 - name: null
   address: 0x28e951e8d98b7307ad2b4a476f538c4c451ce85f
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0x2c56d9b3798f151f97dd407d1644c72e40bb35ee
   abi_file: null
   is_verified: false
 - name: null
@@ -1704,6 +1796,10 @@ unverified_contracts:
   abi_file: null
   is_verified: false
 - name: null
+  address: 0x864b28c8a20c87508583a5180b70f1b9fd9df218
+  abi_file: null
+  is_verified: false
+- name: null
   address: 0x89de9623465030f288ddc77158eb798853e63d5b
   abi_file: null
   is_verified: false
@@ -1872,6 +1968,10 @@ unverified_contracts:
   abi_file: null
   is_verified: false
 - name: null
+  address: 0xc193e7bdd0fb485190ae3932821d3ab0faae0adb
+  abi_file: null
+  is_verified: false
+- name: null
   address: 0xc1f83f62043bef91204bcd10c57e183f7d3aecfe
   abi_file: null
   is_verified: false
@@ -1953,6 +2053,10 @@ unverified_contracts:
   is_verified: false
 - name: null
   address: 0xe3741089c2f26b07693f32eec57d42bfdb55e81b
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0xe454c718031841ab2d5a89ea7639306234412936
   abi_file: null
   is_verified: false
 - name: null

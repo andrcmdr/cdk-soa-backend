@@ -1,0 +1,13 @@
+Event Name: TokensWithdrawn
+Signature: TokensWithdrawn(address,address,uint256)
+Topic Hash: 0x6337ed398c0e8467698c581374fdce4db14922df487b5a39483079f5f59b60a4
+Anonymous: false
+
+Inputs:
+  0: token address (indexed)
+  1: to address (indexed)
+  2: amount uint256 (not indexed)
+
+Contract Sources:
+  - 0x6d11a25fe882a00222fb8c708411309888ecb544 (contract_name: Treasury)
+  - 0x76e1e992e5a19e676011e100f0665f513ba4f299 (contract_name: AirdropVault)
