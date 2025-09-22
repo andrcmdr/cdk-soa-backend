@@ -33,13 +33,13 @@ pub struct ErrorResponse {
 // App state to hold database connection
 #[derive(Clone)]
 pub struct AppState {
-    pub db: Arc<Database>,
+    pub _db: Arc<Database>,
 }
 
 // Create the main router with all endpoints
 pub fn create_router(db: Arc<Database>) -> Router {
     let state = AppState {
-        db,
+        _db: db,
     };
 
     Router::new()
@@ -57,7 +57,7 @@ async fn health_check() -> StatusCode {
 // Get six months revenue endpoint
 async fn get_six_months_revenue(
     Path(address): Path<String>,
-    State(state): State<AppState>,
+    State(_state): State<AppState>,
 ) -> Result<Json<SixMonthsRevenueResponse>, (StatusCode, Json<ErrorResponse>)> {
     // TODO: Implement the actual database query logic
     
@@ -76,7 +76,7 @@ async fn get_six_months_revenue(
 // Get total usage endpoint
 async fn get_total_usage(
     Path(address): Path<String>,
-    State(state): State<AppState>,
+    State(_state): State<AppState>,
 ) -> Result<Json<TotalUsageResponse>, (StatusCode, Json<ErrorResponse>)> {
     // TODO: Implement the actual database query logic
     

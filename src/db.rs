@@ -1,7 +1,7 @@
 use anyhow::Result;
 use tokio_postgres::{Client, NoTls};
 use tracing::{info, error};
-use crate::types::{RevenueReport, UsageReport, BackendData};
+use crate::types::BackendData;
 
 pub struct Database {
     client: Client,
@@ -39,50 +39,6 @@ impl Database {
         let row = self.client.query_one("SELECT COUNT(*) FROM usage_reports", &[]).await?;
         let count: i64 = row.get(0);
         Ok(count)
-    }
-
-    pub async fn insert_revenue_report(&self, report: &RevenueReport) -> Result<()> {
-        let query = r#"
-        INSERT INTO revenue_reports (
-            artifact_address,
-            revenue,
-            timestamp
-        ) VALUES ($1, $2, $3)
-    "#;
-
-    self.client
-        .execute(
-            query,
-            &[
-                &report.artifact_address,
-                &report.revenue,
-                &report.timestamp,
-            ],
-        ).await?;
-
-        Ok(())
-    }
-
-    pub async fn insert_usage_report(&self, report: &UsageReport) -> Result<()> {
-        let query = r#"
-        INSERT INTO usage_reports (
-            artifact_address,
-            usage,
-            timestamp
-        ) VALUES ($1, $2, $3)
-    "#;
-
-    self.client
-        .execute(
-            query,
-            &[
-                &report.artifact_address,
-                &report.usage,
-                &report.timestamp,
-            ],
-        ).await?;
-
-        Ok(())
     }
 
     pub async fn insert_backend_data(&self, data: &BackendData) -> Result<()> {

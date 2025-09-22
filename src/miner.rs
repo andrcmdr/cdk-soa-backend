@@ -3,7 +3,6 @@ use std::sync::Arc;
 use tracing::{info, error, warn};
 use crate::db::Database;
 use crate::types::{BackendData, BackendApiResponse};
-use crate::validators::validate_backend_data;
 use reqwest::Client;
 use serde_json::Value;
 
@@ -24,30 +23,6 @@ impl APIMiner {
             api_url: api_url,
             http_client: Client::new(),
         }
-    }
-
-
-    /// Mine data from external APIs. This would be called periodically to fetch data from the external API.
-    async fn mine_data(&self, start_at: i64, end_at: i64) -> Result<()> {
-        info!("APIMiner: Starting data mining cycle");
-        
-        // Simulate fetching revenue data from external API
-        let backend_data = self.fetch_data(start_at, end_at).await?;
-        for data in backend_data {
-            match validate_backend_data(&data) {
-                Ok(valid) => {
-                    if valid {
-                        self.db.insert_backend_data(&data).await?;
-                    }
-                }
-                Err(e) => {
-                    error!("Failed to validate backend data: {}", e);
-                }
-            }
-        }
-        
-        info!("APIMiner: Data mining cycle completed");
-        Ok(())
     }
 
     /// Fetch revenue and usage data from external API with pagination support

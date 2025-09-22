@@ -141,7 +141,7 @@ impl ContractClient {
     }
 
     /// Get the contract address
-    pub fn contract_address(&self) -> Address {
+    pub fn _contract_address(&self) -> Address {
         self.contract_address
     }
 
@@ -185,7 +185,7 @@ mod tests {
         let wallet_addr = client.wallet_address();
         info!("Wallet address: {:?}", wallet_addr);
         info!("Wallet address (checksum): {:?}", wallet_addr.to_checksum(Some(chain_id_num)));
-        info!("Contract address: {:?}", client.contract_address());
+        info!("Contract address: {:?}", client._contract_address());
         
         // Try a simple view function first to test connection
         let contract = ArtifactManager::new(contract_addr, &client.provider);
