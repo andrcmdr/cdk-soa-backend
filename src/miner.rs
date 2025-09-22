@@ -177,7 +177,7 @@ mod tests {
             //  delay is 5 minutes
             let delay =  300;
 
-            let start_at = chrono::Utc::now().timestamp() - 60 - delay;
+            let start_at = chrono::Utc::now().timestamp() - 300 - delay;
             let end_at = chrono::Utc::now().timestamp() - delay ;
             let result = APIMiner::fetch_data_from_api(
                 &http_client,
