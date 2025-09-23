@@ -71,7 +71,7 @@ impl Database {
             LIMIT $1
         "#;
 
-        let rows = self.client.query(query, &[&limit]).await?;
+        let rows = self.client.query(query, &[&(limit as i64)]).await?;
         Ok(rows)
     }
 
@@ -85,7 +85,7 @@ impl Database {
             LIMIT $1
         "#;
 
-        let rows = self.client.query(query, &[&limit]).await?;
+        let rows = self.client.query(query, &[&(limit as i64)]).await?;
         Ok(rows)
     }
 
@@ -95,7 +95,8 @@ impl Database {
             SET submitted_to_chain = TRUE
             WHERE id = ANY($1)
         "#;
-        self.client.execute(query, &[&id]).await?;
+        let id_i64: Vec<i64> = id.into_iter().map(|i| i as i64).collect();
+        self.client.execute(query, &[&id_i64]).await?;
         Ok(())
     }
 
@@ -105,7 +106,8 @@ impl Database {
             SET submitted_to_chain = TRUE
             WHERE id = ANY($1)
         "#;
-        self.client.execute(query, &[&id]).await?;
+        let id_i64: Vec<i64> = id.into_iter().map(|i| i as i64).collect();
+        self.client.execute(query, &[&id_i64]).await?;
         Ok(())
     }
 

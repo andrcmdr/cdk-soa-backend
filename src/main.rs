@@ -283,7 +283,10 @@ async fn process_usage_reports(db: Arc<Database>, config: &Config) -> Result<()>
     let artifacts = artifacts?;
     
     // Convert to U256
-    let usages: Vec<U256> = batch.usage.into_iter().map(U256::from).collect();
+    let usages: Result<Vec<U256>, _> = batch.usage.into_iter()
+        .map(|s| U256::from_str(&s))
+        .collect();
+    let usages = usages?;
     let timestamps: Vec<U256> = batch.timestamp.into_iter().map(U256::from).collect();
     
     // Submit to blockchain
@@ -335,7 +338,10 @@ async fn process_revenue_reports(db: Arc<Database>, config: &Config) -> Result<(
     let artifacts = artifacts?;
     
     // Convert to U256
-    let revenues: Vec<U256> = batch.revenue.into_iter().map(U256::from).collect();
+    let revenues: Result<Vec<U256>, _> = batch.revenue.into_iter()
+        .map(|s| U256::from_str(&s))
+        .collect();
+    let revenues = revenues?;
     let timestamps: Vec<U256> = batch.timestamp.into_iter().map(U256::from).collect();
     
     // Submit to blockchain
