@@ -22,5 +22,5 @@ mining_interval_seconds = 300
 
 [contract]
 # Contract interaction configuration
-batch_size = 100
+batch_size = 2
 batch_interval_seconds = 600

@@ -95,8 +95,7 @@ impl Database {
             SET submitted_to_chain = TRUE
             WHERE id = ANY($1)
         "#;
-        let id_i64: Vec<i64> = id.into_iter().map(|i| i as i64).collect();
-        self.client.execute(query, &[&id_i64]).await?;
+        self.client.execute(query, &[&id]).await?;
         Ok(())
     }
 
@@ -106,8 +105,7 @@ impl Database {
             SET submitted_to_chain = TRUE
             WHERE id = ANY($1)
         "#;
-        let id_i64: Vec<i64> = id.into_iter().map(|i| i as i64).collect();
-        self.client.execute(query, &[&id_i64]).await?;
+        self.client.execute(query, &[&id]).await?;
         Ok(())
     }
 
