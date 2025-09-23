@@ -37,15 +37,16 @@ async fn initialize_blockchain_client(config: &Config) -> Result<ContractClient>
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Load configuration
+    // Load configuration first
     let config = Config::load()?;
-    info!("Configuration loaded successfully");
     
     // Initialize logging with configured level
     let log_level = config.service.log_level.parse::<tracing::Level>().unwrap_or(tracing::Level::INFO);
     tracing_subscriber::fmt()
         .with_max_level(log_level)
         .init();
+    
+    info!("Configuration loaded successfully");
     
     info!("Starting Oracle Service on {}:{}", config.service.host, config.service.port);
 

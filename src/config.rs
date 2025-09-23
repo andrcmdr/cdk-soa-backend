@@ -39,6 +39,8 @@ pub struct ContractConfig {
 
 impl Config {
     pub fn load() -> Result<Self> {
+        // Load .env file first
+        dotenv::dotenv().ok();     
         let config_builder = config::Config::builder()
             // Start with default config
             .add_source(config::File::with_name("config.toml"))

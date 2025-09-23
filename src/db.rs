@@ -57,7 +57,7 @@ impl Database {
             timestamp
         ) VALUES ($1, $2, $3)
     "#;
-        self.client.execute(revenue_query, &[&data.artifact_address, &data.revenue, &data.usage, &data.timestamp]).await?;
+        self.client.execute(revenue_query, &[&data.artifact_address, &data.revenue, &data.timestamp]).await?;
         Ok(())
     }
 

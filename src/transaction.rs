@@ -158,8 +158,6 @@ mod tests {
     use crate::transaction::{ContractClient, ArtifactManager};
     use tracing::info;
     use std::str::FromStr;
-    use alloy::primitives::hex;
-    use alloy::contract::Error as ContractError;
 
     #[tokio::test]
     async fn test_function_call() {
