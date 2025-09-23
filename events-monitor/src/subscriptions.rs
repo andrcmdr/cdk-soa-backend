@@ -40,19 +40,23 @@ pub struct EventProcessor {
 
 impl EventProcessor {
     pub async fn new(config: &AppConfig, db_pool: DbClient, nats_store: Option<Nats>) -> anyhow::Result<Self> {
-        // ABIs
-        let mut contracts = Vec::with_capacity(config.contracts.len());
-        for c in config.contracts.iter() {
-            let abi = ContractAbi::load(&c.name, &c.address, &c.abi_path)?;
+        // ABIs - use flattened contracts to handle implementations
+        let flattened_contracts = config.get_all_contracts();
+        let mut contracts = Vec::with_capacity(flattened_contracts.len());
+
+        for flattened in flattened_contracts.iter() {
+            let abi = ContractAbi::from_flattened(flattened)?;
             contracts.push(abi);
         }
 
-        info!("Loaded contracts: {:?}", contracts.len());
+        info!("Loaded contracts: {} (including implementations)", contracts.len());
 
         // index contracts by address for a quick lookup
         use std::collections::BTreeMap;
         let mut addr_abi_map: BTreeMap<Address, ContractAbi> = BTreeMap::new();
-        for c in contracts { addr_abi_map.insert(c.address, c); }
+        for c in contracts {
+            addr_abi_map.insert(c.address, c);
+        }
 
         let ws = WsConnect::new(&config.chain.ws_rpc_url);
         let http_rpc = reqwest::Url::from_str(&config.chain.http_rpc_url)?;
@@ -81,7 +85,7 @@ impl EventProcessor {
         let from_block = self.config.indexing.from_block.unwrap_or(0u64);
         let to_block = self.config.indexing.to_block;
 
-        // build a single filter for all addresses
+        // build a single filter for all addresses (including implementations)
         let addresses: Vec<Address> = self.addr_abi_map.iter().map(|(_addr, c)| c.address).collect();
 
         let mut filter = Filter::new()
@@ -99,25 +103,22 @@ impl EventProcessor {
         }
 
         // Grab logs from all contracts according to filer and subscribe to new ones
-        let logs = self.http_rpc_provider.get_logs(&filter).await?;
-        debug!("Received {} logs from {} contracts", logs.len(), addresses.len());
-        logs.iter().for_each(|log| {
-            debug!("Received log from contract: {}", log.address());
-            debug!("Log: {:?}", log);
-        });
-
-        // Grab logs from all contracts according to filer and subscribe to new ones
+        // let logs = self.http_rpc_provider.get_logs(&filter).await?;
         let logs = self.ws_rpc_provider.get_logs(&filter).await?;
-        debug!("Received {} logs from {} contracts", logs.len(), addresses.len());
-        logs.iter().for_each(|log| {
+        debug!("Received {} logs from {} contracts (including implementations)", logs.len(), addresses.len());
+        for log in logs.iter() {
             debug!("Received log from contract: {}", log.address());
             debug!("Log: {:?}", log);
-        });
+            if let Err(e) = self.handle_log(log.clone()).await {
+                error!("Failed to handle log: {:?}", e);
+                eprintln!("Log error: {:?}", e);
+            }
+        }
 
         let sub = provider.subscribe_logs(&filter).await?;
-        info!("Subscribed to logs for {} contracts", addresses.len());
+        info!("Subscribed to logs for {} contracts (including implementations)", addresses.len());
         let mut sub_stream = sub.into_stream();
-        info!("Subscribed to logs for {} contracts", addresses.len());
+        info!("Subscribed to logs for {} contracts (including implementations)", addresses.len());
         while let Some(log) = sub_stream.next().await {
             debug!("Received log from contract: {}", log.address());
             if let Err(e) = self.handle_log(log).await {
@@ -125,6 +126,7 @@ impl EventProcessor {
                 eprintln!("Log error: {:?}", e);
             }
         }
+
         Ok(())
     }
 
@@ -141,8 +143,34 @@ impl EventProcessor {
         let parsed_event = decoder.decode_log(&log.inner)?;
         let parsed_event_value = parsed_event.to_json()?;
 
-        let contract_name = contract.name.as_str();
-        let contract_address = contract.address.to_string();
+        let contract_name = if contract.is_implementation {
+            // For implementations, use parent contract name as main contract name
+            contract.parent_contract_name.as_deref().unwrap_or(&contract.name)
+        } else {
+            &contract.name
+        };
+
+        let contract_address = if contract.is_implementation {
+            // For implementations, use parent contract address as main contract address
+            contract.parent_contract_address.as_ref()
+                .map(|addr| addr.to_string())
+                .unwrap_or_else(|| contract.address.to_string())
+        } else {
+            contract.address.to_string()
+        };
+
+        let implementation_name = if contract.is_implementation {
+            Some(contract.name.clone())
+        } else {
+            None
+        };
+
+        let implementation_address = if contract.is_implementation {
+            Some(contract.address.to_string())
+        } else {
+            None
+        };
+
         let block_number = log.block_number.unwrap_or_default().to_string();
         let block_hash = log.block_hash
             .map(|bh| format!("0x{}", hex::encode(bh.0.as_slice())))
@@ -214,6 +242,8 @@ impl EventProcessor {
         let payload = EventPayload {
             contract_name: contract_name.to_string(),
             contract_address,
+            implementation_name,
+            implementation_address,
             chain_id: self.chain_id.to_string(),
             block_number,
             block_hash,

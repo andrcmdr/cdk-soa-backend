@@ -5,6 +5,8 @@ use serde_json::Value;
 pub struct EventPayload {
     pub contract_name: String,
     pub contract_address: String,
+    pub implementation_name: Option<String>,
+    pub implementation_address: Option<String>,
     pub chain_id: String,
     pub block_number: String,
     pub block_hash: String,
