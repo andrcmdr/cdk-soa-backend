@@ -51,9 +51,11 @@ pub async fn publish_event(
     payload: &EventPayload,
 ) -> anyhow::Result<()> {
     let key = format!(
-        "{}::{}::{}::{}::{}::{}::{}::{}",
+        "{}::{}::{:?}::{:?}::{}::{}::{}::{}::{}::{}",
         payload.contract_name,
         payload.contract_address,
+        payload.implementation_name,
+        payload.implementation_address,
         payload.chain_id,
         payload.transaction_hash,
         payload.transaction_sender,

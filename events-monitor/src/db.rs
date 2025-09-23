@@ -25,6 +25,8 @@ pub async fn insert_event(
         INSERT INTO events_monitor_data (
             contract_name,
             contract_address,
+            implementation_name,
+            implementation_address,
             chain_id,
             block_number,
             block_hash,
@@ -39,7 +41,7 @@ pub async fn insert_event(
             event_name,
             event_signature,
             event_data
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16::jsonb)
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18::jsonb)
     "#;
 
     let event_data_jsonb = serde_json::to_string_pretty(&payload.event_data)?;
@@ -50,6 +52,8 @@ pub async fn insert_event(
             &[
                 &payload.contract_name,
                 &payload.contract_address,
+                &payload.implementation_name,
+                &payload.implementation_address,
                 &payload.chain_id,
                 &payload.block_number,
                 &payload.block_hash,
