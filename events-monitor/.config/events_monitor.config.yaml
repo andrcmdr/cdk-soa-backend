@@ -6,6 +6,7 @@ chain:
 indexing:
   from_block: 0
   to_block:
+  all_logs_processing: 1
 
 postgres:
   # libpq connection string format

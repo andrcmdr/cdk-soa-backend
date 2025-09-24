@@ -8,6 +8,7 @@ use std::time::Duration;
 use async_nats::jetstream::object_store::Object;
 use tracing::{error, info};
 
+#[derive(Clone)]
 pub struct Nats {
     pub client: Client,
     pub js: Context,

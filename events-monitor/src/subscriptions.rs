@@ -97,8 +97,6 @@ impl EventProcessor {
     }
 
     pub async fn run(&self) -> anyhow::Result<()> {
-        let provider = self.ws_rpc_provider.clone();
-
         let from_block = self.config.indexing.from_block.unwrap_or(0u64);
         let to_block = self.config.indexing.to_block;
 
@@ -119,19 +117,24 @@ impl EventProcessor {
                 .select(BlockRangeFrom(from_block..));
         }
 
-        // Grab logs from all contracts according to filer and subscribe to new ones
-        // let logs = self.http_rpc_provider.get_logs(&filter).await?;
-        let logs = self.ws_rpc_provider.get_logs(&filter).await?;
-        debug!("Received {} logs from {} contracts", logs.len(), addresses.len());
-        for log in logs.iter() {
-            debug!("Received log from contract: {}", log.address());
-            debug!("Log: {:?}", log);
-            if let Err(e) = self.handle_log(log.clone()).await {
-                error!("Failed to handle log: {:?}", e);
-                eprintln!("Log error: {:?}", e);
+        // Grab logs from all contracts according to filter
+        let process_all_logs = self.config.indexing.all_logs_processing.is_some_and(|process_logs| process_logs > 0);
+        if process_all_logs {
+            // let logs = self.http_rpc_provider.get_logs(&filter).await?;
+            let logs = self.ws_rpc_provider.get_logs(&filter).await?;
+            debug!("Received {} logs from {} contracts", logs.len(), addresses.len());
+            for log in logs.iter() {
+                debug!("Received log from contract: {}", log.address());
+                debug!("Log: {:?}", log);
+                if let Err(e) = self.handle_log(log.clone()).await {
+                    error!("Failed to handle log: {:?}", e);
+                    eprintln!("Log error: {:?}", e);
+                }
             }
-        };
+        }
 
+        // Subscribe to new logs from all contracts according to filter
+        let provider = self.ws_rpc_provider.clone();
         let sub = provider.subscribe_logs(&filter).await?;
         info!("Subscribed to logs for {} contracts", addresses.len());
         let mut sub_stream = sub.into_stream();
