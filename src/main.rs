@@ -161,7 +161,7 @@ async fn start_mining_task(db: Arc<Database>, config: Config) {
             }
         };
         
-        info!("Mining time range: {} to {}", start_time, end_time);
+        info!("Mining time range: {} to {} (with {}s delay applied)", start_time, end_time, config.mining.mining_delay_seconds);
         
         match mine_data_with_tracking(db.clone(), &config, start_time, end_time).await {
             Ok(records_found) => {
@@ -264,20 +264,26 @@ async fn mine_data_with_tracking(db: Arc<Database>, config: &Config, start_at: i
 async fn determine_next_mining_range(db: Arc<Database>, config: &Config) -> Result<(i64, i64)> {
     let now = chrono::Utc::now().timestamp();
     let interval = config.mining.mining_interval_seconds as i64;
+    let delay = config.mining.mining_delay_seconds as i64;
     
     // Get the last successfully mined timestamp
     match db.get_last_mined_timestamp().await? {
         Some(last_mined) => {
-            // Continue from where we left off
-            let start_time = last_mined + 1;
-            let end_time = std::cmp::min(start_time + interval - 1, now);
-            Ok((start_time, end_time))
+            // Continue from where we left off (API uses [start, end) - inclusive start, exclusive end)
+            // last_mined is the end_timestamp from previous range, so next range starts there
+            let start_time = last_mined;
+            let end_time = start_time + interval;
+            
+            // Apply delay to both start and end times
+            Ok((start_time - delay, end_time - delay))
         }
         None => {
             // First time mining - start from recent past
             let start_time = now - interval;
             let end_time = now;
-            Ok((start_time, end_time))
+            
+            // Apply delay to both start and end times
+            Ok((start_time - delay, end_time - delay))
         }
     }
 }

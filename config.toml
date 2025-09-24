@@ -19,6 +19,9 @@ log_level = "info"
 [mining]
 # Sensitive data loaded from environment variables: API_URL, API_KEY
 mining_interval_seconds = 300
+# Delay before mining recent data to avoid race conditions with API provider's DB
+# This ensures data has had time to settle in the provider's system
+mining_delay_seconds = 120
 
 [contract]
 # Contract interaction configuration

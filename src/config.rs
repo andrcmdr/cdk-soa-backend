@@ -29,6 +29,7 @@ pub struct ServiceConfig {
 #[derive(Debug, Deserialize, Clone)]
 pub struct MiningConfig {
     pub mining_interval_seconds: u64,
+    pub mining_delay_seconds: u64,
 }
 
 #[derive(Debug, Deserialize, Clone)]
