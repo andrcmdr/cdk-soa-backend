@@ -151,12 +151,21 @@ async fn start_mining_task(db: Arc<Database>, config: Config) {
         interval.tick().await;
         
         info!("Starting mining cycle...");
-        let start_time = chrono::Utc::now().timestamp() - (config.mining.mining_interval_seconds as i64);
-        let end_time = chrono::Utc::now().timestamp();
         
-        match mine_data(db.clone(), &config, start_time, end_time).await {
-            Ok(()) => {
-                info!("Mining cycle completed successfully");
+        // Determine next time range to mine
+        let (start_time, end_time) = match determine_next_mining_range(db.clone(), &config).await {
+            Ok(range) => range,
+            Err(e) => {
+                error!("Failed to determine next mining range: {}", e);
+                continue;
+            }
+        };
+        
+        info!("Mining time range: {} to {}", start_time, end_time);
+        
+        match mine_data_with_tracking(db.clone(), &config, start_time, end_time).await {
+            Ok(records_found) => {
+                info!("Mining cycle completed successfully, found {} records", records_found);
             }
             Err(e) => {
                 error!("Mining cycle failed: {}", e);
@@ -214,8 +223,8 @@ async fn start_api_server(router: axum::Router, addr: std::net::SocketAddr) {
     }
 }
 
-/// Mine data from external API
-async fn mine_data(db: Arc<Database>, config: &Config, start_at: i64, end_at: i64) -> Result<()> {
+/// Mine data from external API with state tracking
+async fn mine_data_with_tracking(db: Arc<Database>, config: &Config, start_at: i64, end_at: i64) -> Result<i32> {
     let (api_url, api_key) = match (config.mining_api_url(), config.mining_api_key()) {
         (Ok(url), Ok(key)) => (url, key),
         (Err(e), _) | (_, Err(e)) => return Err(e),
@@ -228,11 +237,13 @@ async fn mine_data(db: Arc<Database>, config: &Config, start_at: i64, end_at: i6
     let backend_data = api_miner.fetch_data(start_at, end_at).await?;
     info!("Fetched {} data items from API", backend_data.len());
     
+    let mut records_inserted = 0;
     for data in backend_data {
         match crate::validators::validate_backend_data(&data) {
             Ok(valid) => {
                 if valid {
                     db.insert_backend_data(&data).await?;
+                    records_inserted += 1;
                 } else {
                     warn!("Invalid data rejected: {:?}", data);
                 }
@@ -243,8 +254,34 @@ async fn mine_data(db: Arc<Database>, config: &Config, start_at: i64, end_at: i6
         }
     }
     
-    Ok(())
+    // Record that this time range has been successfully mined
+    db.record_mining_completed(start_at, end_at, records_inserted).await?;
+    
+    Ok(records_inserted)
 }
+
+/// Determine the next time range to mine based on current state
+async fn determine_next_mining_range(db: Arc<Database>, config: &Config) -> Result<(i64, i64)> {
+    let now = chrono::Utc::now().timestamp();
+    let interval = config.mining.mining_interval_seconds as i64;
+    
+    // Get the last successfully mined timestamp
+    match db.get_last_mined_timestamp().await? {
+        Some(last_mined) => {
+            // Continue from where we left off
+            let start_time = last_mined + 1;
+            let end_time = std::cmp::min(start_time + interval - 1, now);
+            Ok((start_time, end_time))
+        }
+        None => {
+            // First time mining - start from recent past
+            let start_time = now - interval;
+            let end_time = now;
+            Ok((start_time, end_time))
+        }
+    }
+}
+
 
 /// Process usage reports and submit to blockchain
 async fn process_usage_reports(db: Arc<Database>, config: &Config) -> Result<()> {

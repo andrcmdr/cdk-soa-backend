@@ -121,4 +121,34 @@ impl Database {
         self.update_revenue_report_submitted_to_chain(ids).await
     }
 
+    /// Record that a time period has been successfully mined
+    pub async fn record_mining_completed(&self, start_timestamp: i64, end_timestamp: i64, records_found: i32) -> Result<()> {
+        let query = r#"
+            INSERT INTO mining_state (start_timestamp, end_timestamp, records_found, status)
+            VALUES ($1, $2, $3, 'completed')
+            ON CONFLICT (start_timestamp, end_timestamp) DO NOTHING
+        "#;
+        
+        self.client.execute(query, &[&start_timestamp, &end_timestamp, &records_found]).await?;
+        Ok(())
+    }
+
+    /// Get the last successfully mined timestamp
+    pub async fn get_last_mined_timestamp(&self) -> Result<Option<i64>> {
+        let query = r#"
+            SELECT end_timestamp 
+            FROM mining_state 
+            WHERE status = 'completed'
+            ORDER BY end_timestamp DESC 
+            LIMIT 1
+        "#;
+        
+        let rows = self.client.query(query, &[]).await?;
+        if let Some(row) = rows.first() {
+            Ok(Some(row.get("end_timestamp")))
+        } else {
+            Ok(None)
+        }
+    }
+
 }
