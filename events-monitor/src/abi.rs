@@ -4,16 +4,17 @@ use std::str::FromStr;
 use alloy_json_abi::JsonAbi;
 use alloy_primitives::Address;
 use crate::event_decoder::EventDecoder;
-use crate::config::FlattenedContract;
+use crate::config::ContractWithImplementation;
 
 #[derive(Clone)]
 pub struct ContractAbi {
     pub name: String,
     pub address: Address,
     pub abi: JsonAbi,
+    pub implementation_name: Option<String>,
+    pub implementation_address: Option<Address>,
     pub parent_contract_name: Option<String>,
     pub parent_contract_address: Option<Address>,
-    pub is_implementation: bool,
 }
 
 impl ContractAbi {
@@ -21,7 +22,7 @@ impl ContractAbi {
         let address = Address::from_str(address_hex)?;
 
         let path = PathBuf::from(abi_path);
-        let json_abi_vec= fs::read(path)?;
+        let json_abi_vec = fs::read(path)?;
 
         // Preprocess the JSON to add missing anonymous fields
         let preprocessed_json = EventDecoder::preprocess_abi_json_from_vec(&json_abi_vec)?;
@@ -32,22 +33,22 @@ impl ContractAbi {
             name: name.to_string(),
             address,
             abi: json_abi,
+            implementation_name: None,
+            implementation_address: None,
             parent_contract_name: None,
             parent_contract_address: None,
-            is_implementation: false,
         })
     }
 
-    pub fn from_flattened(flattened: &FlattenedContract) -> anyhow::Result<Self> {
-        let address = Address::from_str(&flattened.address)?;
-        let parent_address = if let Some(parent_addr) = &flattened.parent_contract_address {
-            Some(Address::from_str(parent_addr)?)
-        } else {
-            None
-        };
+    pub fn from_contract_with_implementation(contract_info: &ContractWithImplementation) -> anyhow::Result<Self> {
+        let address = Address::from_str(&contract_info.address)?;
+        let parent_address = contract_info.parent_contract_address
+            .as_ref()
+            .map(|addr| Address::from_str(addr))
+            .transpose()?;
 
-        let path = PathBuf::from(&flattened.abi_path);
-        let json_abi_vec= fs::read(path)?;
+        let path = PathBuf::from(&contract_info.abi_path);
+        let json_abi_vec = fs::read(path)?;
 
         // Preprocess the JSON to add missing anonymous fields
         let preprocessed_json = EventDecoder::preprocess_abi_json_from_vec(&json_abi_vec)?;
@@ -55,12 +56,28 @@ impl ContractAbi {
         let json_abi: JsonAbi = serde_json::from_slice(&preprocessed_json)?;
 
         Ok(Self {
-            name: flattened.name.clone(),
+            name: contract_info.name.clone(),
             address,
             abi: json_abi,
-            parent_contract_name: flattened.parent_contract_name.clone(),
+            implementation_name: Some(contract_info.name.clone()),
+            implementation_address: Some(address),
+            parent_contract_name: contract_info.parent_contract_name.clone(),
             parent_contract_address: parent_address,
-            is_implementation: flattened.is_implementation,
         })
+    }
+
+    /// Check if this contract represents an implementation
+    pub fn is_implementation(&self) -> bool {
+        self.parent_contract_name.is_some()
+    }
+
+    /// Get the effective contract name (parent if this is an implementation, self otherwise)
+    pub fn get_effective_contract_name(&self) -> &str {
+        self.parent_contract_name.as_ref().unwrap_or(&self.name)
+    }
+
+    /// Get the effective contract address (parent if this is an implementation, self otherwise)
+    pub fn get_effective_contract_address(&self) -> Address {
+        self.parent_contract_address.unwrap_or(self.address)
     }
 }

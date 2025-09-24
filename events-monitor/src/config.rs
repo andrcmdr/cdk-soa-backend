@@ -47,9 +47,9 @@ pub struct AppCfg {
 
 impl AppCfg {
     pub fn load(path: &str) -> anyhow::Result<Self> {
-        let mut config: AppCfg = serde_yaml::from_str(&std::fs::read_to_string(path)?)?;
+        let mut config: Self = serde_yaml::from_str(&std::fs::read_to_string(path)?)?;
 
-        // Set default values
+        // Set default values if not specified
         if config.max_implementations_per_contract.is_none() {
             config.max_implementations_per_contract = Some(1);
         }
@@ -57,83 +57,111 @@ impl AppCfg {
             config.max_implementation_nesting_depth = Some(0);
         }
 
-        // Validate configuration
-        Self::validate_contracts(&config.contracts, 0, &config)?;
+        // Validate implementation structure
+        config.validate_implementations()?;
 
         Ok(config)
     }
 
-    fn validate_contracts(contracts: &[ContractCfg], current_depth: usize, config: &AppCfg) -> anyhow::Result<()> {
-        let max_depth = config.max_implementation_nesting_depth.unwrap_or(0);
-        let max_impls = config.max_implementations_per_contract.unwrap_or(1);
+    fn validate_implementations(&self) -> anyhow::Result<()> {
+        let max_per_contract = self.max_implementations_per_contract.unwrap_or(1);
+        let max_depth = self.max_implementation_nesting_depth.unwrap_or(0);
 
-        for contract in contracts {
-            if let Some(implementations) = &contract.implementations {
-                // Check max implementations limit
-                if implementations.len() > max_impls {
-                    return Err(anyhow::anyhow!(
-                        "Contract '{}' has {} implementations, but maximum allowed is {}",
-                        contract.name, implementations.len(), max_impls
-                    ));
-                }
+        for contract in &self.contracts {
+            self.validate_contract_implementations(contract, 0, max_per_contract, max_depth)?;
+        }
 
-                // Check nesting depth
-                if current_depth >= max_depth {
-                    return Err(anyhow::anyhow!(
-                        "Implementation nesting depth {} exceeds maximum allowed depth of {}",
-                        current_depth + 1, max_depth
-                    ));
-                }
+        Ok(())
+    }
 
-                // Validate that implementations don't have their own implementations at max depth
-                for implementation in implementations {
-                    if implementation.implementations.is_some() && current_depth >= max_depth {
+    fn validate_contract_implementations(
+        &self,
+        contract: &ContractCfg,
+        current_depth: usize,
+        max_per_contract: usize,
+        max_depth: usize,
+    ) -> anyhow::Result<()> {
+        if let Some(implementations) = &contract.implementations {
+            if implementations.len() > max_per_contract {
+                return Err(anyhow::anyhow!(
+                    "Contract '{}' has {} implementations, but max allowed is {}",
+                    contract.name,
+                    implementations.len(),
+                    max_per_contract
+                ));
+            }
+
+            if current_depth >= max_depth {
+                for impl_contract in implementations {
+                    if impl_contract.implementations.is_some() {
                         return Err(anyhow::anyhow!(
-                            "Implementation '{}' has nested implementations at maximum depth {}",
-                            implementation.name, max_depth
+                            "Implementation '{}' of contract '{}' has nested implementations at depth {}, but max depth is {}",
+                            impl_contract.name,
+                            contract.name,
+                            current_depth + 1,
+                            max_depth
                         ));
                     }
                 }
-
-                // Recursively validate nested implementations
-                Self::validate_contracts(implementations, current_depth + 1, config)?;
+            } else {
+                for impl_contract in implementations {
+                    self.validate_contract_implementations(
+                        impl_contract,
+                        current_depth + 1,
+                        max_per_contract,
+                        max_depth,
+                    )?;
+                }
             }
         }
 
         Ok(())
     }
 
-    /// Flatten all contracts and their implementations into a single list
-    pub fn get_all_contracts(&self) -> Vec<FlattenedContract> {
-        let mut flattened = Vec::new();
-        self.flatten_contracts(&self.contracts, None, &mut flattened);
-        flattened
+    /// Get all contracts including implementations flattened
+    pub fn get_all_contracts(&self) -> Vec<ContractWithImplementation> {
+        let mut all_contracts = Vec::new();
+
+        for contract in &self.contracts {
+            self.collect_contracts_recursive(contract, None, &mut all_contracts);
+        }
+
+        all_contracts
     }
 
-    fn flatten_contracts(&self, contracts: &[ContractCfg], parent_contract: Option<&ContractCfg>, flattened: &mut Vec<FlattenedContract>) {
-        for contract in contracts {
-            flattened.push(FlattenedContract {
-                name: contract.name.clone(),
-                address: contract.address.clone(),
-                abi_path: contract.abi_path.clone(),
-                parent_contract_name: parent_contract.map(|p| p.name.clone()),
-                parent_contract_address: parent_contract.map(|p| p.address.clone()),
-                is_implementation: parent_contract.is_some(),
-            });
+    fn collect_contracts_recursive(
+        &self,
+        contract: &ContractCfg,
+        parent_info: Option<(String, String)>,
+        collector: &mut Vec<ContractWithImplementation>,
+    ) {
+        // Add the current contract
+        collector.push(ContractWithImplementation {
+            name: contract.name.clone(),
+            address: contract.address.clone(),
+            abi_path: contract.abi_path.clone(),
+            parent_contract_name: parent_info.as_ref().map(|(name, _)| name.clone()),
+            parent_contract_address: parent_info.as_ref().map(|(_, addr)| addr.clone()),
+        });
 
-            if let Some(implementations) = &contract.implementations {
-                self.flatten_contracts(implementations, Some(contract), flattened);
+        // Add all implementations recursively
+        if let Some(implementations) = &contract.implementations {
+            for impl_contract in implementations {
+                self.collect_contracts_recursive(
+                    impl_contract,
+                    Some((contract.name.clone(), contract.address.clone())),
+                    collector,
+                );
             }
         }
     }
 }
 
 #[derive(Debug, Clone)]
-pub struct FlattenedContract {
+pub struct ContractWithImplementation {
     pub name: String,
     pub address: String,
     pub abi_path: String,
     pub parent_contract_name: Option<String>,
     pub parent_contract_address: Option<String>,
-    pub is_implementation: bool,
 }
