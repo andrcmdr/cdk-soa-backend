@@ -48,6 +48,7 @@ impl Database {
             usage,
             timestamp
         ) VALUES ($1, $2, $3)
+        ON CONFLICT (artifact_address, timestamp) DO NOTHING
     "#;
         self.client.execute(usage_query, &[&data.artifact_address, &data.usage, &data.timestamp]).await?;
         let revenue_query = r#"
@@ -56,6 +57,7 @@ impl Database {
             revenue,
             timestamp
         ) VALUES ($1, $2, $3)
+        ON CONFLICT (artifact_address, timestamp) DO NOTHING
     "#;
         self.client.execute(revenue_query, &[&data.artifact_address, &data.revenue, &data.timestamp]).await?;
         Ok(())

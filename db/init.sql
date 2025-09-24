@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS revenue_reports (
     revenue TEXT NOT NULL,
     timestamp BIGINT NOT NULL,
     submitted_to_chain BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(artifact_address, timestamp)
 );
 
 -- Usage tracking
@@ -20,7 +21,8 @@ CREATE TABLE IF NOT EXISTS usage_reports (
     usage TEXT NOT NULL,
     timestamp BIGINT NOT NULL,
     submitted_to_chain BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(artifact_address, timestamp)
 );
 
 -- Indexes for efficient queries
