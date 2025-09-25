@@ -25,6 +25,7 @@ use std::ops::{Range, RangeFrom};
 use std::str::FromStr;
 use std::sync::Arc;
 use anyhow::anyhow;
+use tokio::task::JoinHandle;
 
 type RPCProvider = FillProvider<JoinFill<Identity, JoinFill<GasFiller, JoinFill<BlobGasFiller, JoinFill<NonceFiller, ChainIdFiller>>>>, RootProvider>;
 
@@ -96,12 +97,14 @@ impl EventProcessor {
         })
     }
 
-    pub async fn run(&self) -> anyhow::Result<()> {
-        let from_block = self.config.indexing.from_block.unwrap_or(0u64);
-        let to_block = self.config.indexing.to_block;
+    pub async fn run(self) -> anyhow::Result<()> {
+        let self_arc = Arc::new(self);
+        
+        let from_block = self_arc.config.indexing.from_block.unwrap_or(0u64);
+        let to_block = self_arc.config.indexing.to_block;
 
         // build a single filter for all addresses
-        let addresses: Vec<Address> = self.addr_abi_map.iter().map(|(addr, _c)| *addr).collect();
+        let addresses: Vec<Address> = self_arc.addr_abi_map.iter().map(|(addr, _c)| *addr).collect();
 
         let mut filter = Filter::new()
             .address(addresses.clone())
@@ -117,33 +120,73 @@ impl EventProcessor {
                 .select(BlockRangeFrom(from_block..));
         }
 
-        // Grab logs from all contracts according to filter
-        let process_all_logs = self.config.indexing.all_logs_processing.is_some_and(|process_logs| process_logs > 0);
+        let mut handles: Vec<JoinHandle<anyhow::Result<()>>> = Vec::new();
+
+        // Task 1: Process historical logs if enabled
+        let process_all_logs = self_arc.config.indexing.all_logs_processing.is_some_and(|process_logs| process_logs > 0);
         if process_all_logs {
-            // let logs = self.http_rpc_provider.get_logs(&filter).await?;
-            let logs = self.ws_rpc_provider.get_logs(&filter).await?;
-            debug!("Received {} logs from {} contracts", logs.len(), addresses.len());
-            for log in logs.iter() {
-                debug!("Received log from contract: {}", log.address());
-                debug!("Log: {:?}", log);
-                if let Err(e) = self.handle_log(log.clone()).await {
-                    error!("Failed to handle log: {:?}", e);
-                    eprintln!("Log error: {:?}", e);
+            let processor_for_history = Arc::clone(&self_arc);
+            let filter_for_history = filter.clone();
+            let addresses_for_history = addresses.clone();
+
+            let historical_task = tokio::spawn(async move {
+                info!("Starting historical logs processing task");
+                
+                let logs = processor_for_history.ws_rpc_provider.get_logs(&filter_for_history).await?;
+                debug!("Received {} logs from {} contracts", logs.len(), addresses_for_history.len());
+                
+                for log in logs.iter() {
+                    debug!("Received historical log from contract: {}", log.address());
+                    debug!("Historical log: {:?}", log);
+                    if let Err(e) = processor_for_history.handle_log(log.clone()).await {
+                        error!("Failed to handle historical log: {:?}", e);
+                        eprintln!("Historical log error: {:?}", e);
+                    }
                 }
-            }
+                
+                info!("Historical logs processing task completed");
+                Ok(())
+            });
+            handles.push(historical_task);
         }
 
-        // Subscribe to new logs from all contracts according to filter
-        let provider = self.ws_rpc_provider.clone();
-        let sub = provider.subscribe_logs(&filter).await?;
-        info!("Subscribed to logs for {} contracts", addresses.len());
-        let mut sub_stream = sub.into_stream();
-        info!("Subscribed to logs for {} contracts", addresses.len());
-        while let Some(log) = sub_stream.next().await {
-            debug!("Received log from contract: {}", log.address());
-            if let Err(e) = self.handle_log(log).await {
-                error!("Failed to handle log: {:?}", e);
-                eprintln!("Log error: {:?}", e);
+        // Task 2: Subscribe to new logs
+        let processor_for_subscription = Arc::clone(&self_arc);
+        let addresses_for_subscription = addresses.clone();
+
+        let subscription_task = tokio::spawn(async move {
+            info!("Starting subscription task");
+            
+            let provider = processor_for_subscription.ws_rpc_provider.clone();
+            let sub = provider.subscribe_logs(&filter).await?;
+            info!("Subscribed to logs for {} contracts", addresses_for_subscription.len());
+            
+            let mut sub_stream = sub.into_stream();
+            while let Some(log) = sub_stream.next().await {
+                debug!("Received subscription log from contract: {}", log.address());
+                if let Err(e) = processor_for_subscription.handle_log(log).await {
+                    error!("Failed to handle subscription log: {:?}", e);
+                    eprintln!("Subscription log error: {:?}", e);
+                }
+            }
+            
+            info!("Subscription task completed");
+            Ok(())
+        });
+        handles.push(subscription_task);
+
+        // Wait for all tasks to complete
+        for handle in handles {
+            match handle.await {
+                Ok(Ok(())) => info!("Task completed successfully"),
+                Ok(Err(e)) => {
+                    error!("Task failed with error: {:?}", e);
+                    return Err(e);
+                }
+                Err(join_err) => {
+                    error!("Task panicked: {:?}", join_err);
+                    return Err(anyhow!("Task panicked: {:?}", join_err));
+                }
             }
         }
 
