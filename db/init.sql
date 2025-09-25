@@ -46,13 +46,13 @@ CREATE TABLE IF NOT EXISTS mining_state (
 CREATE INDEX IF NOT EXISTS idx_mining_state_time_range ON mining_state(start_timestamp, end_timestamp);
 CREATE INDEX IF NOT EXISTS idx_mining_state_status ON mining_state(status);
 
--- Add some sample data for testing
+-- Add some sample data for testing (using only registered artifacts)
 INSERT INTO revenue_reports (artifact_address, revenue, timestamp) VALUES
-    ('0x40F67E835D5C1ECBe7759a9F7eE9639aB3B7aa5A', '10', EXTRACT(EPOCH FROM NOW() - INTERVAL '5 minutes')::BIGINT),
-    ('0x13844906650C75E8e9FDf035eAc2F4717c3A5A04', '20', EXTRACT(EPOCH FROM NOW() - INTERVAL '5 minutes')::BIGINT)
+    ('0x13844906650C75E8e9FDf035eAc2F4717c3A5A04', '10', EXTRACT(EPOCH FROM NOW() - INTERVAL '25 minutes')::BIGINT),
+    ('0xbc03Dd9B9Bfd695bc77b275fAF94BAD45D8d1eE8', '20', EXTRACT(EPOCH FROM NOW() - INTERVAL '25 minutes')::BIGINT)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO usage_reports (artifact_address, usage, timestamp) VALUES
-    ('0x40F67E835D5C1ECBe7759a9F7eE9639aB3B7aa5A', '50', EXTRACT(EPOCH FROM NOW() - INTERVAL '5 minutes')::BIGINT),
-    ('0x13844906650C75E8e9FDf035eAc2F4717c3A5A04', '75', EXTRACT(EPOCH FROM NOW() - INTERVAL '5 minutes')::BIGINT)
+    ('0x13844906650C75E8e9FDf035eAc2F4717c3A5A04', '50', EXTRACT(EPOCH FROM NOW() - INTERVAL '25 minutes')::BIGINT),
+    ('0xbc03Dd9B9Bfd695bc77b275fAF94BAD45D8d1eE8', '75', EXTRACT(EPOCH FROM NOW() - INTERVAL '25 minutes')::BIGINT)
 ON CONFLICT DO NOTHING;

@@ -51,6 +51,11 @@ sol! {
         function isArtifactActive(address _artifact) external view returns (bool);
 
         function getArtifactCount() external view returns (uint256);
+        
+        // Debug functions
+        function isArtifactRegistered(address _artifact) external view returns (bool);
+        
+        function getArtifactList() external view returns (address[] memory);
 
     }
 }
@@ -252,5 +257,72 @@ mod tests {
                 info!("Failed to submit revenue report: {:?}", e);
             }
         }            
+    }
+
+    #[tokio::test]
+    async fn test_check_init_artifacts() {
+        let _ = tracing_subscriber::fmt()
+            .with_max_level(tracing::Level::INFO)
+            .try_init();
+
+        dotenv::dotenv().ok();
+    
+        let private_key = std::env::var("PRIVATE_KEY").unwrap();
+        let rpc_url = std::env::var("RPC_URL").unwrap();
+        let contract_address = std::env::var("CONTRACT_ADDRESS").unwrap();
+        let chain_id = std::env::var("CHAIN_ID").unwrap();
+    
+        let contract_addr = Address::from_str(&contract_address).unwrap();
+        let chain_id_num = chain_id.parse::<u64>().unwrap();
+        let client = ContractClient::new(rpc_url, private_key, contract_addr, chain_id_num).await.unwrap();
+
+        let contract = ArtifactManager::new(contract_addr, &client.provider);
+        
+        // Check the artifacts from init.sql
+        let artifacts_to_check = vec![
+            "0x40F67E835D5C1ECBe7759a9F7eE9639aB3B7aa5A",
+            "0x13844906650C75E8e9FDf035eAc2F4717c3A5A04",
+            "0xe3741089C2f26b07693F32eEc57d42BfDb55e81B",
+            "0xbc03Dd9B9Bfd695bc77b275fAF94BAD45D8d1eE8",
+
+        ];
+        
+        info!("Checking artifact registration status...");
+        info!("Contract address: {}", contract_addr);
+        
+        // First, get the total count of artifacts
+        match contract.getArtifactCount().call().await {
+            Ok(count) => info!("Total artifacts registered: {}", count),
+            Err(e) => info!("Error getting artifact count: {:?}", e),
+        }
+        
+        // Check each artifact individually
+        for artifact_str in artifacts_to_check {
+            let artifact_addr = Address::from_str(artifact_str).unwrap();
+            info!("Checking artifact: {}", artifact_str);
+            
+            // Check if registered
+            match contract.isArtifactRegistered(artifact_addr).call().await {
+                Ok(is_registered) => info!("  Registered: {}", is_registered),
+                Err(e) => info!("  Error checking registration: {:?}", e),
+            }
+            
+            // Check if active
+            match contract.isArtifactActive(artifact_addr).call().await {
+                Ok(is_active) => info!("  Active: {}", is_active),
+                Err(e) => info!("  Error checking active status: {:?}", e),
+            }
+        }
+        
+        // Get all registered artifacts
+        info!("All registered artifacts:");
+        match contract.getArtifactList().call().await {
+            Ok(artifacts) => {
+                for (i, artifact) in artifacts.iter().enumerate() {
+                    info!("  {}: {}", i + 1, artifact);
+                }
+            },
+            Err(e) => info!("Error getting artifact list: {:?}", e),
+        }
     }
 }
