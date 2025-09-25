@@ -40,6 +40,9 @@ async fn main() -> Result<()> {
     // Load configuration first
     let config = Config::load()?;
     
+    // Validate configuration
+    config.validate_mining_config()?;
+    
     // Initialize logging with configured level
     let log_level = config.service.log_level.parse::<tracing::Level>().unwrap_or(tracing::Level::INFO);
     tracing_subscriber::fmt()
@@ -154,7 +157,11 @@ async fn start_mining_task(db: Arc<Database>, config: Config) {
         
         // Determine next time range to mine
         let (start_time, end_time) = match determine_next_mining_range(db.clone(), &config).await {
-            Ok(range) => range,
+            Ok(Some(range)) => range,
+            Ok(None) => {
+                info!("Mining is caught up with real-time, skipping this cycle");
+                continue;
+            }
             Err(e) => {
                 error!("Failed to determine next mining range: {}", e);
                 continue;
@@ -255,35 +262,55 @@ async fn mine_data_with_tracking(db: Arc<Database>, config: &Config, start_at: i
     }
     
     // Record that this time range has been successfully mined
+    // Note: start_at and end_at are the actual times we mined (with delay already applied)
     db.record_mining_completed(start_at, end_at, records_inserted).await?;
     
     Ok(records_inserted)
 }
 
 /// Determine the next time range to mine based on current state
-async fn determine_next_mining_range(db: Arc<Database>, config: &Config) -> Result<(i64, i64)> {
+/// Returns None if we're fully caught up and should skip mining
+async fn determine_next_mining_range(db: Arc<Database>, config: &Config) -> Result<Option<(i64, i64)>> {
     let now = chrono::Utc::now().timestamp();
     let interval = config.mining.mining_interval_seconds as i64;
     let delay = config.mining.mining_delay_seconds as i64;
     
     // Get the last successfully mined timestamp
     match db.get_last_mined_timestamp().await? {
-        Some(last_mined) => {
-            // Continue from where we left off (API uses [start, end) - inclusive start, exclusive end)
-            // last_mined is the end_timestamp from previous range, so next range starts there
-            let start_time = last_mined;
+        Some(last_mined_end) => {
+            // Continue from where we left off
+            // last_mined_end is the actual end time we mined (with delay already applied)
+            let start_time = last_mined_end;
+            // Instead of using min here, an if comparison is used to make the code more readable
             let end_time = start_time + interval;
-            
-            // Apply delay to both start and end times
-            Ok((start_time - delay, end_time - delay))
+            // Ensure we don't mine data that's too recent (apply delay constraint)
+            let max_allowed_end = now - delay;
+            if end_time > max_allowed_end {
+                // We've caught up to real-time, need to wait or mine a smaller range
+                let adjusted_end_time = max_allowed_end;
+                if adjusted_end_time <= start_time {
+                    // No data to mine yet, we're fully caught up - skip this cycle
+                    return Ok(None);
+                }
+                Ok(Some((start_time, adjusted_end_time)))
+            } else {
+                Ok(Some((start_time, end_time)))
+            }
         }
         None => {
-            // First time mining - start from recent past
-            let start_time = now - interval;
-            let end_time = now;
+            // First time mining - start from configured lookback period to catch historical data
+            let lookback_seconds = config.mining.bootstrap_lookback_seconds
+                .unwrap_or((interval * 12) as u64) as i64; // Default to 12 intervals back
+            
+            let start_time = now - lookback_seconds;
+            let end_time = start_time + interval;
+            
+            info!("Bootstrapping: Starting mining from {} seconds ago ({})", 
+                lookback_seconds, chrono::DateTime::from_timestamp(start_time, 0)
+                .unwrap_or_default().format("%Y-%m-%d %H:%M:%S UTC"));
             
             // Apply delay to both start and end times
-            Ok((start_time - delay, end_time - delay))
+            Ok(Some((start_time - delay, end_time - delay)))
         }
     }
 }
