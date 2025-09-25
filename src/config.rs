@@ -30,6 +30,9 @@ pub struct ServiceConfig {
 pub struct MiningConfig {
     pub mining_interval_seconds: u64,
     pub mining_delay_seconds: u64,
+    /// How far back to start mining on first run (in seconds from now)
+    /// If not set, defaults to mining_interval_seconds * 12 (12 intervals back)
+    pub bootstrap_lookback_seconds: Option<u64>,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -101,5 +104,20 @@ impl Config {
         std::env::var("CHAIN_ID")
             .map_err(|_| anyhow::anyhow!("CHAIN_ID environment variable not set"))
             .and_then(|id| id.parse::<u64>().map_err(|e| anyhow::anyhow!("Invalid CHAIN_ID: {}", e)))
+    }
+
+    /// Validate mining configuration to prevent invalid time ranges
+    pub fn validate_mining_config(&self) -> Result<()> {
+        let interval = self.mining.mining_interval_seconds as i64;
+        let delay = self.mining.mining_delay_seconds as i64;
+        
+        if delay >= interval {
+            return Err(anyhow::anyhow!(
+                "Invalid mining configuration: mining_delay_seconds ({}) must be less than mining_interval_seconds ({}) \
+                to ensure valid time ranges", delay, interval
+            ));
+        }
+        
+        Ok(())
     }
 }
