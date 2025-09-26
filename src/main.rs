@@ -67,7 +67,6 @@ async fn main() -> Result<()> {
         (Ok(api_url), Ok(api_key)) => {
             info!("Initializing API miner with URL: {}", api_url);
             Some(APIMiner::new(
-                db.clone(),
                 api_key,
                 api_url,
                 config.mining.clone(),
@@ -238,7 +237,7 @@ async fn mine_data_with_tracking(db: Arc<Database>, config: &Config, start_at: i
         (Err(e), _) | (_, Err(e)) => return Err(e),
     };
     
-    let api_miner = APIMiner::new(db.clone(), api_key, api_url, config.mining.clone());
+    let api_miner = APIMiner::new(api_key, api_url, config.mining.clone());
     
     info!("Mining data from {} to {}", start_at, end_at);
     

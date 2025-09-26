@@ -1,16 +1,13 @@
 use anyhow::Result;
-use std::sync::Arc;
 use tracing::{info, error, warn};
-use crate::db::Database;
 use crate::types::{BackendData, BackendApiResponse};
 use crate::config::MiningConfig;
 use reqwest::Client;
 use serde_json::Value;
 
 /// APIMiner handles mining data from external APIs
-/// This miner would typically fetch data from external services and store it in the database
+/// This miner fetches data from external services - database operations are handled separately
 pub struct APIMiner {
-    db: Arc<Database>,
     api_key: String,
     api_url: String,
     http_client: Client,
@@ -18,11 +15,10 @@ pub struct APIMiner {
 }
 
 impl APIMiner {
-    pub fn new(db: Arc<Database>, api_key: String, api_url: String, mining_config: MiningConfig) -> Self {
+    pub fn new(api_key: String, api_url: String, mining_config: MiningConfig) -> Self {
         Self {
-            db,
-            api_key: api_key,
-            api_url: api_url,
+            api_key,
+            api_url,
             http_client: Client::new(),
             mining_config,
         }
