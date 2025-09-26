@@ -21,10 +21,14 @@ log_level = "info"
 mining_interval_seconds = 300
 # Delay before mining recent data to avoid race conditions with API provider's DB
 # This ensures data has had time to settle in the provider's system
+# To be clear of weird edge cases make sure this mining_delay_seconds < mining_interval_seconds
 mining_delay_seconds = 120
 # On first run, how far back to start mining (in seconds)
 # Default: 1 day = 1 * 24 * 3600 = 604800 seconds
 bootstrap_lookback_seconds = 86400
+# Pagination configuration for API requests
+page_size = 2
+max_pages = 10
 
 [contract]
 # Contract interaction configuration

@@ -3,6 +3,7 @@ use std::sync::Arc;
 use tracing::{info, error, warn};
 use crate::db::Database;
 use crate::types::{BackendData, BackendApiResponse};
+use crate::config::MiningConfig;
 use reqwest::Client;
 use serde_json::Value;
 
@@ -13,21 +14,31 @@ pub struct APIMiner {
     api_key: String,
     api_url: String,
     http_client: Client,
+    mining_config: MiningConfig,
 }
 
 impl APIMiner {
-    pub fn new(db: Arc<Database>, api_key: String, api_url: String) -> Self {
+    pub fn new(db: Arc<Database>, api_key: String, api_url: String, mining_config: MiningConfig) -> Self {
         Self {
             db,
             api_key: api_key,
             api_url: api_url,
             http_client: Client::new(),
+            mining_config,
         }
     }
 
     /// Fetch revenue and usage data from external API with pagination support
     pub async fn fetch_data(&self, start_at: i64, end_at: i64) -> Result<Vec<BackendData>> {
-        Self::fetch_data_from_api(&self.http_client, &self.api_key, &self.api_url, start_at, end_at).await
+        Self::fetch_data_from_api(
+            &self.http_client, 
+            &self.api_key, 
+            &self.api_url, 
+            start_at, 
+            end_at,
+            self.mining_config.page_size,
+            self.mining_config.max_pages
+        ).await
     }
 
     /// Standalone function to fetch data from API (useful for testing)
@@ -37,10 +48,11 @@ impl APIMiner {
         api_url: &str,
         start_at: i64,
         end_at: i64,
+        page_size: u32,
+        max_pages: u32,
     ) -> Result<Vec<BackendData>> {
         let mut all_data = Vec::new();
         let mut page = 1;
-        let page_size = 100; // Current page size
         let current_timestamp = chrono::Utc::now().timestamp();
 
         loop {
@@ -113,7 +125,7 @@ impl APIMiner {
             info!("Fetched {} items from page {}", response_count, page);
             
             // Reached end of data
-            if response_count < page_size {
+            if response_count < page_size as usize {
                 info!("Reached end of data (got {} items, expected {})", response_count, page_size);
                 break;
             }
@@ -121,8 +133,8 @@ impl APIMiner {
             page += 1;
             
             // Safety check to prevent infinite loops
-            if page > 10 {
-                warn!("Reached maximum page limit (10), stopping pagination");
+            if page > max_pages {
+                warn!("Reached maximum page limit ({}), stopping pagination", max_pages);
                 break;
             }
         }
@@ -160,6 +172,8 @@ mod tests {
                 &api_url,
                 start_at,
                 end_at,
+                100, // page_size
+                10,  // max_pages
             ).await;
             
             // Just test that it doesn't panic and returns a result

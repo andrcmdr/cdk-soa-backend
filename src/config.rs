@@ -33,6 +33,10 @@ pub struct MiningConfig {
     /// How far back to start mining on first run (in seconds from now)
     /// If not set, defaults to mining_interval_seconds * 12 (12 intervals back)
     pub bootstrap_lookback_seconds: Option<u64>,
+    /// Number of items to fetch per page when paginating API requests
+    pub page_size: u32,
+    /// Maximum number of pages to fetch to prevent infinite loops
+    pub max_pages: u32,
 }
 
 #[derive(Debug, Deserialize, Clone)]
