@@ -29,5 +29,5 @@ COPY --from=builder /usr/src/app/target/release/oracle-service ./oracle-service
 RUN chmod +x ./oracle-service
 
 EXPOSE 8080
-
+# Run the Oracle Service
 CMD ["./oracle-service"]
