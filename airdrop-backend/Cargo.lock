@@ -74,7 +74,7 @@ dependencies = [
 
 [[package]]
 name = "airdrop-backend"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "aes-gcm",
  "alloy",
@@ -1560,6 +1560,7 @@ dependencies = [
  "matchit 0.8.4",
  "memchr",
  "mime",
+ "multer",
  "percent-encoding",
  "pin-project-lite",
  "rustversion",
@@ -3971,6 +3972,9 @@ dependencies = [
  "bytes",
  "fallible-iterator",
  "postgres-protocol",
+ "serde",
+ "serde_json",
+ "uuid",
 ]
 
 [[package]]
@@ -4347,6 +4351,7 @@ dependencies = [
  "js-sys",
  "log",
  "mime",
+ "mime_guess",
  "native-tls",
  "percent-encoding",
  "pin-project-lite",

@@ -1,7 +1,11 @@
 [package]
 name = "events-monitor"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
+
+[[bin]]
+name = "api-client"
+path = "client/api_client.rs"
 
 [dependencies]
 # Alloy meta-crate with full feature-set incl. WS providers, JSON ABI, dyn-ABI
@@ -11,42 +15,44 @@ alloy-json-abi = "1.3"
 alloy-primitives = "1.3"
 
 # Async runtime
-tokio = { version = "1.40", features = ["rt-multi-thread", "macros", "signal"] }
+tokio = { version = "1.47", features = ["full"] }
 
 # Streaming utils
 futures-util = "0.3"
 
 # Postgres
-tokio-postgres = { version = "0.7", default-features = false, features = ["runtime", "with-uuid-1"] }
+tokio-postgres = { version = "0.7", features = ["with-serde_json-1", "runtime", "with-uuid-1"] }
 postgres-types = { version = "0.2", features = ["derive"] }
 
 # NATS JetStream / Object Store
-async-nats = { version = "0.42" }
-
-openssl = { version = "0.10", features = ["vendored"] }
+async-nats = "0.42"
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_yaml = "0.9"
 
-# Config, logging, tracing
+# Config, logging, tracing, error handling
+anyhow = "1.0"
 thiserror = "1.0"
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "ansi"] }
-anyhow = "1.0"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json", "fmt", "ansi"] }
+
+# Timestamps
+chrono = { version = "0.4", features = ["serde"] }
 
 hex = "0.4"
 sha3 = "0.10"
+openssl = { version = "0.10", features = ["vendored"] }
 
-# For reading ABI files from disk
-# camino = "1.1"
+# HTTP API requests
+reqwest = { version = "0.12", features = ["json", "multipart"] }
 
-chrono = "0.4"
-reqwest = { version = "0.12", features = ["json"] }
-
-[build-dependencies]
-vergen = { version = "9" }
+# Web API dependencies
+axum = { version = "0.7", features = ["multipart"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
 
 [profile.release]
 strip = true

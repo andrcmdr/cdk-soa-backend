@@ -37,6 +37,7 @@ pub struct ContractCfg {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct AppCfg {
+    pub name: Option<String>, // Add optional name field for task identification
     pub chain: ChainCfg,
     pub indexing: IndexingCfg,
     pub postgres: PgCfg,
@@ -62,6 +63,12 @@ impl AppCfg {
         config.validate_implementations()?;
 
         Ok(config)
+    }
+
+    pub fn get_name(&self) -> String {
+        self.name.clone().unwrap_or_else(|| {
+            format!("monitor-{}", chrono::Utc::now().timestamp())
+        })
     }
 
     fn validate_implementations(&self) -> anyhow::Result<()> {
