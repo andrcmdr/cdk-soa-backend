@@ -1,74 +1,102 @@
-# Oracle Service 
+# Oracle Service
 
-## API Endpoints
+A Rust-based blockchain oracle service that mines usage and revenue data from external APIs and submits batched reports to smart contracts.
 
-This section describes the available API endpoints for the Oracle Service.
+## Architecture
 
-### Base URL
-The service runs on the configured host and port (default: `localhost:8080`)
+The service consists of three main components:
 
-### Endpoints
+### Core Components
 
-#### Health Check
-- **GET** `/health`
-- **Description**: Health check endpoint to verify the service is running
-- **Response**: `200 OK`
+1. **API Miner**: Periodically fetches usage and revenue data from external APIs with configurable pagination and delay mechanisms to ensure data consistency.
 
-#### Six Months Revenue
-- **GET** `/api/v1/artifacts/{address}/six-month-revenue`
-- **Description**: Get the six-month revenue for a specific artifact address
-- **Parameters**:
-  - `address` (path): The artifact address (e.g., "0x123...")
-- **Response**:
-```json
-{
-    "artifactAddress": "0x123...",
-    "sixMonthRevenue": "5000000000000000000",
-    "calculatedAt": 1640995200
-}
+2. **Database Layer**: PostgreSQL database storing revenue reports, usage reports, and mining state tracking with proper indexing for efficient queries.
+
+3. **Blockchain Client**: Handles batched submission of aggregated data to smart contracts using the Alloy library for Ethereum interactions.
+
+4. **REST API**: Provides endpoints for querying artifact revenue and usage data. (In Version 1 of oracle, they are just placeholders)
+
+### Data Flow
+
+```
+External APIs → API Miner → PostgreSQL → Blockchain Client → Smart Contract
+                    ↓
+              REST API (Query Interface)
 ```
 
-#### Total Usage
-- **GET** `/api/v1/artifacts/{address}/total-usage`
-- **Description**: Get the total usage for a specific artifact address
-- **Parameters**:
-  - `address` (path): The artifact address (e.g., "0x123...")
-- **Response**:
-```json
-{
-    "artifactAddress": "0x123...",
-    "totalUsage": "15000",
-    "calculatedAt": 1640995200
-}
-```
+The service runs three concurrent tasks:
+- **Mining Task**: Fetches data from external APIs every 5 minutes with a 2-minute delay buffer
+- **Batching Task**: Submits accumulated data to blockchain every 10 minutes in batches of 40 records
+- **API Server**: Serves HTTP requests on port 8080
 
-### Error Responses
-All endpoints may return error responses in the following format:
-```json
-{
-    "error": "500 Internal Server Error",
-    "message": "Database connection failed"
-}
-```
+## Deployment
 
-### Example Usage
+### Prerequisites
+
+- Docker and Docker Compose
+- Environment variables for sensitive configuration
+
+### Environment Variables
+
+Copy `.env.example` as `.env`. Override placeholder values in `.env` with appropriate values
+
+
+### Docker Deployment
 
 ```bash
-# Health check
-curl http://localhost:8080/health
+# Create environment file
+cp .env.example .env
+# Edit .env with your configuration
 
-# Get six months revenue for an artifact
-curl http://localhost:8080/api/v1/artifacts/0x1234567890abcdef/six-month-revenue
+# Deploy with Docker Compose
+docker-compose up -d
 
-# Get total usage for an artifact
-curl http://localhost:8080/api/v1/artifacts/0x1234567890abcdef/total-usage
+# Check logs
+docker-compose logs -f oracle-service
 ```
 
-### Implementation Notes
+### Local Development
 
-The current implementation includes placeholder logic for the database queries. The actual database query logic needs to be implemented in the following functions:
+```bash
+# Install Rust (if not already installed)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
-1. `get_six_months_revenue` in `src/api.rs` - Calculate revenue for the last 6 months
-2. `get_total_usage` in `src/api.rs` - Calculate total usage across all time
+# Run PostgreSQL
+docker-compose up -d db
 
-These functions should query the `revenue_reports` and `usage_reports` tables respectively, filtering by the provided artifact address.
+# Update config.toml for local database
+# Change database.host from "db" to "localhost"
+
+# Run the service
+cargo run
+```
+
+## API Endpoints (Placeholders for now)
+
+- `GET /health` - Health check
+- `GET /api/v1/artifacts/{address}/six-month-revenue` - Get 6-month revenue for artifact
+- `GET /api/v1/artifacts/{address}/total-usage` - Get total usage for artifact
+
+## Configuration
+
+Key configuration parameters in `config.toml`:
+
+- **Mining Interval**: 300 seconds (5 minutes)
+- **Mining Delay**: 120 seconds buffer for data consistency
+- **Batch Size**: 40 records per blockchain transaction
+- **Batch Interval**: 600 seconds (10 minutes)
+- **Bootstrap Lookback**: 86400 seconds (24 hours) for initial data mining
+
+## Assumptions
+
+1. **External API Stability**: The external API provides consistent data format and maintains reasonable uptime
+2. **Blockchain Connectivity**: Reliable RPC endpoint access with sufficient gas for batch transactions
+3. **Data Consistency**: 2-minute delay buffer is sufficient for external API data settlement
+4. **Artifact Addresses**: All artifact addresses are valid Ethereum addresses (42 characters, 0x-prefixed)
+5. **Database Persistence**: PostgreSQL data persists across service restarts via Docker volumes
+
+## Future Implementation
+
+1. Check the working end-to-end with actual API with Sentient Chat data.
+2. Integrate nats-based indexer as another mining method.
+3. Implement API functions.
