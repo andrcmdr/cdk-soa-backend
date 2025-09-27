@@ -99,7 +99,7 @@ impl EventProcessor {
 
     pub async fn run(self) -> anyhow::Result<()> {
         let self_arc = Arc::new(self);
-        
+
         let from_block = self_arc.config.indexing.from_block.unwrap_or(0u64);
         let to_block = self_arc.config.indexing.to_block;
 
@@ -131,10 +131,10 @@ impl EventProcessor {
 
             let historical_task = tokio::spawn(async move {
                 info!("Starting historical logs processing task");
-                
+
                 let logs = processor_for_history.ws_rpc_provider.get_logs(&filter_for_history).await?;
                 debug!("Received {} logs from {} contracts", logs.len(), addresses_for_history.len());
-                
+
                 for log in logs.iter() {
                     debug!("Received historical log from contract: {}", log.address());
                     debug!("Historical log: {:?}", log);
@@ -143,7 +143,7 @@ impl EventProcessor {
                         eprintln!("Historical log error: {:?}", e);
                     }
                 }
-                
+
                 info!("Historical logs processing task completed");
                 Ok(())
             });
@@ -156,11 +156,11 @@ impl EventProcessor {
 
         let subscription_task = tokio::spawn(async move {
             info!("Starting subscription task");
-            
+
             let provider = processor_for_subscription.ws_rpc_provider.clone();
             let sub = provider.subscribe_logs(&filter).await?;
             info!("Subscribed to logs for {} contracts", addresses_for_subscription.len());
-            
+
             let mut sub_stream = sub.into_stream();
             while let Some(log) = sub_stream.next().await {
                 debug!("Received subscription log from contract: {}", log.address());
@@ -169,7 +169,7 @@ impl EventProcessor {
                     eprintln!("Subscription log error: {:?}", e);
                 }
             }
-            
+
             info!("Subscription task completed");
             Ok(())
         });
