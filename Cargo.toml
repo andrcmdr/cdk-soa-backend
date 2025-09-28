@@ -10,6 +10,8 @@ exclude = [
     "cdk-indexer.v3.prototype",
     "cdk-indexer.v4.prototype",
     "merkle-trie-generator",
+    "airdrop-backend",
+    "user-id-fetcher",
 ]
 
 # edition = "2021"
