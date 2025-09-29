@@ -7,6 +7,7 @@ mod event_decoder;
 mod types;
 mod task_manager;
 mod web_api;
+mod aws_rds;
 
 use std::sync::Arc;
 use tracing_subscriber::{EnvFilter, fmt};
@@ -63,8 +64,22 @@ async fn main() -> anyhow::Result<()> {
 
         let db_schema = std::fs::read_to_string(&db_schema_path)?;
 
-        // deps
-        let pg = db::connect_pg(&cfg.postgres.dsn, db_schema.as_str()).await?;
+        // Initialize database connections (local + AWS RDS if enabled)
+        let aws_rds_config = if cfg.is_aws_rds_enabled() {
+            cfg.aws_rds.as_ref()
+        } else {
+            None
+        };
+
+        let db_clients = db::DatabaseClients::new(
+            &cfg.postgres.dsn,
+            &db_schema,
+            aws_rds_config
+        ).await?;
+
+        // Test database connections
+        db_clients.test_connections().await?;
+
         let nats = if cfg.nats.nats_enabled.is_some_and(|enabled| enabled > 0) {
             let nats = nats::connect(&cfg.nats.url, &cfg.nats.object_store_bucket).await?;
             Some(nats)
@@ -72,7 +87,7 @@ async fn main() -> anyhow::Result<()> {
             None
         };
 
-        let event_processor = subscriptions::EventProcessor::new(&cfg, pg, nats).await?;
+        let event_processor = subscriptions::EventProcessor::new(&cfg, db_clients, nats).await?;
         event_processor.run().await?;
     }
 

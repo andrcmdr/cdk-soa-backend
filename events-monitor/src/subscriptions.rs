@@ -13,10 +13,9 @@ use alloy::providers::{Identity, RootProvider};
 use alloy::consensus::Transaction;
 use alloy::network::TransactionResponse;
 
-use tokio_postgres::Client as DbClient;
 use async_nats::jetstream::object_store::ObjectStore;
 
-use crate::{abi::ContractAbi, db, nats, nats::Nats};
+use crate::{abi::ContractAbi, db::{self, DatabaseClients}, nats, nats::Nats};
 use crate::config::AppCfg as AppConfig;
 use crate::event_decoder::EventDecoder;
 use crate::types::EventPayload;
@@ -31,7 +30,7 @@ type RPCProvider = FillProvider<JoinFill<Identity, JoinFill<GasFiller, JoinFill<
 
 pub struct EventProcessor {
     addr_abi_map: BTreeMap<Address, ContractAbi>,
-    db_pool: DbClient,
+    db_clients: DatabaseClients,
     nats_store: Option<Nats>,
     config: AppConfig,
     ws_rpc_provider: RPCProvider,
@@ -40,7 +39,7 @@ pub struct EventProcessor {
 }
 
 impl EventProcessor {
-    pub async fn new(config: &AppConfig, db_pool: DbClient, nats_store: Option<Nats>) -> anyhow::Result<Self> {
+    pub async fn new(config: &AppConfig, db_clients: DatabaseClients, nats_store: Option<Nats>) -> anyhow::Result<Self> {
         // Get all contracts including implementations
         let all_contracts = config.get_all_contracts();
 
@@ -88,7 +87,7 @@ impl EventProcessor {
 
         Ok(Self {
             addr_abi_map,
-            db_pool,
+            db_clients,
             nats_store,
             config: config.clone(),
             ws_rpc_provider,
@@ -317,8 +316,9 @@ impl EventProcessor {
 
         debug!("Persisting event: {:?}", payload);
 
-        // Persist to Postgres
-        db::insert_event(&self.db_pool, &payload).await?;
+        // Persist to databases (local PostgreSQL + AWS RDS if enabled)
+        self.db_clients.insert_event(&payload).await?;
+
         // Persist to NATS Object Store
         if let Some(nats_store) = &self.nats_store {
             nats::publish_event(&nats_store.object_store, &payload).await?;

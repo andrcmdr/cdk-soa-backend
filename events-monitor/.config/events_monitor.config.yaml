@@ -11,9 +11,24 @@ indexing:
   all_logs_processing: 1
 
 postgres:
+  # Local PostgreSQL connection (primary)
   # libpq connection string format
   dsn: "host=localhost user=events_monitor password=passwd dbname=events_monitor_db port=5432"
   schema: "./init_table.sql"
+
+# AWS RDS configuration (optional additional data layer)
+aws_rds:
+  enabled: 1  # Set to 0 to disable AWS RDS support
+  endpoint: "your-rds-instance.abcd1234.us-west-2.rds.amazonaws.com"
+  port: 5432
+  database_name: "events_monitor_rds"
+  username: "events_monitor_user"
+  password: "your-secure-password"
+  region: "us-west-2"  # AWS region (optional)
+  ssl_mode: "require"  # SSL configuration (disable, prefer, require, verify-ca, verify-full)
+  connection_timeout: 30  # Connection timeout in seconds (optional)
+  max_connections: 10  # Maximum connections (optional)
+  schema: "./init_aws_rds_schema.sql"  # Schema file for AWS RDS (optional)
 
 nats:
   nats_enabled: 1
@@ -21,6 +36,7 @@ nats:
   # existing JetStream object store bucket for persisted event payloads
   object_store_bucket: "events_bucket"
 
+# contracts configuration
 
 # max_implementations_per_contract: 1
 # max_implementation_nesting_depth: 0
@@ -30,6 +46,9 @@ contracts:
   - name: "Bridge"
     address: "0x1111111111111111111111111111111111111111"
     abi_path: "./abi/Bridge.json"
+    implementations: null
   - name: "ERC20USDC"
     address: "0x2222222222222222222222222222222222222222"
     abi_path: "./abi/ERC20.json"
+    implementations: null
+  # ... other contracts

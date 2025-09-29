@@ -81,11 +81,24 @@ impl TaskManager {
                 }
             }
 
-            // Initialize database connection
-            let pg = match db::connect_pg(&config.postgres.dsn, &db_schema).await {
-                Ok(client) => client,
+            // Initialize database connections (local + AWS RDS if enabled)
+            let aws_rds_config = if config.is_aws_rds_enabled() {
+                config.aws_rds.as_ref()
+            } else {
+                None
+            };
+
+            let db_clients = match db::DatabaseClients::new(
+                &config.postgres.dsn,
+                &db_schema,
+                aws_rds_config
+            ).await {
+                Ok(clients) => {
+                    info!("Database connections established for task {}", task_id_clone);
+                    clients
+                }
                 Err(e) => {
-                    error!("Failed to connect to database for task {}: {:?}", task_id_clone, e);
+                    error!("Failed to connect to databases for task {}: {:?}", task_id_clone, e);
 
                     // Update status to failed
                     let mut tasks = tasks_clone.write().await;
@@ -96,6 +109,12 @@ impl TaskManager {
                     return Err(e);
                 }
             };
+
+            // Test database connections
+            if let Err(e) = db_clients.test_connections().await {
+                warn!("Database connection test issues for task {}: {:?}", task_id_clone, e);
+                // Don't fail here as AWS RDS issues shouldn't prevent task startup
+            }
 
             // Initialize NATS if enabled
             let nats = if config.nats.nats_enabled.is_some_and(|enabled| enabled > 0) {
@@ -111,7 +130,7 @@ impl TaskManager {
             };
 
             // Create event processor
-            let event_processor = match EventProcessor::new(&config, pg, nats).await {
+            let event_processor = match EventProcessor::new(&config, db_clients, nats).await {
                 Ok(processor) => processor,
                 Err(e) => {
                     error!("Failed to create EventProcessor for task {}: {:?}", task_id_clone, e);

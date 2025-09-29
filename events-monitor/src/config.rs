@@ -21,6 +21,21 @@ pub struct PgCfg {
 }
 
 #[derive(Debug, Deserialize, Clone)]
+pub struct AwsRdsCfg {
+    pub enabled: Option<u8>,
+    pub endpoint: String,
+    pub port: Option<u16>,
+    pub database_name: String,
+    pub username: String,
+    pub password: String,
+    pub region: Option<String>,
+    pub ssl_mode: Option<String>,
+    pub connection_timeout: Option<u64>,
+    pub max_connections: Option<u32>,
+    pub schema: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Clone)]
 pub struct NatsCfg {
     pub nats_enabled: Option<u8>,
     pub url: String,
@@ -37,10 +52,11 @@ pub struct ContractCfg {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct AppCfg {
-    pub name: Option<String>, // Add optional name field for task identification
+    pub name: Option<String>, // Optional name field for task identification
     pub chain: ChainCfg,
     pub indexing: IndexingCfg,
     pub postgres: PgCfg,
+    pub aws_rds: Option<AwsRdsCfg>,
     pub nats: NatsCfg,
     pub contracts: Vec<ContractCfg>,
     pub max_implementations_per_contract: Option<usize>,
@@ -69,6 +85,13 @@ impl AppCfg {
         self.name.clone().unwrap_or_else(|| {
             format!("monitor-{}", chrono::Utc::now().timestamp())
         })
+    }
+
+    pub fn is_aws_rds_enabled(&self) -> bool {
+        self.aws_rds
+            .as_ref()
+            .map(|rds| rds.enabled.unwrap_or(0) > 0)
+            .unwrap_or(false)
     }
 
     fn validate_implementations(&self) -> anyhow::Result<()> {
