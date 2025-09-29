@@ -1,7 +1,7 @@
 # Stage 1: Build Rust Apps
 FROM debian:testing-slim AS rust_builder
 
-ARG VERSION=0.4.0
+ARG VERSION=0.8.0
 ENV VERSION=${VERSION}
 
 ENV SHELL="/usr/bin/env bash"
