@@ -1,34 +1,21 @@
 use std::collections::HashMap;
 use std::fmt;
+use tiny_keccak::{Hasher, Keccak};
 
-// Simple SHA-256 implementation (simplified for demonstration)
-// In a real implementation, we'd want to use a proper crypto library
-pub fn hash_data(data: &[u8]) -> [u8; 32] {
-    use std::collections::hash_map::DefaultHasher;
-    use std::hash::{Hash, Hasher};
-
-    let mut hasher = DefaultHasher::new();
-    data.hash(&mut hasher);
-    let hash = hasher.finish();
-
-    // Convert to 32-byte array (simplified)
-    let mut result = [0u8; 32];
-    result[0..8].copy_from_slice(&hash.to_be_bytes());
-
-    // For demonstration, we'll use a simple hash function
-    // In production, we'd use a proper cryptographic hash like SHA-256
-    for i in 8..32 {
-        result[i] = (hash.wrapping_mul(i as u64 + 1) >> (i % 8)) as u8;
-    }
-
-    result
+// Keccak256 hash implementation
+pub fn keccak256(data: &[u8]) -> [u8; 32] {
+    let mut hasher = Keccak::v256();
+    let mut output = [0u8; 32];
+    hasher.update(data);
+    hasher.finalize(&mut output);
+    output
 }
 
-pub fn hash_combine(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
+pub fn keccak256_combine(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
     let mut combined = Vec::with_capacity(64);
     combined.extend_from_slice(left);
     combined.extend_from_slice(right);
-    hash_data(&combined)
+    keccak256(&combined)
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -42,7 +29,7 @@ pub struct MerkleNode {
 
 impl MerkleNode {
     pub fn new_leaf(data: Vec<u8>, index: usize) -> Self {
-        let hash = hash_data(&data);
+        let hash = keccak256(&data);
         MerkleNode {
             hash,
             left: None,
@@ -53,7 +40,7 @@ impl MerkleNode {
     }
 
     pub fn new_internal(left: MerkleNode, right: MerkleNode) -> Self {
-        let hash = hash_combine(&left.hash, &right.hash);
+        let hash = keccak256_combine(&left.hash, &right.hash);
         MerkleNode {
             hash,
             left: Some(Box::new(left)),
@@ -89,9 +76,9 @@ impl fmt::Display for MerkleProof {
         for (i, element) in self.siblings.iter().enumerate() {
             writeln!(
                 f,
-                "  Level {}: {:02x?} ({})",
+                "  Level {}: 0x{} ({})",
                 i,
-                &element.hash[..8],
+                hex::encode(&element.hash[..8]),
                 if element.is_right_sibling { "right" } else { "left" }
             )?;
         }
@@ -182,6 +169,11 @@ impl MerkleTrie {
         self.root.as_ref().map(|node| node.hash)
     }
 
+    /// Get root hash as hex string with 0x prefix
+    pub fn get_root_hash_hex(&self) -> Option<String> {
+        self.get_root_hash().map(|hash| format!("0x{}", hex::encode(hash)))
+    }
+
     pub fn generate_proof(&self, data: &[u8]) -> Option<MerkleProof> {
         let leaf_index = *self.leaf_map.get(data)?;
         self.generate_proof_by_index(leaf_index)
@@ -261,19 +253,34 @@ impl MerkleTrie {
     }
 
     pub fn verify_proof_against_root(proof: &MerkleProof, root_hash: &[u8; 32]) -> bool {
-        let mut current_hash = hash_data(&proof.leaf_data);
+        let mut current_hash = keccak256(&proof.leaf_data);
 
         for sibling in &proof.siblings {
             current_hash = if sibling.is_right_sibling {
                 // Current node is left, sibling is right
-                hash_combine(&current_hash, &sibling.hash)
+                keccak256_combine(&current_hash, &sibling.hash)
             } else {
                 // Current node is right, sibling is left
-                hash_combine(&sibling.hash, &current_hash)
+                keccak256_combine(&sibling.hash, &current_hash)
             };
         }
 
         &current_hash == root_hash
+    }
+
+    /// Verify proof against hex string root hash
+    pub fn verify_proof_against_hex_root(proof: &MerkleProof, root_hash_hex: &str) -> Result<bool, hex::FromHexError> {
+        let root_hash_str = root_hash_hex.strip_prefix("0x").unwrap_or(root_hash_hex);
+        let root_hash_bytes = hex::decode(root_hash_str)?;
+
+        if root_hash_bytes.len() != 32 {
+            return Ok(false);
+        }
+
+        let mut root_hash = [0u8; 32];
+        root_hash.copy_from_slice(&root_hash_bytes);
+
+        Ok(Self::verify_proof_against_root(proof, &root_hash))
     }
 
     pub fn get_all_leaves(&self) -> &Vec<Vec<u8>> {
@@ -326,6 +333,53 @@ impl MerkleTrie {
             false
         }
     }
+
+    /// Convert proof to format compatible with smart contracts
+    pub fn proof_to_hex_array(&self, proof: &MerkleProof) -> Vec<String> {
+        proof
+            .siblings
+            .iter()
+            .map(|element| format!("0x{}", hex::encode(element.hash)))
+            .collect()
+    }
+
+    /// Create a trie from address/amount pairs (to use for airdrops)
+    pub fn from_address_amounts(data: HashMap<String, String>) -> Result<Self, hex::FromHexError> {
+        let mut trie = MerkleTrie::new();
+
+        for (address, amount) in data {
+            // Combine address and amount for leaf data
+            let mut leaf_data = Vec::new();
+
+            // Add address (remove 0x prefix if present)
+            let addr_str = address.strip_prefix("0x").unwrap_or(&address);
+            let addr_bytes = hex::decode(addr_str)?;
+            leaf_data.extend_from_slice(&addr_bytes);
+
+            // Add amount as bytes (might want to encode this differently)
+            leaf_data.extend_from_slice(amount.as_bytes());
+
+            trie.add_leaf(leaf_data);
+        }
+
+        trie.build_tree();
+        Ok(trie)
+    }
+
+    /// Generate proof for an address/amount pair
+    pub fn generate_proof_for_address_amount(&self, address: &str, amount: &str) -> Result<Option<MerkleProof>, hex::FromHexError> {
+        let mut leaf_data = Vec::new();
+
+        // Add address (remove 0x prefix if present)
+        let addr_str = address.strip_prefix("0x").unwrap_or(address);
+        let addr_bytes = hex::decode(addr_str)?;
+        leaf_data.extend_from_slice(&addr_bytes);
+
+        // Add amount as bytes
+        leaf_data.extend_from_slice(amount.as_bytes());
+
+        Ok(self.generate_proof(&leaf_data))
+    }
 }
 
 impl Default for MerkleTrie {
@@ -337,6 +391,16 @@ impl Default for MerkleTrie {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_keccak256_hash() {
+        let data = b"hello world";
+        let hash = keccak256(data);
+
+        // Known keccak256 hash of "hello world"
+        let expected = hex::decode("47173285a8d7341e5e972fc677286384f802f8ef42a5ec5f03bbfa254cb01fad").unwrap();
+        assert_eq!(hash.to_vec(), expected);
+    }
 
     #[test]
     fn test_empty_tree() {
@@ -351,7 +415,7 @@ mod tests {
         trie.build_tree();
 
         let root_hash = trie.get_root_hash().unwrap();
-        let expected = hash_data(b"hello");
+        let expected = keccak256(b"hello");
         assert_eq!(root_hash, expected);
     }
 
@@ -362,9 +426,9 @@ mod tests {
 
         let root_hash = trie.get_root_hash().unwrap();
 
-        let left_hash = hash_data(b"hello");
-        let right_hash = hash_data(b"world");
-        let expected = hash_combine(&left_hash, &right_hash);
+        let left_hash = keccak256(b"hello");
+        let right_hash = keccak256(b"world");
+        let expected = keccak256_combine(&left_hash, &right_hash);
 
         assert_eq!(root_hash, expected);
     }
@@ -393,13 +457,61 @@ mod tests {
     }
 
     #[test]
+    fn test_hex_root_verification() {
+        let data = vec![b"test".to_vec()];
+        let trie = MerkleTrie::from_data(data);
+
+        let root_hex = trie.get_root_hash_hex().unwrap();
+        let proof = trie.generate_proof(b"test").unwrap();
+
+        assert!(MerkleTrie::verify_proof_against_hex_root(&proof, &root_hex).unwrap());
+    }
+
+    #[test]
+    fn test_address_amount_trie() {
+        let mut data = HashMap::new();
+        data.insert("0x742C4d97C86bCF0176776C16e073b8c6f9Db4021".to_string(), "1000".to_string());
+        data.insert("0x8ba1f109551bD432803012645Hac136c5a2B1A".to_string(), "2000".to_string());
+
+        let trie = MerkleTrie::from_address_amounts(data).unwrap();
+        let root_hash = trie.get_root_hash().unwrap();
+
+        // Should have a valid root hash
+        assert_ne!(root_hash, [0u8; 32]);
+
+        // Should be able to generate proof
+        let proof = trie.generate_proof_for_address_amount(
+            "0x742C4d97C86bCF0176776C16e073b8c6f9Db4021",
+            "1000"
+        ).unwrap().unwrap();
+
+        // Proof should verify
+        assert!(trie.verify_proof(&proof));
+    }
+
+    #[test]
+    fn test_proof_to_hex_array() {
+        let data = vec![b"data1".to_vec(), b"data2".to_vec()];
+        let trie = MerkleTrie::from_data(data);
+
+        let proof = trie.generate_proof(b"data1").unwrap();
+        let hex_array = trie.proof_to_hex_array(&proof);
+
+        assert!(!hex_array.is_empty());
+        for hex_str in hex_array {
+            assert!(hex_str.starts_with("0x"));
+            assert_eq!(hex_str.len(), 66); // 0x + 64 hex chars = 66 total
+        }
+    }
+
+    #[test]
     fn test_odd_number_of_leaves() {
         let data = vec![b"data1".to_vec(), b"data2".to_vec(), b"data3".to_vec()];
         let trie = MerkleTrie::from_data(data);
 
         // Should handle odd number by duplicating last node
         let root_hash = trie.get_root_hash().unwrap();
-        assert!(root_hash != [0u8; 32]);
+        assert_ne!(root_hash, [0u8; 32]);
 
         // All proofs should verify
         for i in 0..3 {
