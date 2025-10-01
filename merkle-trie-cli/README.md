@@ -1,92 +1,70 @@
-## Merkle Trie Generator
+## Merkle Trie generator and comparison CLI tool
 
-## Changelog:
+## Usage:
 
-## v0.1.0:
+Build and run the CLI tool:
 
-## This implementation provides:
+```bash
+# Build the project
+cargo build --release
 
-## Key Features
+# Run the CLI tool
+cargo run --bin merkle-cli -- \
+  --input example.csv \
+  --output output.json \
+  --verbose \
+  --pretty
 
-1. **Pure Rust Implementation**: No external cryptographic dependencies - uses a simplified hash function for demonstration (in production, we'd replace it with proper hashing/digest function, like SHA-256)
-
-2. **Complete Merkle Tree**: Binary tree structure with internal nodes and leaf nodes
-
-3. **Root Hash**: Computed from bottom-up tree construction
-
-4. **Merkle Proofs**: Complete proofs with all sibling hashes needed to verify a leaf's inclusion
-
-5. **Proof Verification**: Both instance-based and static verification methods
-
-## Core Components
-
-- **MerkleNode**: Represents both leaf and internal nodes
-- **MerkleProof**: Contains leaf data and sibling hashes with position information
-- **MerkleTrie**: Main structure managing the tree and operations
-
-## Key Methods
-
-- `add_leaf()`: Add data to the tree
-- `build_tree()`: Construct the tree from leaves
-- `get_root_hash()`: Get the tree's root hash
-- `generate_proof()`: Create merkle proof for any leaf
-- `verify_proof()`: Verify a proof against the tree
-- `update_leaf()`: Modify existing leaf data
-- `remove_leaf()`: Remove leaf and rebuild tree
-
-## Usage Example
-
-```rust
-let mut trie = MerkleTrie::new();
-trie.add_leaf(b"Hello".to_vec());
-trie.add_leaf(b"World".to_vec());
-trie.build_tree();
-
-let root_hash = trie.get_root_hash().unwrap();
-let proof = trie.generate_proof(b"Hello").unwrap();
-assert!(trie.verify_proof(&proof));
+# Or use the compiled binary
+./target/release/merkle-cli \
+  --input example.csv \
+  --output output.json \
+  --verbose \
+  --pretty
 ```
 
-The implementation handles edge cases like odd numbers of leaves (by duplication) and provides comprehensive testing. For production use, we'd replace the simplified hash function with a proper cryptographic hash/digest, like SHA-256.
+## CLI Options:
 
-## v0.2.0:
+- `-i, --input <PATH>`: Input CSV file path (required)
+- `-o, --output <PATH>`: Output JSON file path (required)
+- `-v, --verbose`: Print root hash and statistics to stdout
+- `-p, --pretty`: Pretty print JSON output
 
-## Key Changes Made:
+## Expected Output Format:
 
-1. **Keccak256 Implementation**: Replaced the simple hash function with proper keccak256 using `tiny-keccak`
-2. **Hex Support**: Added hex encoding/decoding support for better compatibility with Ethereum tooling
-3. **Enhanced API**: Added methods for:
-   - `get_root_hash_hex()`: Get root hash as hex string
-   - `verify_proof_against_hex_root()`: Verify proof against hex root hash
-   - `from_address_amounts()`: Create trie from address/amount pairs
-   - `generate_proof_for_address_amount()`: Generate proof for address/amount pairs
-   - `proof_to_hex_array()`: Convert proof to hex array format for smart contracts
+The tool will generate a JSON output file in exactly specified format:
 
-4. **Better Display**: Enhanced the `Display` implementation for `MerkleProof` to show hex values
-5. **Production Ready**: Uses cryptographically secure keccak256 hash function
-
-## Usage Examples:
-
-```rust
-// Create trie from address/amount pairs
-let mut data = HashMap::new();
-data.insert("0x742C4d97C86bCF0176776C16e073b8c6f9Db4021".to_string(), "1000000000000000000".to_string());
-data.insert("0x8ba1f109551bD432803012645Hac136c5a2B1A".to_string(), "500000000000000000".to_string());
-
-let trie = MerkleTrie::from_address_amounts(data)?;
-let root_hash = trie.get_root_hash_hex().unwrap(); // Returns "0x..."
-
-// Generate proof for specific address/amount
-let proof = trie.generate_proof_for_address_amount(
-    "0x742C4d97C86bCF0176776C16e073b8c6f9Db4021",
-    "1000000000000000000"
-)?.unwrap();
-
-// Get proof in hex format for smart contracts
-let hex_proof = trie.proof_to_hex_array(&proof);
-
-// Verify proof
-assert!(trie.verify_proof(&proof));
+```json
+{
+  "root_hash": "0x1234567890abcdef...",
+  "allocations": {
+    "0x06a37c563d88894a98438e3b2fe17f365f1d3530": {
+      "allocation": "990000000000000000",
+      "proof": [
+        "0x5fa272eb5be1047ecbd6f02c97bc29f552c2cb081d793f10ed7f9c9c9e229ec6",
+        "0x36003a3a59da38caf1f58e57a89c0e62957cbc78699bc9aa1d59c65dd5ca4b88",
+        "0xfb85a4a2bd4a7cb643681d468ae32d7f36716abefbcc540771d005d96474ea0d"
+      ]
+    },
+    "0x742c4d97c86bcf0176776c16e073b8c6f9db4021": {
+      "allocation": "1000000000000000000",
+      "proof": [
+        "0x7fc3ecd9577a0cf7d414b1cc9e0c94e006cf073f99b63c2046a30a5dccfca9e7",
+        "0x8849588141eaee743b7b2ebd93d78afbe099e40b65a4aa708580a72e0918e375"
+      ]
+    }
+  }
+}
 ```
 
-This implementation is now compatible with Ethereum's `keccak256` hashing and provides features needed for production Merkle trie system.
+## Key Features:
+
+1. **CSV Processing**: Reads CSV files with `address` and `amount` columns
+2. **Leaf Encoding**: Concatenates address (20 bytes) + amount (32 bytes big-endian) and hashes with keccak256
+3. **Address Normalization**: Converts addresses to lowercase and handles 0x prefix
+4. **Merkle Proof Generation**: Generates complete Merkle proofs for each address
+5. **JSON Output**: Outputs in the exact format specified with root hash and allocations
+6. **Error Handling**: Comprehensive error messages for invalid CSV data
+7. **Validation**: Validates addresses and amounts during processing
+
+The tool ensures that the leaf data encoding matches Ethereum standards (20-byte addresses and 32-byte amounts in big-endian format), making the proofs compatible with smart contracts.
