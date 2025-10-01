@@ -8,7 +8,6 @@ use csv::ReaderBuilder;
 use serde::{Serialize, Deserialize};
 
 // Import the merkle trie implementation
-// Assuming it's in a module called merkle_trie
 use merkle_trie_cli::merkle_trie::{MerkleTrie, keccak256};
 
 #[derive(Parser, Debug)]
@@ -30,6 +29,10 @@ struct Args {
     /// Pretty print JSON output
     #[arg(short, long, default_value_t = false)]
     pretty: bool,
+
+    /// Sort addresses before building tree (recommended for deterministic output)
+    #[arg(short, long, default_value_t = false)]
+    sort: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -42,6 +45,12 @@ struct AllocationProof {
 struct OutputData {
     root_hash: String,
     allocations: HashMap<String, AllocationProof>,
+}
+
+#[derive(Debug, Clone)]
+struct AddressAmount {
+    address: String,
+    amount: String,
 }
 
 /// Normalize Ethereum address to lowercase without 0x prefix
@@ -85,7 +94,7 @@ fn encode_leaf_data(address: &str, amount: &str) -> Result<Vec<u8>> {
 }
 
 /// Process CSV file and build Merkle Trie
-fn process_csv_file(input_path: &PathBuf) -> Result<(MerkleTrie, HashMap<String, String>)> {
+fn process_csv_file(input_path: &PathBuf, sort: bool) -> Result<(MerkleTrie, HashMap<String, String>)> {
     let file = File::open(input_path)
         .with_context(|| format!("Failed to open file: {:?}", input_path))?;
 
@@ -95,10 +104,10 @@ fn process_csv_file(input_path: &PathBuf) -> Result<(MerkleTrie, HashMap<String,
         .flexible(false)
         .from_reader(reader);
 
-    let mut trie = MerkleTrie::new();
-    let mut address_amount_map: HashMap<String, String> = HashMap::new();
+    let mut entries: Vec<AddressAmount> = Vec::new();
     let mut row_count = 0;
 
+    // First, collect all entries
     for result in csv_reader.records() {
         let record = result.with_context(|| format!("Failed to read CSV record at row {}", row_count + 1))?;
 
@@ -125,26 +134,47 @@ fn process_csv_file(input_path: &PathBuf) -> Result<(MerkleTrie, HashMap<String,
         // Normalize address
         let normalized_address = normalize_address(address);
 
+        // Validate by attempting to decode
+        let _ = encode_leaf_data(&normalized_address, amount)
+            .with_context(|| format!("Failed to validate data at row {}", row_count + 1))?;
+
+        entries.push(AddressAmount {
+            address: normalized_address,
+            amount: amount.to_string(),
+        });
+
+        row_count += 1;
+    }
+
+    if entries.is_empty() {
+        anyhow::bail!("CSV file is empty or contains no valid records");
+    }
+
+    println!("Read {} records from CSV", row_count);
+
+    // Sort entries by address if requested (for deterministic output)
+    if sort {
+        println!("Sorting entries by address for deterministic output...");
+        entries.sort_by(|a, b| a.address.cmp(&b.address));
+    }
+
+    // Now build the trie with the (possibly sorted) entries
+    let mut trie = MerkleTrie::new();
+    let mut address_amount_map: HashMap<String, String> = HashMap::new();
+
+    for entry in entries {
         // Encode leaf data
-        let leaf_data = encode_leaf_data(&normalized_address, amount)
-            .with_context(|| format!("Failed to encode leaf data at row {}", row_count + 1))?;
+        let leaf_data = encode_leaf_data(&entry.address, &entry.amount)?;
 
         // Add to trie
         trie.add_leaf(leaf_data);
 
         // Store address-amount mapping
-        address_amount_map.insert(normalized_address, amount.to_string());
-
-        row_count += 1;
+        address_amount_map.insert(entry.address, entry.amount);
     }
-
-    if row_count == 0 {
-        anyhow::bail!("CSV file is empty or contains no valid records");
-    }
-
-    println!("Processed {} records from CSV", row_count);
 
     // Build the tree
+    println!("Building Merkle tree...");
     trie.build_tree();
 
     Ok((trie, address_amount_map))
@@ -211,11 +241,12 @@ fn main() -> Result<()> {
     println!("===================");
     println!("Input file: {:?}", args.input);
     println!("Output file: {:?}", args.output);
+    println!("Deterministic sorting: {}", if args.sort { "enabled" } else { "disabled" });
     println!();
 
     // Process CSV file
     println!("Processing CSV file...");
-    let (trie, address_amount_map) = process_csv_file(&args.input)?;
+    let (trie, address_amount_map) = process_csv_file(&args.input, args.sort)?;
 
     // Get root hash
     let root_hash = trie.get_root_hash_hex()
@@ -237,6 +268,13 @@ fn main() -> Result<()> {
     println!("\n✓ Successfully generated Merkle Trie data!");
     println!("  Root Hash: {}", output_data.root_hash);
     println!("  Allocations: {}", output_data.allocations.len());
+
+    if args.sort {
+        println!("\n  Note: Entries were sorted by address for deterministic output.");
+        println!("        The same data will always produce the same root hash.");
+    } else {
+        println!("\n  Warning: Sorting was disabled. Different input orders will produce different root hashes.");
+    }
 
     Ok(())
 }
@@ -271,5 +309,22 @@ mod tests {
 
         let result = encode_leaf_data(address, amount);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_order_affects_root_hash() {
+        // Create two tries with same data but different order
+        let mut trie1 = MerkleTrie::new();
+        trie1.add_leaf(vec![1, 2, 3]);
+        trie1.add_leaf(vec![4, 5, 6]);
+        trie1.build_tree();
+
+        let mut trie2 = MerkleTrie::new();
+        trie2.add_leaf(vec![4, 5, 6]);
+        trie2.add_leaf(vec![1, 2, 3]);
+        trie2.build_tree();
+
+        // Root hashes should be different
+        assert_ne!(trie1.get_root_hash(), trie2.get_root_hash());
     }
 }

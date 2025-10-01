@@ -68,3 +68,94 @@ The tool will generate a JSON output file in exactly specified format:
 7. **Validation**: Validates addresses and amounts during processing
 
 The tool ensures that the leaf data encoding matches Ethereum standards (20-byte addresses and 32-byte amounts in big-endian format), making the proofs compatible with smart contracts.
+
+## Data ordering
+
+The order of data rows significantly affects the proofs, hashes, and root hash in a Merkle tree.
+
+## Why Order Matters
+
+In the current implementation, the Merkle tree is built as a **binary tree** where:
+
+1. **Leaf Position**: Each data row becomes a leaf at a specific position (index 0, 1, 2, 3...)
+2. **Tree Structure**: The tree is built bottom-up by pairing adjacent leaves
+3. **Hash Computation**: Parent hashes are computed as `keccak256(left_child || right_child)`
+
+## Example:
+
+Let's say we have 4 addresses:
+
+### Order 1: [A, B, C, D]
+```
+       Root
+      /    \
+    H1      H2
+   /  \    /  \
+  A    B  C    D
+```
+- Root = keccak256(H1 || H2)
+- H1 = keccak256(A || B)
+- H2 = keccak256(C || D)
+
+### Order 2: [D, C, B, A]
+```
+       Root'
+      /    \
+    H1'     H2'
+   /  \    /  \
+  D    C  B    A
+```
+- Root' = keccak256(H1' || H2')
+- H1' = keccak256(D || C)
+- H2' = keccak256(B || A)
+
+**Result**: Root ≠ Root' (completely different!)
+
+## Impact on Proofs
+
+The proof for address A in both cases will be different:
+- **Order 1**: Proof includes [B, H2] to reconstruct the path to Root
+- **Order 2**: Proof includes [H2', C] to reconstruct the path to Root'
+
+## Solution: Deterministic Ordering
+
+To ensure consistent results regardless of input order, you should **sort the data** before building the tree.
+An updated version of the CLI tool is made/built with deterministic ordering of data.
+
+## Key Changes of current version:
+
+1. **Added `--sort` flag** (disabled by default): Sorts entries by address before building the tree
+2. **Two-phase processing**: First collect all entries, then optionally sort, then build tree
+3. **Warning messages**: Informs users about the implications of sorting
+4. **Test case**: Added test demonstrating that order affects the root hash
+
+## Usage:
+
+```bash
+# With sorting (deterministic, recommended)
+cargo run --bin merkle-cli -- \
+  --input example.csv \
+  --output output.json \
+  --sort \
+  --verbose
+
+# Without sorting (preserves input order)
+cargo run --bin merkle-cli -- \
+  --input example.csv \
+  --output output.json \
+  --verbose
+```
+
+## Best Practices:
+
+1. **Always use `--sort` for production**: Ensures deterministic output
+2. **Multiple data sources**: If combining data from multiple sources, sorting ensures consistency
+3. **Verification**: Sorted trees allow anyone to independently verify the root hash by sorting the same data
+4. **Smart contracts**: When submitting to blockchain, ensure the contract expects the same ordering
+
+## Summary:
+
+- **Data order matters tremendously** in Merkle trees
+- **Solution**: Sort data before building the tree
+- **Result**: Same data → same root hash, regardless of input order
+- **Default behavior**: The updated CLI tool read data sequentially from CSV file and sorts input data only when running with `--sort` flag for safety
