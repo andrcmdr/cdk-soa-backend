@@ -1,6 +1,8 @@
 ## Merkle Trie generator and comparison CLI tool
 
-## Usage:
+## Usage Examples:
+
+### Basic usage:
 
 Build and run the CLI tool:
 
@@ -23,6 +25,96 @@ cargo run --bin merkle-cli -- \
   --pretty
 ```
 
+### Keep 0x prefix in leaf data:
+```bash
+cargo run --bin merkle-cli -- \
+  --input example.csv \
+  --output output.json \
+  --keep-prefix \
+  --verbose \
+  --pretty
+```
+
+### Compare root hash:
+```bash
+cargo run --bin merkle-cli -- \
+  --input example.csv \
+  --output output.json \
+  --compare-root "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef" \
+  --verbose \
+  --pretty
+
+# Check exit code
+echo $?  # Returns 0 if match, 1 if mismatch
+```
+
+### Compare with reference JSON:
+```bash
+cargo run --bin merkle-cli -- \
+  --input example.csv \
+  --output output.json \
+  --compare-json example_reference.json \
+  --verbose \
+  --pretty
+
+# Check exit code
+echo $?  # Returns 0 if all match, 1 if any mismatch
+```
+
+### Complete comparison (root hash + JSON with proofs):
+```bash
+cargo run --bin merkle-cli -- \
+  --input example.csv \
+  --output output.json \
+  --compare-root "0xabcdef123456..." \
+  --compare-json reference.json \
+  --keep-prefix \
+  --verbose \
+  --pretty
+
+# Check exit code
+echo $?  # Returns 0 if all match, 1 if there are any mismatch
+```
+
+## Exit Codes:
+
+- **0**: Success (all comparisons passed or no comparisons requested)
+- **1**: Failure (root hash mismatch or/and proof differences detected)
+
+## Comparison CLI Output Example:
+
+```
+=== Root Hash Comparison ===
+Expected: 0x1234...abcd
+Actual:   0x5678...efgh
+✗ Root hash DOES NOT match
+============================
+
+=== Comparison Report ===
+✗ Root hash DOES NOT match
+✗ Proofs have differences
+
+  Missing addresses (in reference but not in output):
+    - 0x1234567890123456789012345678901234567890
+
+  Mismatched proofs:
+    - 0xabcdef1234567890abcdef1234567890abcdef12
+
+=========================
+
+✗ ERROR: Output comparison with reference JSON failed!
+```
+
+This CLI tool provides comprehensive comparison capabilities and proper exit codes for CI/CD integration.
+
+## New Features:
+
+1. ✅ **`--keep-prefix`**: Keeps `0x` prefix in leaf data for hashing
+2. ✅ **`--compare-root <HASH>`**: Compares computed root hash with expected value
+3. ✅ **`--compare-json <PATH>`**: Compares output with reference JSON
+4. ✅ **Exit codes**: Returns shell error status (1) if comparison fails
+5. ✅ **Detailed reports**: Shows exactly what differs (missing addresses, mismatched proofs, etc.)
+
 ## CLI Options:
 
 - `-i, --input <PATH>`: Input CSV file path (required)
@@ -30,7 +122,11 @@ cargo run --bin merkle-cli -- \
 - `-v, --verbose`: Print root hash and statistics to stdout
 - `-p, --pretty`: Pretty print JSON output
 
-## Expected Output Format:
+- `--keep-prefix`: Keeps `0x` prefix in leaf data for hashing
+- `--compare-root <HASH>`: Compares computed root hash with expected value
+- `--compare-json <PATH>`: Compares output with reference JSON
+
+## Expected Output JSON File Format:
 
 The tool will generate a JSON output file in exactly specified format:
 

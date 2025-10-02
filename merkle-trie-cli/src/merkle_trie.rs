@@ -500,7 +500,7 @@ mod tests {
     fn test_address_amount_trie() {
         let mut data = BTreeMap::new();
         data.insert("0x742C4d97C86bCF0176776C16e073b8c6f9Db4021".to_string(), "1000".to_string());
-        data.insert("0x8ba1f109551bD432803012645Hac136c5a2B1A".to_string(), "2000".to_string());
+        data.insert("0x8ba1f109551bD432803012645Fedac136c5a2B1A".to_string(), "2000".to_string());
 
         let trie = MerkleTrie::from_address_amounts(data).unwrap();
         let root_hash = trie.get_root_hash().unwrap();
