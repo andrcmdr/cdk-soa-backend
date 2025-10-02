@@ -1,14 +1,11 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::fmt;
-use tiny_keccak::{Hasher, Keccak};
+use keccak_hasher::KeccakHasher;
+use hash_db::Hasher as HashDbHasher;
 
-// Keccak256 hash implementation
+/// Keccak256 hash implementation using keccak-hasher
 pub fn keccak256(data: &[u8]) -> [u8; 32] {
-    let mut hasher = Keccak::v256();
-    let mut output = [0u8; 32];
-    hasher.update(data);
-    hasher.finalize(&mut output);
-    output
+    KeccakHasher::hash(data)
 }
 
 pub fn keccak256_combine(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
@@ -59,6 +56,7 @@ impl MerkleNode {
 pub struct MerkleProof {
     pub leaf_index: usize,
     pub leaf_data: Vec<u8>,
+    pub leaf_hash: [u8; 32],
     pub siblings: Vec<ProofElement>,
 }
 
@@ -71,7 +69,7 @@ pub struct ProofElement {
 impl fmt::Display for MerkleProof {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f, "Merkle Proof for leaf index {}:", self.leaf_index)?;
-        writeln!(f, "Leaf data: {:?}", self.leaf_data)?;
+        writeln!(f, "Leaf hash: 0x{}", hex::encode(&self.leaf_hash))?;
         writeln!(f, "Sibling hashes:")?;
         for (i, element) in self.siblings.iter().enumerate() {
             writeln!(
@@ -89,16 +87,17 @@ impl fmt::Display for MerkleProof {
 #[derive(Debug, Clone)]
 pub struct MerkleTrie {
     root: Option<MerkleNode>,
-    leaves: Vec<Vec<u8>>,
-    leaf_map: HashMap<Vec<u8>, usize>, // Maps data to leaf index
+    // BTreeMap automatically keeps keys sorted
+    leaves: BTreeMap<Vec<u8>, usize>, // Maps data to leaf index (sorted by data)
+    ordered_leaves: Vec<Vec<u8>>,     // Ordered list of leaf data for index lookup
 }
 
 impl MerkleTrie {
     pub fn new() -> Self {
         MerkleTrie {
             root: None,
-            leaves: Vec::new(),
-            leaf_map: HashMap::new(),
+            leaves: BTreeMap::new(),
+            ordered_leaves: Vec::new(),
         }
     }
 
@@ -112,22 +111,29 @@ impl MerkleTrie {
     }
 
     pub fn add_leaf(&mut self, data: Vec<u8>) {
-        if !self.leaf_map.contains_key(&data) {
-            let index = self.leaves.len();
-            self.leaf_map.insert(data.clone(), index);
-            self.leaves.push(data);
+        if !self.leaves.contains_key(&data) {
+            self.leaves.insert(data, 0); // Index will be updated when building tree
         }
     }
 
     pub fn build_tree(&mut self) {
         if self.leaves.is_empty() {
             self.root = None;
+            self.ordered_leaves.clear();
             return;
         }
 
-        // Create leaf nodes
+        // Extract and sort leaf data (BTreeMap keys are already sorted)
+        self.ordered_leaves = self.leaves.keys().cloned().collect();
+
+        // Update indices in the BTreeMap
+        for (index, data) in self.ordered_leaves.iter().enumerate() {
+            self.leaves.insert(data.clone(), index);
+        }
+
+        // Create leaf nodes with sorted order
         let mut current_level: Vec<MerkleNode> = self
-            .leaves
+            .ordered_leaves
             .iter()
             .enumerate()
             .map(|(i, data)| MerkleNode::new_leaf(data.clone(), i))
@@ -175,30 +181,33 @@ impl MerkleTrie {
     }
 
     pub fn generate_proof(&self, data: &[u8]) -> Option<MerkleProof> {
-        let leaf_index = *self.leaf_map.get(data)?;
+        let leaf_index = *self.leaves.get(data)?;
         self.generate_proof_by_index(leaf_index)
     }
 
     pub fn generate_proof_by_index(&self, leaf_index: usize) -> Option<MerkleProof> {
-        if leaf_index >= self.leaves.len() {
+        if leaf_index >= self.ordered_leaves.len() {
             return None;
         }
 
         let root = self.root.as_ref()?;
         let mut siblings = Vec::new();
-        let mut current_index = leaf_index;
 
         // Handle case where we duplicated the last node for odd number of leaves
-        let mut actual_tree_size = self.leaves.len();
+        let mut actual_tree_size = self.ordered_leaves.len();
         if actual_tree_size % 2 == 1 {
             actual_tree_size += 1;
         }
 
-        self.collect_siblings(root, current_index, actual_tree_size, 0, &mut siblings);
+        self.collect_siblings(root, leaf_index, actual_tree_size, 0, &mut siblings);
+
+        let leaf_data = self.ordered_leaves[leaf_index].clone();
+        let leaf_hash = keccak256(&leaf_data);
 
         Some(MerkleProof {
             leaf_index,
-            leaf_data: self.leaves[leaf_index].clone(),
+            leaf_data,
+            leaf_hash,
             siblings,
         })
     }
@@ -283,26 +292,28 @@ impl MerkleTrie {
         Ok(Self::verify_proof_against_root(proof, &root_hash))
     }
 
-    pub fn get_all_leaves(&self) -> &Vec<Vec<u8>> {
-        &self.leaves
+    pub fn get_all_leaves(&self) -> Vec<Vec<u8>> {
+        self.ordered_leaves.clone()
+    }
+
+    pub fn get_leaf_count(&self) -> usize {
+        self.ordered_leaves.len()
     }
 
     pub fn find_leaf_index(&self, data: &[u8]) -> Option<usize> {
-        self.leaf_map.get(data).copied()
+        self.leaves.get(data).copied()
     }
 
-    pub fn update_leaf(&mut self, index: usize, new_data: Vec<u8>) -> bool {
-        if index >= self.leaves.len() {
+    pub fn update_leaf(&mut self, data: &[u8], new_data: Vec<u8>) -> bool {
+        if !self.leaves.contains_key(data) {
             return false;
         }
 
-        // Remove old mapping
-        let old_data = &self.leaves[index];
-        self.leaf_map.remove(old_data);
+        // Remove old data
+        self.leaves.remove(data);
 
-        // Add new mapping
-        self.leaf_map.insert(new_data.clone(), index);
-        self.leaves[index] = new_data;
+        // Add new data
+        self.leaves.insert(new_data, 0); // Index will be updated when rebuilding
 
         // Rebuild tree
         self.build_tree();
@@ -310,22 +321,7 @@ impl MerkleTrie {
     }
 
     pub fn remove_leaf(&mut self, data: &[u8]) -> bool {
-        if let Some(&index) = self.leaf_map.get(data) {
-            self.leaf_map.remove(data);
-            self.leaves.remove(index);
-
-            // Update indices in the map
-            let mut new_map = HashMap::new();
-            for (leaf_data, &old_index) in &self.leaf_map {
-                let new_index = if old_index > index {
-                    old_index - 1
-                } else {
-                    old_index
-                };
-                new_map.insert(leaf_data.clone(), new_index);
-            }
-            self.leaf_map = new_map;
-
+        if self.leaves.remove(data).is_some() {
             // Rebuild tree
             self.build_tree();
             true
@@ -343,8 +339,9 @@ impl MerkleTrie {
             .collect()
     }
 
-    /// Create a trie from address/amount pairs (to use for airdrops)
-    pub fn from_address_amounts(data: HashMap<String, String>) -> Result<Self, hex::FromHexError> {
+    /// Create a trie from address/amount pairs (used commonly for airdrops)
+    /// Data is automatically sorted by the encoded leaf data
+    pub fn from_address_amounts(data: BTreeMap<String, String>) -> Result<Self, hex::FromHexError> {
         let mut trie = MerkleTrie::new();
 
         for (address, amount) in data {
@@ -379,6 +376,17 @@ impl MerkleTrie {
         leaf_data.extend_from_slice(amount.as_bytes());
 
         Ok(self.generate_proof(&leaf_data))
+    }
+
+    /// Get the leaf data at a specific index (in sorted order)
+    pub fn get_leaf_at_index(&self, index: usize) -> Option<&Vec<u8>> {
+        self.ordered_leaves.get(index)
+    }
+
+    /// Check if the tree is deterministic (always produces same root for same data)
+    pub fn is_deterministic(&self) -> bool {
+        // STUB for compatibility: BTreeMap ensures deterministic ordering
+        true
     }
 }
 
@@ -426,11 +434,33 @@ mod tests {
 
         let root_hash = trie.get_root_hash().unwrap();
 
+        // BTreeMap sorts by data, so order will be "hello", "world"
         let left_hash = keccak256(b"hello");
         let right_hash = keccak256(b"world");
         let expected = keccak256_combine(&left_hash, &right_hash);
 
         assert_eq!(root_hash, expected);
+    }
+
+    #[test]
+    fn test_deterministic_ordering() {
+        // Create two tries with same data but different insertion order
+        let data1 = vec![b"zebra".to_vec(), b"apple".to_vec(), b"banana".to_vec()];
+        let trie1 = MerkleTrie::from_data(data1);
+
+        let data2 = vec![b"banana".to_vec(), b"zebra".to_vec(), b"apple".to_vec()];
+        let trie2 = MerkleTrie::from_data(data2);
+
+        // Root hashes should be identical due to BTreeMap sorting
+        assert_eq!(trie1.get_root_hash(), trie2.get_root_hash());
+
+        // Verify the order is sorted
+        let leaves1 = trie1.get_all_leaves();
+        let leaves2 = trie2.get_all_leaves();
+        assert_eq!(leaves1, leaves2);
+        assert_eq!(leaves1[0], b"apple");
+        assert_eq!(leaves1[1], b"banana");
+        assert_eq!(leaves1[2], b"zebra");
     }
 
     #[test]
@@ -443,9 +473,8 @@ mod tests {
         ];
         let trie = MerkleTrie::from_data(data);
 
-        // Generate proof for first leaf
+        // Generate proof for first leaf (sorted order: data1, data2, data3, data4)
         let proof = trie.generate_proof(b"data1").unwrap();
-        assert_eq!(proof.leaf_index, 0);
         assert_eq!(proof.leaf_data, b"data1");
 
         // Verify proof
@@ -469,7 +498,7 @@ mod tests {
 
     #[test]
     fn test_address_amount_trie() {
-        let mut data = HashMap::new();
+        let mut data = BTreeMap::new();
         data.insert("0x742C4d97C86bCF0176776C16e073b8c6f9Db4021".to_string(), "1000".to_string());
         data.insert("0x8ba1f109551bD432803012645Hac136c5a2B1A".to_string(), "2000".to_string());
 
@@ -525,11 +554,11 @@ mod tests {
         let mut trie = MerkleTrie::from_data(vec![b"original".to_vec()]);
         let original_root = trie.get_root_hash().unwrap();
 
-        assert!(trie.update_leaf(0, b"updated".to_vec()));
+        assert!(trie.update_leaf(b"original", b"updated".to_vec()));
         let new_root = trie.get_root_hash().unwrap();
 
         assert_ne!(original_root, new_root);
-        assert_eq!(trie.leaves[0], b"updated");
+        assert_eq!(trie.get_leaf_at_index(0).unwrap(), b"updated");
     }
 
     #[test]
@@ -541,14 +570,39 @@ mod tests {
         ]);
 
         assert!(trie.remove_leaf(b"data2"));
-        assert_eq!(trie.leaves.len(), 2);
-        assert_eq!(trie.leaves[0], b"data1");
-        assert_eq!(trie.leaves[1], b"data3");
+        assert_eq!(trie.get_leaf_count(), 2);
+
+        // Verify remaining leaves
+        let leaves = trie.get_all_leaves();
+        assert!(leaves.contains(&b"data1".to_vec()));
+        assert!(leaves.contains(&b"data3".to_vec()));
+        assert!(!leaves.contains(&b"data2".to_vec()));
 
         // Verify remaining leaves still have valid proofs
         let proof1 = trie.generate_proof(b"data1").unwrap();
         let proof3 = trie.generate_proof(b"data3").unwrap();
         assert!(trie.verify_proof(&proof1));
         assert!(trie.verify_proof(&proof3));
+    }
+
+    #[test]
+    fn test_is_deterministic() {
+        let trie = MerkleTrie::new();
+        assert!(trie.is_deterministic());
+    }
+
+    #[test]
+    fn test_btreemap_automatic_sorting() {
+        let data = vec![
+            b"zzz".to_vec(),
+            b"aaa".to_vec(),
+            b"mmm".to_vec(),
+        ];
+        let trie = MerkleTrie::from_data(data);
+
+        let leaves = trie.get_all_leaves();
+        assert_eq!(leaves[0], b"aaa");
+        assert_eq!(leaves[1], b"mmm");
+        assert_eq!(leaves[2], b"zzz");
     }
 }

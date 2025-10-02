@@ -119,43 +119,41 @@ The proof for address A in both cases will be different:
 
 ## Solution: Deterministic Ordering
 
-To ensure consistent results regardless of input order, you should **sort the data** before building the tree.
-An updated version of the CLI tool is made/built with deterministic ordering of data.
+To ensure consistent results regardless of input order, data should be sorted before building the tree.
+An updated version of the CLI tool is made/built with deterministic ordering of data internally by the usage of `BTreeMap` data sctructure, which always ensures data ordered by key.
+The tree will automatically sort leaves by their encoded data (address + amount), ensuring deterministic output regardless of CSV row order.
 
-## Key Changes of current version:
+## Key changes of the current version:
 
-1. **Added `--sort` flag** (disabled by default): Sorts entries by address before building the tree
-2. **Two-phase processing**: First collect all entries, then optionally sort, then build tree
-3. **Warning messages**: Informs users about the implications of sorting
-4. **Test case**: Added test demonstrating that order affects the root hash
+1. **BTreeMap Usage**:
+   - Changed `HashMap` to `BTreeMap` in the `MerkleTrie` struct
+   - `leaves: BTreeMap<Vec<u8>, usize>` - automatically keeps leaf data sorted
+   - `ordered_leaves: Vec<Vec<u8>>` - maintains the sorted order for quick index access
 
-## Usage:
+2. **keccak-hasher Integration**:
+   - Using `keccak_hasher::KeccakHasher` which implements the `hash_db::Hasher` trait
+   - `KeccakHasher::hash()` provides the keccak256 implementation
+   - Compatible with Ethereum's keccak256
 
-```bash
-# With sorting (deterministic, recommended)
-cargo run --bin merkle-cli -- \
-  --input example.csv \
-  --output output.json \
-  --sort \
-  --verbose
+3. **Automatic Sorting**:
+   - No manual sorting needed - BTreeMap handles it automatically
+   - Removed `--sort` flag from CLI since it's always deterministic
+   - Keys in BTreeMap are always in sorted order
 
-# Without sorting (preserves input order)
-cargo run --bin merkle-cli -- \
-  --input example.csv \
-  --output output.json \
-  --verbose
-```
+4. **Enhanced Features**:
+   - Added `leaf_hash` to `MerkleProof` for easier verification
+   - Added `get_leaf_count()` method
+   - Added `get_leaf_at_index()` method
+   - Added `is_deterministic()` method that always returns `true`
 
-## Best Practices:
+5. **CLI Output Uses BTreeMap**:
+   - `OutputData.allocations` is now `BTreeMap<String, AllocationProof>`
+   - JSON output will have addresses in sorted order
 
-1. **Always use `--sort` for production**: Ensures deterministic output
-2. **Multiple data sources**: If combining data from multiple sources, sorting ensures consistency
-3. **Verification**: Sorted trees allow anyone to independently verify the root hash by sorting the same data
-4. **Smart contracts**: When submitting to blockchain, ensure the contract expects the same ordering
+## Benefits:
 
-## Summary:
-
-- **Data order matters tremendously** in Merkle trees
-- **Solution**: Sort data before building the tree
-- **Result**: Same data → same root hash, regardless of input order
-- **Default behavior**: The updated CLI tool read data sequentially from CSV file and sorts input data only when running with `--sort` flag for safety
+✅ **Deterministic**: Same data always produces same root hash
+✅ **Sorted by Default**: No need for manual sorting
+✅ **Efficient**: BTreeMap provides O(log n) operations
+✅ **Compatible**: Uses standard Ethereum keccak256 hashing
+✅ **Verifiable**: Anyone can reproduce the same tree and root hash
