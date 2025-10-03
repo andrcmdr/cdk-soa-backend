@@ -165,6 +165,124 @@ The tool will generate a JSON output file in exactly specified format:
 
 The tool ensures that the leaf data encoding matches Ethereum standards (20-byte addresses and 32-byte amounts in big-endian format), making the proofs compatible with smart contracts.
 
+
+## Reference ordering mode
+
+## Usage Examples:
+
+### Standard Mode (automatic sorting by leaf data):
+```bash
+cargo run --bin merkle-cli -- \
+  --input example.csv \
+  --output output.json \
+  --verbose \
+  --pretty
+```
+
+### Reference-Ordered Mode:
+```bash
+# Generate tree with addresses ordered according to reference file
+cargo run --bin merkle-cli -- \
+  --input example.csv \
+  --output output.json \
+  --order-by-reference reference.json \
+  --verbose \
+  --pretty
+```
+
+### Reference-Ordered Mode with Comparison:
+```bash
+# Order by reference AND compare with it
+cargo run --bin merkle-cli -- \
+  --input example.csv \
+  --output output.json \
+  --order-by-reference reference.json \
+  --compare-json reference.json \
+  --verbose \
+  --pretty
+```
+
+### Complete Example with All Features:
+```bash
+cargo run --bin merkle-cli -- \
+  --input example.csv \
+  --output output.json \
+  --order-by-reference reference.json \
+  --compare-root "0xabcdef123456..." \
+  --compare-json reference.json \
+  --keep-prefix \
+  --verbose \
+  --pretty
+```
+
+## How Reference-Ordered Mode Works:
+
+1. **Load Reference**: Reads the reference JSON file and extracts the address ordering
+2. **Build HashMap**: Stores CSV data in a HashMap for O(1) lookup
+3. **Order by Reference**: Creates an ordered vector of (address, amount) pairs following the reference order
+4. **Build Tree**: Constructs the Merkle tree using the reference-ordered data
+5. **Warnings**: Reports addresses in reference but not in CSV, and vice versa
+
+## Output Example:
+
+```
+Merkle Trie CLI Tool
+===================
+Input file: "example.csv"
+Output file: "output.json"
+Keep 0x prefix in leaf data: false
+Reference ordering mode: enabled
+Reference file: "reference.json"
+
+Loading reference order from "reference.json"...
+Reference contains 100 addresses
+
+Processing CSV file with reference ordering...
+Processed 95 records from CSV
+Ordering addresses according to reference file...
+  Addresses from reference found in CSV: 95/100
+  ⚠ Warning: 5 address(es) in reference not found in CSV:
+    - 0x1234567890123456789012345678901234567890
+    - 0x2345678901234567890123456789012345678901
+    - 0x3456789012345678901234567890123456789012
+    - 0x4567890123456789012345678901234567890123
+    - 0x5678901234567890123456789012345678901234
+
+Building Merkle tree with reference-based ordering...
+
+Root Hash: 0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
+Total addresses in output: 95
+
+Generating Merkle proofs...
+
+Writing output to "output.json"...
+
+✓ Successfully generated Merkle Trie data!
+  Root Hash: 0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
+  Allocations: 95
+
+  Note: Addresses were ordered according to reference file.
+        The tree structure follows the reference ordering.
+```
+
+## Key Features:
+
+1. ✅ **Reference-Based Ordering**: `--order-by-reference <FILE>` - Orders addresses according to reference JSON
+2. ✅ **HashMap Storage**: Fast O(1) lookup of CSV data
+3. ✅ **Vector Indexing**: Maintains ordered list of addresses for tree construction
+4. ✅ **Mismatch Detection**: Reports addresses in reference but not in CSV
+5. ✅ **Extra Address Detection**: Reports addresses in CSV but not in reference
+6. ✅ **Flexible Comparison**: Can compare with same reference used for ordering
+7. ✅ **Dual Mode**: Works in both standard (auto-sorted) and reference-ordered modes
+
+## Use Cases:
+
+- **Reproducible Builds**: Generate tree with exact same structure as reference
+- **Multi-Source Verification**: Compare multiple data sources using same ordering
+- **Incremental Updates**: Update tree while maintaining address order
+- **Cross-System Compatibility**: Ensure same tree structure across different systems
+
+
 ## Data ordering
 
 The order of data rows significantly affects the proofs, hashes, and root hash in a Merkle tree.

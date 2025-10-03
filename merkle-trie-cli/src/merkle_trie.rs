@@ -76,7 +76,7 @@ impl fmt::Display for MerkleProof {
                 f,
                 "  Level {}: 0x{} ({})",
                 i,
-                hex::encode(&element.hash[..8]),
+                hex::encode(&element.hash),
                 if element.is_right_sibling { "right" } else { "left" }
             )?;
         }
