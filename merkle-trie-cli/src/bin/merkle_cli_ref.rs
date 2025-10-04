@@ -43,10 +43,10 @@ struct Args {
     #[arg(long)]
     compare_json: Option<PathBuf>,
 
-    /// Reference JSON file to use for ordering addresses (special mode)
-    /// When set, addresses will be ordered according to this file instead of sorting by leaf data
+    /// Preserve order mode: use reference JSON to determine leaf insertion order
+    /// This allows reproducing exact tree structure and proofs from reference data
     #[arg(long)]
-    order_by_reference: Option<PathBuf>,
+    preserve_order: Option<PathBuf>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -59,6 +59,13 @@ struct AllocationProof {
 struct OutputData {
     root_hash: String,
     allocations: BTreeMap<String, AllocationProof>,
+}
+
+/// For preserve_order mode, we need to maintain insertion order
+#[derive(Debug, Serialize, Deserialize)]
+struct OrderedOutputData {
+    root_hash: String,
+    allocations: Vec<(String, AllocationProof)>,
 }
 
 #[derive(Debug)]
@@ -196,8 +203,8 @@ fn encode_leaf_data(address: &str, amount: &str, keep_prefix: bool) -> Result<Ve
     Ok(leaf_data)
 }
 
-/// Load reference JSON data and extract address ordering
-fn load_reference_order(path: &PathBuf) -> Result<Vec<String>> {
+/// Load reference JSON data
+fn load_reference_json(path: &PathBuf) -> Result<OutputData> {
     let file = File::open(path)
         .with_context(|| format!("Failed to open reference JSON file: {:?}", path))?;
 
@@ -205,16 +212,137 @@ fn load_reference_order(path: &PathBuf) -> Result<Vec<String>> {
     let data: OutputData = serde_json::from_reader(reader)
         .with_context(|| format!("Failed to parse reference JSON file: {:?}", path))?;
 
-    // Extract addresses in the order they appear in the BTreeMap
-    // BTreeMap maintains sorted order, so this gives us the reference ordering
-    let addresses: Vec<String> = data.allocations.keys().cloned().collect();
+    Ok(data)
+}
+
+/// Extract ordered addresses from reference JSON
+fn extract_ordered_addresses(reference: &OutputData) -> Vec<String> {
+    // BTreeMap maintains sorted order, but we want to preserve the order as it appears
+    // Actually, we need to parse as a different structure to preserve JSON order
+    reference.allocations.keys().cloned().collect()
+}
+
+/// Load reference JSON preserving insertion order
+fn load_reference_json_ordered(path: &PathBuf) -> Result<Vec<String>> {
+    let file = File::open(path)
+        .with_context(|| format!("Failed to open reference JSON file: {:?}", path))?;
+
+    let reader = BufReader::new(file);
+    let value: serde_json::Value = serde_json::from_reader(reader)
+        .with_context(|| format!("Failed to parse reference JSON file: {:?}", path))?;
+
+    // Extract addresses in order they appear in JSON
+    let mut addresses = Vec::new();
+    if let Some(allocations) = value.get("allocations").and_then(|v| v.as_object()) {
+        for key in allocations.keys() {
+            addresses.push(key.clone());
+        }
+    }
 
     Ok(addresses)
 }
 
-/// Process CSV file with standard sorting (by leaf data) and build Merkle Trie
+/// Process CSV file in preserve_order mode and build Merkle Trie
+fn process_csv_preserve_order(
+    input_path: &PathBuf,
+    order_reference: &PathBuf,
+    keep_prefix: bool
+) -> Result<(MerkleTrie, Vec<(String, String)>)> {
+    println!("Loading reference order from {:?}...", order_reference);
+    let ordered_addresses = load_reference_json_ordered(order_reference)?;
+    println!("Found {} addresses in reference order", ordered_addresses.len());
+
+    // Load CSV data into a HashMap
+    let file = File::open(input_path)
+        .with_context(|| format!("Failed to open file: {:?}", input_path))?;
+
+    let reader = BufReader::new(file);
+    let mut csv_reader = ReaderBuilder::new()
+        .has_headers(true)
+        .flexible(false)
+        .from_reader(reader);
+
+    let mut csv_data: HashMap<String, String> = HashMap::new();
+    let mut row_count = 0;
+
+    // First, collect all entries
+    for result in csv_reader.records() {
+        let record = result.with_context(|| format!("Failed to read CSV record at row {}", row_count + 1))?;
+
+        if record.len() < 2 {
+            anyhow::bail!("Invalid CSV format at row {}: expected 2 columns, found {}", row_count + 1, record.len());
+        }
+
+        let address = record.get(0)
+            .ok_or_else(|| anyhow::anyhow!("Missing address at row {}", row_count + 1))?
+            .trim();
+
+        let amount = record.get(1)
+            .ok_or_else(|| anyhow::anyhow!("Missing amount at row {}", row_count + 1))?
+            .trim();
+
+        if address.is_empty() {
+            anyhow::bail!("Empty address at row {}", row_count + 1);
+        }
+
+        if amount.is_empty() {
+            anyhow::bail!("Empty amount at row {}", row_count + 1);
+        }
+
+        // Normalize and store
+        let normalized_address = ensure_prefix(&normalize_address(address, keep_prefix));
+        csv_data.insert(normalized_address.to_lowercase(), amount.to_string());
+
+        row_count += 1;
+    }
+
+    println!("Loaded {} records from CSV", csv_data.len());
+
+    // Build trie in the order specified by reference
+    let mut trie = MerkleTrie::new();
+    let mut ordered_data: Vec<(String, String)> = Vec::new();
+    let mut matched_count = 0;
+
+    for ref_address in ordered_addresses {
+        let normalized_ref = ref_address.to_lowercase();
+
+        if let Some(amount) = csv_data.get(&normalized_ref) {
+            let addr_for_encoding = if keep_prefix {
+                ref_address.as_str()
+            } else {
+                ref_address.strip_prefix("0x").unwrap_or(&ref_address)
+            };
+
+            // Encode leaf data
+            let leaf_data = encode_leaf_data(addr_for_encoding, amount, keep_prefix)
+                .with_context(|| format!("Failed to encode leaf data for address: {}", ref_address))?;
+
+            // Add to trie in order
+            trie.add_leaf(leaf_data);
+            ordered_data.push((ref_address.clone(), amount.clone()));
+            matched_count += 1;
+        } else {
+            println!("Warning: Address {} from reference not found in CSV", ref_address);
+        }
+    }
+
+    println!("Matched {} addresses from reference order", matched_count);
+
+    if matched_count != csv_data.len() {
+        println!("Warning: CSV contains {} addresses but only {} were in reference order",
+                 csv_data.len(), matched_count);
+    }
+
+    // Build the tree (preserving insertion order)
+    println!("Building Merkle tree with preserved order...");
+    trie.build_tree();
+
+    Ok((trie, ordered_data))
+}
+
+/// Process CSV file normally (sorted mode) and build Merkle Trie
 /// BTreeMap automatically handles sorting, so no manual sorting needed
-fn process_csv_file_standard(input_path: &PathBuf, keep_prefix: bool) -> Result<(MerkleTrie, BTreeMap<String, String>)> {
+fn process_csv_file(input_path: &PathBuf, keep_prefix: bool) -> Result<(MerkleTrie, BTreeMap<String, String>)> {
     let file = File::open(input_path)
         .with_context(|| format!("Failed to open file: {:?}", input_path))?;
 
@@ -282,147 +410,19 @@ fn process_csv_file_standard(input_path: &PathBuf, keep_prefix: bool) -> Result<
     Ok((trie, address_amount_map))
 }
 
-/// Process CSV file with reference-based ordering
-fn process_csv_file_with_reference_order(
-    input_path: &PathBuf,
-    reference_order: &[String],
-    keep_prefix: bool
-) -> Result<(MerkleTrie, Vec<(String, String)>)> {
-    let file = File::open(input_path)
-        .with_context(|| format!("Failed to open file: {:?}", input_path))?;
-
-    let reader = BufReader::new(file);
-    let mut csv_reader = ReaderBuilder::new()
-        .has_headers(true)
-        .flexible(false)
-        .from_reader(reader);
-
-    // Use HashMap to store CSV data for quick lookup
-    let mut csv_data: HashMap<String, String> = HashMap::new();
-    let mut row_count = 0;
-
-    for result in csv_reader.records() {
-        let record = result.with_context(|| format!("Failed to read CSV record at row {}", row_count + 1))?;
-
-        if record.len() < 2 {
-            anyhow::bail!("Invalid CSV format at row {}: expected 2 columns, found {}", row_count + 1, record.len());
-        }
-
-        let address = record.get(0)
-            .ok_or_else(|| anyhow::anyhow!("Missing address at row {}", row_count + 1))?
-            .trim();
-
-        let amount = record.get(1)
-            .ok_or_else(|| anyhow::anyhow!("Missing amount at row {}", row_count + 1))?
-            .trim();
-
-        if address.is_empty() {
-            anyhow::bail!("Empty address at row {}", row_count + 1);
-        }
-
-        if amount.is_empty() {
-            anyhow::bail!("Empty amount at row {}", row_count + 1);
-        }
-
-        // Normalize address and ensure prefix
-        let normalized_address = normalize_address(address, keep_prefix);
-        let output_address = ensure_prefix(&normalized_address);
-
-        csv_data.insert(output_address, amount.to_string());
-        row_count += 1;
-    }
-
-    if row_count == 0 {
-        anyhow::bail!("CSV file is empty or contains no valid records");
-    }
-
-    println!("Processed {} records from CSV", row_count);
-    println!("Ordering addresses according to reference file...");
-
-    // Create ordered list according to reference
-    let mut ordered_data: Vec<(String, String)> = Vec::new();
-    let mut found_count = 0;
-    let mut missing_in_csv: Vec<String> = Vec::new();
-
-    for ref_address in reference_order {
-        let normalized_ref = ensure_prefix(ref_address);
-
-        if let Some(amount) = csv_data.get(&normalized_ref) {
-            ordered_data.push((normalized_ref.clone(), amount.clone()));
-            found_count += 1;
-        } else {
-            missing_in_csv.push(normalized_ref);
-        }
-    }
-
-    // Check for addresses in CSV but not in reference
-    let mut extra_in_csv: Vec<String> = Vec::new();
-    for csv_address in csv_data.keys() {
-        let normalized = ensure_prefix(csv_address);
-        if !reference_order.iter().any(|r| ensure_prefix(r) == normalized) {
-            extra_in_csv.push(normalized);
-        }
-    }
-
-    println!("  Addresses from reference found in CSV: {}/{}", found_count, reference_order.len());
-
-    if !missing_in_csv.is_empty() {
-        println!("  ⚠ Warning: {} address(es) in reference not found in CSV:", missing_in_csv.len());
-        for (i, addr) in missing_in_csv.iter().enumerate() {
-            if i < 5 {
-                println!("    - {}", addr);
-            } else if i == 5 {
-                println!("    ... and {} more", missing_in_csv.len() - 5);
-                break;
-            }
-        }
-    }
-
-    if !extra_in_csv.is_empty() {
-        println!("  ⚠ Warning: {} address(es) in CSV not found in reference:", extra_in_csv.len());
-        for (i, addr) in extra_in_csv.iter().enumerate() {
-            if i < 5 {
-                println!("    - {}", addr);
-            } else if i == 5 {
-                println!("    ... and {} more", extra_in_csv.len() - 5);
-                break;
-            }
-        }
-    }
-
-    // Build trie with reference-ordered data
-    println!("Building Merkle tree with reference-based ordering...");
-    let mut trie = MerkleTrie::new();
-
-    for (address, amount) in &ordered_data {
-        let addr_for_encoding = if keep_prefix {
-            address.as_str()
-        } else {
-            address.strip_prefix("0x").unwrap_or(address)
-        };
-
-        let leaf_data = encode_leaf_data(addr_for_encoding, amount, keep_prefix)?;
-        trie.add_leaf(leaf_data);
-    }
-
-    trie.build_tree();
-
-    Ok((trie, ordered_data))
-}
-
-/// Generate output JSON with proofs for all addresses (standard mode)
-fn generate_output_standard(
+/// Generate output JSON with proofs (ordered mode)
+fn generate_output_ordered(
     trie: &MerkleTrie,
-    address_amount_map: BTreeMap<String, String>,
+    ordered_data: Vec<(String, String)>,
     keep_prefix: bool
-) -> Result<OutputData> {
+) -> Result<serde_json::Value> {
     let root_hash = trie.get_root_hash_hex()
         .ok_or_else(|| anyhow::anyhow!("Failed to get root hash"))?;
 
-    let mut allocations = BTreeMap::new();
+    // Use serde_json::Map to preserve insertion order
+    let mut allocations = serde_json::Map::new();
 
-    for (address, amount) in address_amount_map.iter() {
-        // Remove prefix for encoding if needed
+    for (address, amount) in ordered_data.iter() {
         let addr_for_encoding = if keep_prefix {
             address.as_str()
         } else {
@@ -443,26 +443,26 @@ fn generate_output_standard(
             .collect();
 
         // Create allocation proof
-        let allocation_proof = AllocationProof {
-            allocation: amount.clone(),
-            proof: proof_hashes,
-        };
+        let allocation_proof = serde_json::json!({
+            "allocation": amount,
+            "proof": proof_hashes
+        });
 
         // Add to output (ensure 0x prefix)
         let output_address = ensure_prefix(address);
         allocations.insert(output_address, allocation_proof);
     }
 
-    Ok(OutputData {
-        root_hash,
-        allocations,
-    })
+    Ok(serde_json::json!({
+        "root_hash": root_hash,
+        "allocations": allocations
+    }))
 }
 
-/// Generate output JSON with proofs for all addresses (reference-ordered mode)
-fn generate_output_ordered(
+/// Generate output JSON with proofs (sorted mode)
+fn generate_output(
     trie: &MerkleTrie,
-    ordered_data: Vec<(String, String)>,
+    address_amount_map: BTreeMap<String, String>,
     keep_prefix: bool
 ) -> Result<OutputData> {
     let root_hash = trie.get_root_hash_hex()
@@ -470,7 +470,7 @@ fn generate_output_ordered(
 
     let mut allocations = BTreeMap::new();
 
-    for (address, amount) in ordered_data.iter() {
+    for (address, amount) in address_amount_map.iter() {
         // Remove prefix for encoding if needed
         let addr_for_encoding = if keep_prefix {
             address.as_str()
@@ -525,24 +525,29 @@ fn write_output(output_path: &PathBuf, data: &OutputData, pretty: bool) -> Resul
     Ok(())
 }
 
+/// Write output to JSON file (preserving order)
+fn write_output_ordered(output_path: &PathBuf, data: &serde_json::Value, pretty: bool) -> Result<()> {
+    let mut file = File::create(output_path)
+        .with_context(|| format!("Failed to create output file: {:?}", output_path))?;
+
+    let json_string = if pretty {
+        serde_json::to_string_pretty(data)?
+    } else {
+        serde_json::to_string(data)?
+    };
+
+    file.write_all(json_string.as_bytes())
+        .with_context(|| format!("Failed to write to output file: {:?}", output_path))?;
+
+    Ok(())
+}
+
 /// Compare root hash with expected value
 fn compare_root_hash(actual: &str, expected: &str) -> bool {
     let actual_normalized = actual.to_lowercase();
     let expected_normalized = expected.to_lowercase();
 
     actual_normalized == expected_normalized
-}
-
-/// Load reference JSON data
-fn load_reference_json(path: &PathBuf) -> Result<OutputData> {
-    let file = File::open(path)
-        .with_context(|| format!("Failed to open reference JSON file: {:?}", path))?;
-
-    let reader = BufReader::new(file);
-    let data: OutputData = serde_json::from_reader(reader)
-        .with_context(|| format!("Failed to parse reference JSON file: {:?}", path))?;
-
-    Ok(data)
 }
 
 /// Compare output data with reference data
@@ -601,41 +606,71 @@ fn main() -> Result<()> {
     println!("Output file: {:?}", args.output);
     println!("Keep 0x prefix in leaf data: {}", args.keep_prefix);
 
-    if let Some(ref order_ref) = args.order_by_reference {
-        println!("Reference ordering mode: enabled");
-        println!("Reference file: {:?}", order_ref);
+    if args.preserve_order.is_some() {
+        println!("Mode: PRESERVE ORDER (from reference JSON)");
+    } else {
+        println!("Mode: SORTED (deterministic BTreeMap ordering)");
     }
-
     println!();
 
-    // Check if we're using reference-based ordering
-    let output_data = if let Some(ref order_ref_path) = args.order_by_reference {
-        // Reference-based ordering mode
-        println!("Loading reference order from {:?}...", order_ref_path);
-        let reference_order = load_reference_order(order_ref_path)?;
-        println!("Reference contains {} addresses", reference_order.len());
+    // Process based on mode
+    let (root_hash, exit_code) = if let Some(ref order_ref) = args.preserve_order {
+        // Preserve order mode
+        let (trie, ordered_data) = process_csv_preserve_order(&args.input, order_ref, args.keep_prefix)?;
 
-        println!("\nProcessing CSV file with reference ordering...");
-        let (trie, ordered_data) = process_csv_file_with_reference_order(&args.input, &reference_order, args.keep_prefix)?;
-
-        // Get root hash
         let root_hash = trie.get_root_hash_hex()
             .ok_or_else(|| anyhow::anyhow!("Failed to get root hash"))?;
 
         if args.verbose {
             println!("\nRoot Hash: {}", root_hash);
-            println!("Total addresses in output: {}", ordered_data.len());
+            println!("Total addresses (ordered): {}", ordered_data.len());
         }
 
-        // Generate output with proofs
-        println!("\nGenerating Merkle proofs...");
-        generate_output_ordered(&trie, ordered_data, args.keep_prefix)?
-    } else {
-        // Standard mode (automatic sorting by leaf data)
-        println!("Processing CSV file...");
-        let (trie, address_amount_map) = process_csv_file_standard(&args.input, args.keep_prefix)?;
+        // Compare root hash if provided
+        let mut root_hash_matches = true;
+        if let Some(expected_root) = &args.compare_root {
+            root_hash_matches = compare_root_hash(&root_hash, expected_root);
+            println!("\n=== Root Hash Comparison ===");
+            println!("Expected: {}", expected_root);
+            println!("Actual:   {}", root_hash);
+            if root_hash_matches {
+                println!("✓ Root hash matches");
+            } else {
+                println!("✗ Root hash DOES NOT match");
+            }
+            println!("============================");
+        }
 
-        // Get root hash
+        // Generate output with preserved order
+        println!("\nGenerating Merkle proofs (preserving order)...");
+        let output_data = generate_output_ordered(&trie, ordered_data, args.keep_prefix)?;
+
+        // Write to output file
+        println!("Writing output to {:?}...", args.output);
+        write_output_ordered(&args.output, &output_data, args.pretty)?;
+
+        println!("\n✓ Successfully generated Merkle Trie data!");
+        println!("  Root Hash: {}", root_hash);
+
+        if let Some(allocs) = output_data.get("allocations").and_then(|v| v.as_object()) {
+            println!("  Allocations: {}", allocs.len());
+        }
+
+        println!("\n  Note: Leaf insertion order preserved from reference JSON.");
+
+        let exit_code = if args.compare_root.is_some() && !root_hash_matches {
+            eprintln!("\n✗ ERROR: Root hash comparison failed!");
+            1
+        } else {
+            0
+        };
+
+        (root_hash, exit_code)
+
+    } else {
+        // Normal sorted mode
+        let (trie, address_amount_map) = process_csv_file(&args.input, args.keep_prefix)?;
+
         let root_hash = trie.get_root_hash_hex()
             .ok_or_else(|| anyhow::anyhow!("Failed to get root hash"))?;
 
@@ -644,75 +679,66 @@ fn main() -> Result<()> {
             println!("Total addresses: {}", address_amount_map.len());
         }
 
+        // Compare root hash if provided
+        let mut root_hash_matches = true;
+        if let Some(expected_root) = &args.compare_root {
+            root_hash_matches = compare_root_hash(&root_hash, expected_root);
+            println!("\n=== Root Hash Comparison ===");
+            println!("Expected: {}", expected_root);
+            println!("Actual:   {}", root_hash);
+            if root_hash_matches {
+                println!("✓ Root hash matches");
+            } else {
+                println!("✗ Root hash DOES NOT match");
+            }
+            println!("============================");
+        }
+
         // Generate output with proofs
         println!("\nGenerating Merkle proofs...");
-        generate_output_standard(&trie, address_amount_map, args.keep_prefix)?
-    };
+        let output_data = generate_output(&trie, address_amount_map, args.keep_prefix)?;
 
-    // Compare root hash if provided
-    let mut root_hash_matches = true;
-    if let Some(expected_root) = &args.compare_root {
-        root_hash_matches = compare_root_hash(&output_data.root_hash, expected_root);
-        println!("\n=== Root Hash Comparison ===");
-        println!("Expected: {}", expected_root);
-        println!("Actual:   {}", output_data.root_hash);
-        if root_hash_matches {
-            println!("✓ Root hash matches");
-        } else {
-            println!("✗ Root hash DOES NOT match");
+        // Compare with reference JSON if provided
+        let mut comparison_result: Option<ComparisonResult> = None;
+        if let Some(ref_json_path) = &args.compare_json {
+            println!("\nLoading reference JSON from {:?}...", ref_json_path);
+            let reference_data = load_reference_json(ref_json_path)?;
+
+            println!("Comparing output with reference data...");
+            let result = compare_output_data(&output_data, &reference_data);
+            result.print_report();
+            comparison_result = Some(result);
         }
-        println!("============================");
-    }
 
-    // Compare with reference JSON if provided
-    let mut comparison_result: Option<ComparisonResult> = None;
-    if let Some(ref_json_path) = &args.compare_json {
-        println!("\nLoading reference JSON from {:?}...", ref_json_path);
-        let reference_data = load_reference_json(ref_json_path)?;
+        // Write to output file
+        println!("\nWriting output to {:?}...", args.output);
+        write_output(&args.output, &output_data, args.pretty)?;
 
-        println!("Comparing output with reference data...");
-        let result = compare_output_data(&output_data, &reference_data);
-        result.print_report();
-        comparison_result = Some(result);
-    }
+        println!("\n✓ Successfully generated Merkle Trie data!");
+        println!("  Root Hash: {}", output_data.root_hash);
+        println!("  Allocations: {}", output_data.allocations.len());
+        println!("\n  Note: Data is automatically sorted by leaf data (address + amount)");
+        println!("        for deterministic output.");
 
-    // Write to output file
-    println!("\nWriting output to {:?}...", args.output);
-    write_output(&args.output, &output_data, args.pretty)?;
+        // Determine exit code
+        let mut exit_code = 0;
 
-    println!("\n✓ Successfully generated Merkle Trie data!");
-    println!("  Root Hash: {}", output_data.root_hash);
-    println!("  Allocations: {}", output_data.allocations.len());
-
-    if args.order_by_reference.is_some() {
-        println!("\n  Note: Addresses were ordered according to reference file.");
-        println!("        The tree structure follows the reference ordering.");
-    } else {
-        if args.keep_prefix {
-            println!("\n  Note: 0x prefix was kept in leaf data for hashing.");
-        } else {
-            println!("\n  Note: Data is automatically sorted by leaf data (address + amount)");
-            println!("        for deterministic output. The same data will always produce");
-            println!("        the same root hash regardless of CSV row order.");
-        }
-    }
-
-    // Determine exit code
-    let mut exit_code = 0;
-
-    // Check root hash comparison
-    if args.compare_root.is_some() && !root_hash_matches {
-        eprintln!("\n✗ ERROR: Root hash comparison failed!");
-        exit_code = 1;
-    }
-
-    // Check JSON comparison
-    if let Some(result) = comparison_result {
-        if !result.is_success() {
-            eprintln!("\n✗ ERROR: Output comparison with reference JSON failed!");
+        // Check root hash comparison
+        if args.compare_root.is_some() && !root_hash_matches {
+            eprintln!("\n✗ ERROR: Root hash comparison failed!");
             exit_code = 1;
         }
-    }
+
+        // Check JSON comparison
+        if let Some(result) = comparison_result {
+            if !result.is_success() {
+                eprintln!("\n✗ ERROR: Output comparison with reference JSON failed!");
+                exit_code = 1;
+            }
+        }
+
+        (root_hash, exit_code)
+    };
 
     // Exit with appropriate code
     if exit_code != 0 {

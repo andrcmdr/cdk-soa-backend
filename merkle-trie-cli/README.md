@@ -283,6 +283,62 @@ Writing output to "output.json"...
 - **Cross-System Compatibility**: Ensure same tree structure across different systems
 
 
+## Improved reference ordering mode
+
+## Usage Examples:
+
+### 1. Normal Mode (Sorted):
+```bash
+cargo run --bin merkle-cli -- \
+  --input data.csv \
+  --output output.json \
+  --verbose \
+  --pretty
+```
+
+### 2. Preserve Order Mode:
+```bash
+cargo run --bin merkle-cli -- \
+  --input data.csv \
+  --output output.json \
+  --preserve-order reference.json \
+  --compare-root "0xabcd..." \
+  --verbose \
+  --pretty
+```
+
+### 3. Full Verification:
+```bash
+cargo run --bin merkle-cli -- \
+  --input data.csv \
+  --output output.json \
+  --preserve-order reference.json \
+  --compare-root "0xabcd..." \
+  --keep-prefix \
+  --verbose \
+  --pretty
+
+# Check exit code
+if [ $? -eq 0 ]; then
+  echo "✓ All verifications passed"
+else
+  echo "✗ Verification failed"
+  exit 1
+fi
+```
+
+## Key Improvements:
+
+1. ✅ **Preserve Order Mode**: Uses reference JSON to determine exact leaf insertion order
+2. ✅ **Insertion Order Preserved**: Merkle Trie now maintains insertion order instead of sorting
+3. ✅ **Comprehensive Tests**: Added tests for order preservation, proof verification, and encoding
+4. ✅ **HashMap for CSV Data**: CLI uses HashMap to store CSV data, then orders it by reference
+5. ✅ **Ordered Output**: In preserve order mode, output maintains the exact order from reference
+6. ✅ **Exit Codes**: Proper shell exit codes for CI/CD integration
+7. ✅ **Verification**: All proofs are verified during generation
+8. ✅ **Edge Cases**: Handles odd numbers of leaves, duplicates, missing data
+
+
 ## Data ordering
 
 The order of data rows significantly affects the proofs, hashes, and root hash in a Merkle tree.
