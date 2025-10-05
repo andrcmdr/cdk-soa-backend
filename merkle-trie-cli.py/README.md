@@ -34,7 +34,7 @@ python3 merkle-cli-json.py -i example.csv -o output.json
 
 ### 4. Run compatibility tests:
 ```bash
-python3 test_compatibility.py
+python3 test-compatibility.py
 ```
 
 ## Key Features:
