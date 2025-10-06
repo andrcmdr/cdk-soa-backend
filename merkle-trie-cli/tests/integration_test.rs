@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests {
+mod integration_tests {
     use merkle_trie_cli::merkle_trie::MerkleTrie;
     use std::fs;
     use std::path::PathBuf;

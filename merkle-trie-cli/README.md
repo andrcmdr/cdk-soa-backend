@@ -172,7 +172,7 @@ The tool ensures that the leaf data encoding matches Ethereum standards (20-byte
 
 ### Standard Mode (automatic sorting by leaf data):
 ```bash
-cargo run --bin merkle-cli -- \
+cargo run --bin merkle-cli-ref -- \
   --input example.csv \
   --output output.json \
   --verbose \
@@ -182,7 +182,7 @@ cargo run --bin merkle-cli -- \
 ### Reference-Ordered Mode:
 ```bash
 # Generate tree with addresses ordered according to reference file
-cargo run --bin merkle-cli -- \
+cargo run --bin merkle-cli-ref -- \
   --input example.csv \
   --output output.json \
   --order-by-reference reference.json \
@@ -193,7 +193,7 @@ cargo run --bin merkle-cli -- \
 ### Reference-Ordered Mode with Comparison:
 ```bash
 # Order by reference AND compare with it
-cargo run --bin merkle-cli -- \
+cargo run --bin merkle-cli-ref -- \
   --input example.csv \
   --output output.json \
   --order-by-reference reference.json \
@@ -204,7 +204,7 @@ cargo run --bin merkle-cli -- \
 
 ### Complete Example with All Features:
 ```bash
-cargo run --bin merkle-cli -- \
+cargo run --bin merkle-cli-ref -- \
   --input example.csv \
   --output output.json \
   --order-by-reference reference.json \
@@ -289,7 +289,7 @@ Writing output to "output.json"...
 
 ### 1. Normal Mode (Sorted):
 ```bash
-cargo run --bin merkle-cli -- \
+cargo run --bin merkle-cli-ref -- \
   --input data.csv \
   --output output.json \
   --verbose \
@@ -298,7 +298,7 @@ cargo run --bin merkle-cli -- \
 
 ### 2. Preserve Order Mode:
 ```bash
-cargo run --bin merkle-cli -- \
+cargo run --bin merkle-cli-ref -- \
   --input data.csv \
   --output output.json \
   --preserve-order reference.json \
@@ -309,7 +309,7 @@ cargo run --bin merkle-cli -- \
 
 ### 3. Full Verification:
 ```bash
-cargo run --bin merkle-cli -- \
+cargo run --bin merkle-cli-ref -- \
   --input data.csv \
   --output output.json \
   --preserve-order reference.json \

@@ -11,9 +11,9 @@ path = "src/bin/merkle_cli.rs"
 name = "merkle-cli-ref"
 path = "src/bin/merkle_cli_ref.rs"
 
-# [[bin]]
-# name = "merkle-cli-viem-compat"
-# path = "src/bin/merkle_cli_viem_compat.rs"
+[[bin]]
+name = "merkle-cli-viem-compat"
+path = "src/bin/merkle_cli_viem_compat.rs"
 
 [dependencies]
 anyhow = "1.0.100"
