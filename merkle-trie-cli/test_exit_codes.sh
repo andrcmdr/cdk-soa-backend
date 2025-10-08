@@ -123,11 +123,15 @@ run_test "Failure - Wrong root hash in JSON" 2 \
 run_test "Failure - Wrong proofs in JSON" 3 \
     "./target/release/merkle-cli-viem-compat --input test_data.csv --output output6.json --compare-json invalid_proofs.json"
 
-# Test 7: CLI root check takes precedence over JSON
-run_test "CLI root check (wrong) before JSON check" 1 \
+# Test 7: CLI root hash shouldn't take precedence over root hash provided by JSON file
+run_test "CLI root hash check (wrong) before JSON check (thus CLI root hash should be ignored in favor of root hash in JSON file)" 0 \
     "./target/release/merkle-cli-viem-compat --input test_data.csv --output output7.json --compare-root '$WRONG_ROOT' --compare-json reference.json"
 
-# Test 8: Keep prefix mode
+# Test 8: CLI root hash shouldn't take precedence over root hash provided by JSON file
+run_test "CLI root hash check (wrong) after JSON check (in this order of CLI parameters CLI root hash should be ignored as well in favor of root hash in JSON file)" 0 \
+    "./target/release/merkle-cli-viem-compat --input test_data.csv --output output7.json --compare-json reference.json" --compare-root '$WRONG_ROOT'
+
+# Test 9: Keep prefix mode
 run_test "Success - Keep prefix mode" 0 \
     "./target/release/merkle-cli-viem-compat --input test_data.csv --output output8.json --keep-prefix"
 

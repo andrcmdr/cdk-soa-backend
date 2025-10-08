@@ -306,3 +306,197 @@ This will show:
 - Which proofs differ
 - Exact comparison details
 
+
+## Merkle Trie generator and comparison CLI tool (TypeScript's Viem compatible) extended version with comprehensive comparisons and show leaves content option
+
+## Leaf Content Display Documentation
+
+## Overview
+
+The `--show-leaf-content` flag provides detailed information about how each leaf in the Merkle tree is constructed from the input data.
+
+## Usage
+
+```bash
+cargo run --bin merkle-cli-viem-compat -- \
+  --input data.csv \
+  --output output.json \
+  --show-leaf-content
+```
+
+## Output Format
+
+For each leaf, the following information is displayed:
+
+### Without `--keep-prefix`
+
+```
+Leaf [0]:
+  Address:      0x742C4d97C86bCF0176776C16e073b8c6f9Db4021
+  Amount:       1000000000000000000 wei
+  Amount (ETH): 1.0000 ETH
+  Packed data:  52 bytes total
+    - Address:           20 bytes
+      0x742c4d97c86bcf0176776c16e073b8c6f9db4021
+    - Amount (uint256):  32 bytes
+      0x0000000000000000000000000000000000000000000000000de0b6b3a7640000
+  Leaf hash:    0x8f7a9d0b3c2e1a4f5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8
+```
+
+### With `--keep-prefix`
+
+```
+Leaf [0]:
+  Address:      0x742C4d97C86bCF0176776C16e073b8c6f9Db4021
+  Amount:       1000000000000000000 wei
+  Amount (ETH): 1.0000 ETH
+  Packed data:  74 bytes total
+    - Address (with 0x): 42 bytes
+      Raw: 0x742C4d97C86bCF0176776C16e073b8c6f9Db4021
+      Hex: 0x307837343243346439374338366243463031373637373643313665303733623863366639446234303231
+    - Amount (uint256):  32 bytes
+      0x0000000000000000000000000000000000000000000000000de0b6b3a7640000
+  Leaf hash:    0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+```
+
+## Fields Explained
+
+| Field | Description |
+|-------|-------------|
+| **Index** | Position of the leaf in the tree (0-based) |
+| **Address** | Ethereum address from CSV |
+| **Amount (wei)** | Raw amount in smallest unit |
+| **Amount (ETH)** | Human-readable amount in ETH |
+| **Packed data** | Total bytes of concatenated address + amount |
+| **Address bytes** | Hexadecimal representation of address (20 bytes without prefix, or raw ASCII with prefix) |
+| **Amount bytes** | 32-byte big-endian representation of the amount |
+| **Leaf hash** | keccak256 hash of the packed data |
+
+## Packed Data Structure
+
+### Standard Mode (default)
+
+```
+| Address (20 bytes) | Amount (32 bytes) |
+|--------------------+-------------------|
+| 0x742c4d...        | 0x000000...640000 |
+```
+
+Total: 52 bytes → keccak256 → 32-byte leaf hash
+
+### Keep Prefix Mode (`--keep-prefix`)
+
+```
+| Address with "0x" (42 ASCII bytes) | Amount (32 bytes) |
+|------------------------------------+-------------------|
+| "0x742C4d..."                      | 0x000000...640000 |
+```
+
+Total: 74 bytes → keccak256 → 32-byte leaf hash
+
+## Combining with Other Options
+
+### Show Everything
+```bash
+cargo run --bin merkle-cli-viem-compat -- \
+  --input data.csv \
+  --output output.json \
+  --show-leaf-content \
+  --show-leaves \
+  --show-tree \
+  --verbose \
+  --pretty
+```
+
+### Show Leaf Content and Verify
+```bash
+cargo run --bin merkle-cli-viem-compat -- \
+  --input data.csv \
+  --output output.json \
+  --show-leaf-content \
+  --compare-json reference.json \
+  --verbose
+```
+
+### Debug Specific Encoding
+```bash
+# See how keeping the prefix affects leaf hashes
+cargo run --bin merkle-cli-viem-compat -- \
+  --input data.csv \
+  --show-leaf-content \
+  --keep-prefix
+```
+
+## Use Cases
+
+1. **Debugging**: Verify that address and amount encoding is correct
+2. **Auditing**: Review exact byte-level construction of leaves
+3. **Documentation**: Generate detailed reports of tree construction
+4. **Troubleshooting**: Compare packed data when root hashes don't match
+5. **Learning**: Understand how viem's `encodePacked` works
+
+## Example Output Interpretation
+
+Given this input:
+```csv
+address,allocation
+0x742C4d97C86bCF0176776C16e073b8c6f9Db4021,1000000000000000000
+```
+
+The tool shows:
+- Address is converted to checksum format
+- Amount 1000000000000000000 wei = 1 ETH
+- Packed data combines address (20 bytes) + amount (32 bytes)
+- Final leaf hash is keccak256 of those 52 bytes
+
+This matches viem's:
+```typescript
+keccak256(encodePacked(["address", "uint256"], [address, amount]))
+```
+
+## Complete Usage Examples:
+
+### 1. Basic leaf content display:
+```bash
+cargo run --bin merkle-cli-viem-compat -- \
+  --input example.csv \
+  --show-leaf-content
+```
+
+### 2. Detailed breakdown with prefix:
+```bash
+cargo run --bin merkle-cli-viem-compat -- \
+  --input example.csv \
+  --show-leaf-content \
+  --keep-prefix \
+  --verbose
+```
+
+### 3. Complete analysis:
+```bash
+cargo run --bin merkle-cli-viem-compat -- \
+  --input example.csv \
+  --output output.json \
+  --show-leaf-content \
+  --show-leaves \
+  --show-tree \
+  --compare-json reference.json \
+  --verbose \
+  --pretty
+```
+
+### 4. Quick leaf inspection:
+```bash
+cargo run --bin merkle-cli-viem-compat -- \
+  --input example.csv \
+  --show-leaf-content | grep -A 10 "Leaf \[0\]"
+```
+
+The `--show-leaf-content` option now provides comprehensive information about:
+- Original address and amount
+- Human-readable ETH conversion
+- Byte-level breakdown of packed data
+- Separate display for address and amount components
+- Final leaf hash
+
+This is extremely useful for debugging, auditing, and understanding exactly how the Merkle tree is constructed!

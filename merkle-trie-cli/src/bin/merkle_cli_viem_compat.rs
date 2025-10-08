@@ -36,9 +36,13 @@ struct Args {
     #[arg(short, long, default_value_t = false)]
     pretty: bool,
 
-    /// Show raw leaves
+    /// Show raw leaves (hash only)
     #[arg(long, default_value_t = false)]
     show_leaves: bool,
+
+    /// Show detailed leaf content (address, amount, packed data, hash)
+    #[arg(long, default_value_t = false)]
+    show_leaf_content: bool,
 
     /// Show tree structure
     #[arg(long, default_value_t = false)]
@@ -73,6 +77,15 @@ struct OutputData {
 struct CsvRow {
     address: String,
     allocation: String,
+}
+
+#[derive(Debug, Clone)]
+struct LeafData {
+    index: usize,
+    address: String,
+    amount: u128,
+    hash: [u8; 32],
+    packed_data: Vec<u8>,
 }
 
 #[derive(Debug)]
@@ -207,9 +220,8 @@ fn to_checksum_address(address: &str) -> Result<String> {
     Ok(checksum_addr)
 }
 
-/// Generate leaf hash from address and amount
-/// Equivalent to: keccak256(encodePacked(["address", "uint256"], [address, amount]))
-fn leaf_hash(address: &str, amount: u128, keep_prefix: bool) -> Result<[u8; 32]> {
+/// Generate leaf hash from address and amount, returning detailed information
+fn leaf_hash_detailed(address: &str, amount: u128, keep_prefix: bool, index: usize) -> Result<LeafData> {
     let mut packed = Vec::new();
 
     if keep_prefix && address.starts_with("0x") {
@@ -236,7 +248,21 @@ fn leaf_hash(address: &str, amount: u128, keep_prefix: bool) -> Result<[u8; 32]>
     packed.extend_from_slice(&amount_32);
 
     // Hash the packed data
-    Ok(keccak256(&packed))
+    let hash = keccak256(&packed);
+
+    Ok(LeafData {
+        index,
+        address: address.to_string(),
+        amount,
+        hash,
+        packed_data: packed,
+    })
+}
+
+/// Generate leaf hash from address and amount
+fn leaf_hash(address: &str, amount: u128, keep_prefix: bool) -> Result<[u8; 32]> {
+    let leaf_data = leaf_hash_detailed(address, amount, keep_prefix, 0)?;
+    Ok(leaf_data.hash)
 }
 
 /// Hash a pair of nodes with sorting (lexicographic order)
@@ -493,6 +519,39 @@ fn write_output(output_path: Option<&PathBuf>, data: &OutputData, pretty: bool) 
     Ok(())
 }
 
+/// Display detailed leaf content
+fn display_leaf_content(leaf_data: &[LeafData], keep_prefix: bool) {
+    println!("\nLeaf Content Details:");
+    println!("{}", "=".repeat(100));
+
+    for leaf in leaf_data {
+        println!("\nLeaf [{}]:", leaf.index);
+        println!("  Address:      {}", leaf.address);
+        println!("  Amount:       {} wei", leaf.amount);
+        println!("  Amount (ETH): {:.4} ETH", leaf.amount as f64 / 1e18);
+
+        // Show packed data breakdown
+        if keep_prefix && leaf.address.starts_with("0x") {
+            println!("  Packed data:  {} bytes total", leaf.packed_data.len());
+            println!("    - Address (with 0x): {} bytes", leaf.address.len());
+            println!("      Raw: {}", String::from_utf8_lossy(&leaf.packed_data[0..leaf.address.len()]));
+            println!("      Hex: {}", bytes_to_hex(&leaf.packed_data[0..leaf.address.len()]));
+            println!("    - Amount (uint256):  32 bytes");
+            println!("      {}", bytes_to_hex(&leaf.packed_data[leaf.address.len()..]));
+        } else {
+            println!("  Packed data:  {} bytes total", leaf.packed_data.len());
+            println!("    - Address:           20 bytes");
+            println!("      {}", bytes_to_hex(&leaf.packed_data[0..20]));
+            println!("    - Amount (uint256):  32 bytes");
+            println!("      {}", bytes_to_hex(&leaf.packed_data[20..]));
+        }
+
+        println!("  Leaf hash:    {}", bytes_to_hex(&leaf.hash));
+    }
+
+    println!("\n{}", "=".repeat(100));
+}
+
 fn main() -> Result<()> {
     let args = Args::parse();
 
@@ -518,21 +577,30 @@ fn main() -> Result<()> {
         println!();
     }
 
-    // Generate leaf hashes
+    // Generate leaf hashes with detailed information
     if args.verbose {
         println!("Generating leaf hashes...");
     }
 
     let mut leaves = Vec::new();
-    for row in &data {
+    let mut leaf_details = Vec::new();
+
+    for (i, row) in data.iter().enumerate() {
         let amount = row.allocation.parse::<u128>()
             .with_context(|| format!("Failed to parse allocation amount: {}", row.allocation))?;
-        let leaf = leaf_hash(&row.address, amount, args.keep_prefix)?;
-        leaves.push(leaf);
+        let leaf_data = leaf_hash_detailed(&row.address, amount, args.keep_prefix, i)?;
+        leaves.push(leaf_data.hash);
+        leaf_details.push(leaf_data);
     }
 
+    // Show detailed leaf content if requested
+    if args.show_leaf_content {
+        display_leaf_content(&leaf_details, args.keep_prefix);
+    }
+
+    // Show raw leaves (hash only) if requested
     if args.show_leaves || args.verbose {
-        println!("Raw leaves:");
+        println!("\nRaw leaves:");
         for (i, leaf) in leaves.iter().enumerate() {
             println!("  [{}] {}", i, bytes_to_hex(leaf));
         }
@@ -711,6 +779,20 @@ mod tests {
     }
 
     #[test]
+    fn test_leaf_hash_detailed() {
+        let address = "0x742C4d97C86bCF0176776C16e073b8c6f9Db4021";
+        let amount = 1000000000000000000u128;
+
+        let leaf_data = leaf_hash_detailed(address, amount, false, 0).unwrap();
+
+        assert_eq!(leaf_data.index, 0);
+        assert_eq!(leaf_data.address, address);
+        assert_eq!(leaf_data.amount, amount);
+        assert_eq!(leaf_data.packed_data.len(), 52); // 20 + 32 bytes
+        assert_eq!(leaf_data.hash.len(), 32);
+    }
+
+    #[test]
     fn test_leaf_hash_without_prefix() {
         let address = "0x742C4d97C86bCF0176776C16e073b8c6f9Db4021";
         let amount = 1000000000000000000u128;
@@ -764,6 +846,71 @@ mod tests {
             let proof = get_merkle_proof(i, &levels);
             assert!(verify_merkle_proof(leaf, &proof, &root));
         }
+    }
+
+    #[test]
+    fn test_single_leaf() {
+        let leaves = vec![[1u8; 32]];
+        let (levels, root) = build_merkle_tree(leaves.clone()).unwrap();
+
+        assert_eq!(root, leaves[0]);
+        assert_eq!(levels.len(), 1);
+    }
+
+    #[test]
+    fn test_two_leaves() {
+        let leaves = vec![
+            [1u8; 32],
+            [2u8; 32],
+        ];
+
+        let (levels, root) = build_merkle_tree(leaves.clone()).unwrap();
+
+        // Root should be hash of the two leaves
+        let expected_root = hash_pair(&leaves[0], &leaves[1]);
+        assert_eq!(root, expected_root);
+
+        // Should have 2 levels (leaves + root)
+        assert_eq!(levels.len(), 2);
+    }
+
+    #[test]
+    fn test_odd_number_leaves() {
+        let leaves = vec![
+            [1u8; 32],
+            [2u8; 32],
+            [3u8; 32],
+        ];
+
+        let (levels, root) = build_merkle_tree(leaves.clone()).unwrap();
+
+        // Should handle odd number by duplicating last leaf
+        assert_ne!(root, [0u8; 32]);
+
+        // All proofs should verify
+        for (i, leaf) in leaves.iter().enumerate() {
+            let proof = get_merkle_proof(i, &levels);
+            assert!(verify_merkle_proof(leaf, &proof, &root));
+        }
+    }
+
+    #[test]
+    fn test_bytes_to_hex() {
+        let bytes = [0xde, 0xad, 0xbe, 0xef];
+        let hex = bytes_to_hex(&bytes);
+        assert_eq!(hex, "0xdeadbeef");
+    }
+
+    #[test]
+    fn test_hex_to_bytes() {
+        let hex = "0xdeadbeef";
+        let bytes = hex_to_bytes(hex).unwrap();
+        assert_eq!(bytes, vec![0xde, 0xad, 0xbe, 0xef]);
+
+        // Test without 0x prefix
+        let hex2 = "deadbeef";
+        let bytes2 = hex_to_bytes(hex2).unwrap();
+        assert_eq!(bytes2, vec![0xde, 0xad, 0xbe, 0xef]);
     }
 
     #[test]
