@@ -8,8 +8,8 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum AppError {
-    #[error("Database error: {0}")]
-    Database(#[from] tokio_postgres::Error),
+    #[error(transparent)]
+    Database(DatabaseError),
 
     #[error("CSV processing error: {0}")]
     CsvProcessing(#[from] csv::Error),
@@ -20,8 +20,8 @@ pub enum AppError {
     #[error("Encryption error: {0}")]
     Encryption(String),
 
-    #[error("NATS error: {0}")]
-    Nats(#[from] async_nats::Error),
+    #[error(transparent)]
+    Nats(NatsError),
 
     #[error("Serialization error: {0}")]
     Serialization(#[from] serde_json::Error),
@@ -34,6 +34,26 @@ pub enum AppError {
 
     #[error("Internal error: {0}")]
     Internal(#[from] anyhow::Error),
+}
+
+#[derive(Error, Debug)]
+pub enum DatabaseError {
+    #[error("Postgres database error: {0}")]
+    Postgres(#[from] tokio_postgres::Error),
+    #[error("App internal database error: {0}")]
+    App(#[from] anyhow::Error),
+    #[error("Database error: {0}")]
+    Msg(String),
+}
+
+#[derive(Error, Debug)]
+pub enum NatsError {
+    #[error("NATS library error: {0}")]
+    Nats(#[from] async_nats::Error),
+    #[error("App internal NATS error: {0}")]
+    App(#[from] anyhow::Error),
+    #[error("NATS error: {0}")]
+    Msg(String),
 }
 
 impl IntoResponse for AppError {

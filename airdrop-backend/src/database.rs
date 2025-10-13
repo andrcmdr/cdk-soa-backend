@@ -34,6 +34,7 @@ pub struct ProcessingLog {
     pub created_at: chrono::DateTime<chrono::Utc>,
 }
 
+#[derive(Debug)]
 pub struct Database {
     client: Client,
 }
@@ -192,6 +193,11 @@ impl Database {
             "INSERT INTO eligibility_records (address, amount, round_id) VALUES "
         );
 
+        // Create storage vectors for the data columns
+        let mut address_vecs: Vec<Vec<u8>> = Vec::with_capacity(records.len());
+        let mut amount_strs: Vec<String> = Vec::with_capacity(records.len());
+        let mut round_ids: Vec<i32> = Vec::with_capacity(records.len());
+
         let mut params: Vec<&(dyn tokio_postgres::types::ToSql + Sync)> = Vec::new();
         let mut placeholders = Vec::new();
 
@@ -199,10 +205,17 @@ impl Database {
             let base_idx = i * 3 + 1;
             placeholders.push(format!("(${}, ${}, ${})", base_idx, base_idx + 1, base_idx + 2));
 
-            params.push(record.address.as_slice());
-            let amount_str = record.amount.to_string();
-            params.push(&amount_str);
-            params.push(&(record.round_id as i32));
+            // Store the data
+            address_vecs.push(record.address.to_vec());
+            amount_strs.push(record.amount.to_string());
+            round_ids.push(record.round_id as i32);
+        }
+
+        // Build params by referencing the stored data
+        for i in 0..records.len() {
+            params.push(&address_vecs[i]);
+            params.push(&amount_strs[i]);
+            params.push(&round_ids[i]);
         }
 
         query.push_str(&placeholders.join(", "));
@@ -270,18 +283,22 @@ impl Database {
     }
 
     pub async fn get_processing_logs(&self, round_id: Option<u32>) -> Result<Vec<ProcessingLog>> {
-        let (query, params): (&str, Vec<&(dyn tokio_postgres::types::ToSql + Sync)>) = match round_id {
-            Some(round_id) => (
-                "SELECT id, round_id, operation, status, message, transaction_hash, created_at
-                 FROM processing_logs WHERE round_id = $1 ORDER BY created_at DESC",
-                vec![&(round_id as i32)],
-            ),
-            None => (
-                "SELECT id, round_id, operation, status, message, transaction_hash, created_at
-                 FROM processing_logs ORDER BY created_at DESC LIMIT 100",
-                vec![],
-            ),
-        };
+        let query: &str;
+        let params: Vec<&(dyn tokio_postgres::types::ToSql + Sync)>;
+
+        // Create a binding for the converted i32 so it lives for the entire scope
+        let round_id_i32;
+
+        if let Some(rid) = round_id {
+            round_id_i32 = rid as i32;
+            query = "SELECT id, round_id, operation, status, message, transaction_hash, created_at
+                     FROM processing_logs WHERE round_id = $1 ORDER BY created_at DESC";
+            params = vec![&round_id_i32];
+        } else {
+            query = "SELECT id, round_id, operation, status, message, transaction_hash, created_at
+                     FROM processing_logs ORDER BY created_at DESC LIMIT 100";
+            params = vec![];
+        }
 
         let rows = self.client.query(query, &params).await?;
 

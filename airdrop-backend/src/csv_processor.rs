@@ -58,8 +58,9 @@ impl CsvProcessor {
                 .map_err(|e| AppError::CsvProcessing(e))?;
         }
 
+        // Directly map the error to a CsvProcessing error without trying to use CsvError::IntoInner
         let csv_data = writer.into_inner()
-            .map_err(|e| AppError::CsvProcessing(e))?;
+            .map_err(|e| AppError::CsvProcessing(csv::Error::from(e.into_error())))?;
 
         Ok(csv_data)
     }
