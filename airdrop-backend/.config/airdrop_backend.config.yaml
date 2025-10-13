@@ -1,0 +1,33 @@
+server:
+  bind_address: "0.0.0.0:3000"
+  max_upload_size: 52428800 # 50MB
+
+database:
+  url: "postgresql://username:password@localhost/airdrop_db"
+  max_connections: 10
+
+blockchain:
+  rpc_url: "https://rpc.polygon-cdk-chain.example"
+  contract_address: "0x1234567890123456789012345678901234567890"
+  chain_id: 1
+  # Contract interface configuration
+  contract_interface:
+    # Options: "json_abi" or "inline_sol"
+    type: "json_abi"
+    # Main contract interface definitions as ABI in JSON format
+    abi_path: "abi/AirdropContract.json"
+
+aws:
+  region: "us-east-1"
+  kms_key_id: "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"
+
+wallet:
+  # Encrypted private key (base64 encoded)
+  # This will be auto-populated on first run if empty
+  encrypted_private_key: ""
+
+nats:
+  url: "nats://localhost:4222"
+  object_store:
+    bucket_name: "airdrop-data"
+    max_object_size: 104857600 # 100MB

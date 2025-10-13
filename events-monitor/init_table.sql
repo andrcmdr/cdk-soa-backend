@@ -2,6 +2,8 @@ CREATE TABLE IF NOT EXISTS events_monitor_data (
     id BIGSERIAL PRIMARY KEY,
     contract_name TEXT NOT NULL,
     contract_address TEXT NOT NULL,
+    implementation_name TEXT,
+    implementation_address TEXT,
     chain_id TEXT NOT NULL,
     block_number TEXT NOT NULL,
     block_hash TEXT NOT NULL,
@@ -21,7 +23,9 @@ CREATE TABLE IF NOT EXISTS events_monitor_data (
 
 CREATE INDEX IF NOT EXISTS idx_contract_name ON events_monitor_data (contract_name);
 CREATE INDEX IF NOT EXISTS idx_contract_address ON events_monitor_data (contract_address);
-CREATE INDEX IF NOT EXISTS idx_contract_name_address ON events_monitor_data (contract_name, contract_address);
+CREATE INDEX IF NOT EXISTS idx_impl_name ON events_monitor_data (implementation_name);
+CREATE INDEX IF NOT EXISTS idx_impl_address ON events_monitor_data (implementation_address);
+CREATE INDEX IF NOT EXISTS idx_contract_impl_name_address ON events_monitor_data (contract_name, contract_address, implementation_name, implementation_address);
 
 CREATE INDEX IF NOT EXISTS idx_chain_id ON events_monitor_data (chain_id);
 CREATE INDEX IF NOT EXISTS idx_block_number ON events_monitor_data (block_number);
@@ -43,4 +47,4 @@ CREATE INDEX IF NOT EXISTS idx_event_signature ON events_monitor_data (event_sig
 CREATE INDEX IF NOT EXISTS idx_event_data_jsonb ON events_monitor_data USING gin (event_data);
 CREATE INDEX IF NOT EXISTS idx_event_name_signature ON events_monitor_data (event_name, event_signature);
 
-CREATE INDEX IF NOT EXISTS idx_contract_chain_block_tx_log_event ON events_monitor_data (contract_name, contract_address, chain_id, block_number, block_hash, block_timestamp, transaction_hash, transaction_sender, transaction_receiver, transaction_index, log_index, log_hash, event_name, event_signature);
+CREATE INDEX IF NOT EXISTS idx_contract_chain_block_tx_log_event ON events_monitor_data (contract_name, contract_address, implementation_name, implementation_address, chain_id, block_number, block_hash, block_timestamp, transaction_hash, transaction_sender, transaction_receiver, transaction_index, log_index, log_hash, event_name, event_signature);

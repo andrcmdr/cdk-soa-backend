@@ -1,0 +1,18 @@
+[
+  {
+    "platform": "twitter",
+    "username": "elonmusk"
+  },
+  {
+    "platform": "twitter",
+    "username": "@jack"
+  },
+  {
+    "platform": "discord",
+    "username": "someuser#1234"
+  },
+  {
+    "platform": "google",
+    "username": "user@gmail.com"
+  }
+]

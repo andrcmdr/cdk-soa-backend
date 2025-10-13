@@ -1,0 +1,5 @@
+{
+  "twitter_bearer_token": "YOUR_TWITTER_BEARER_TOKEN_HERE",
+  "discord_bot_token": "YOUR_DISCORD_BOT_TOKEN_HERE",
+  "google_access_token": "YOUR_GOOGLE_ACCESS_TOKEN_HERE"
+}

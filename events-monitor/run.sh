@@ -43,11 +43,13 @@ docker logs nats_2
 docker stop abi-fetcher; docker rm abi-fetcher
 docker run --name abi-fetcher -v ./.events_data/contracts_abi/:/apps/contracts_abi/ -v ./.config/abi_fetcher.config.yaml:/apps/.config/abi_fetcher.config.yaml:ro cdk-soa-backend ./abi-fetcher ./.config/abi_fetcher.config.yaml
 docker cp abi-fetcher:/apps/contracts_abi/ ./.events_data/
+docker start abi-fetcher && docker logs abi-fetcher
 docker logs abi-fetcher
 
 docker stop contracts-fetcher; docker rm contracts-fetcher
 docker run --name contracts-fetcher -v ./.events_data/contracts/:/apps/contracts/ -v ./.config/contracts_fetcher.config.yaml:/apps/.config/contracts_fetcher.config.yaml:ro cdk-soa-backend ./contracts-fetcher ./.config/contracts_fetcher.config.yaml
 docker cp contracts-fetcher:/apps/contracts/ ./.events_data/
+docker start contracts-fetcher && docker logs contracts-fetcher
 docker logs contracts-fetcher
 
 docker stop events_monitor; docker rm events_monitor

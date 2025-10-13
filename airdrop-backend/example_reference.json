@@ -1,0 +1,33 @@
+{
+  "root_hash": "0xcf6ec2651cad1dac48b1076882edc832e0b5b3800be030e98a66e83c9069cd25",
+  "allocations": {
+    "0x06a37c563d88894a98438e3b2fe17f365f1d3530": {
+      "allocation": "990000000000000000",
+      "proof": [
+        "0x19920713a4217d72dd0f1e89bf7bc404d730a3cf8c1f97a1f31a6a19d22437bd",
+        "0x451dd03cf03a7116f969098fc2012b969aa05691c81d78873653152850ddafaa"
+      ]
+    },
+    "0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed": {
+      "allocation": "250000000000000000",
+      "proof": [
+        "0x19920713a4217d72dd0f1e89bf7bc404d730a3cf8c1f97a1f31a6a19d22437bd",
+        "0xb879d5f7dd7802df81738265ef1d20765da146257ddd5c7b37e3ea6d27a8ba0d"
+      ]
+    },
+    "0x742c4d97c86bcf0176776c16e073b8c6f9db4021": {
+      "allocation": "1000000000000000000",
+      "proof": [
+        "0x9fbca3a8c28973e2509b7ebc8fe9a5890c20993a60b156988f34a7fd7562bf6d",
+        "0xaef4bc4aa57d2e6a6e5f3ee2218b0e2eed138a758188fe7fc6ab2fd22a5f854a"
+      ]
+    },
+    "0x8ba1f109551bd432803012645fdeac136c5a2b1a": {
+      "allocation": "500000000000000000",
+      "proof": [
+        "0x9fbca3a8c28973e2509b7ebc8fe9a5890c20993a60b156988f34a7fd7562bf6d",
+        "0x915aa230c1ee782b2fbd4e59019876cce0b24257036dfaf53fe45152fb114fb9"
+      ]
+    }
+  }
+}

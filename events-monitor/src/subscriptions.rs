@@ -13,10 +13,9 @@ use alloy::providers::{Identity, RootProvider};
 use alloy::consensus::Transaction;
 use alloy::network::TransactionResponse;
 
-use tokio_postgres::Client as DbClient;
 use async_nats::jetstream::object_store::ObjectStore;
 
-use crate::{abi::ContractAbi, db, nats, nats::Nats};
+use crate::{abi::ContractAbi, db::{self, DatabaseClients}, nats, nats::Nats};
 use crate::config::AppCfg as AppConfig;
 use crate::event_decoder::EventDecoder;
 use crate::types::EventPayload;
@@ -25,12 +24,13 @@ use std::ops::{Range, RangeFrom};
 use std::str::FromStr;
 use std::sync::Arc;
 use anyhow::anyhow;
+use tokio::task::JoinHandle;
 
 type RPCProvider = FillProvider<JoinFill<Identity, JoinFill<GasFiller, JoinFill<BlobGasFiller, JoinFill<NonceFiller, ChainIdFiller>>>>, RootProvider>;
 
 pub struct EventProcessor {
     addr_abi_map: BTreeMap<Address, ContractAbi>,
-    db_pool: DbClient,
+    db_clients: DatabaseClients,
     nats_store: Option<Nats>,
     config: AppConfig,
     ws_rpc_provider: RPCProvider,
@@ -39,20 +39,41 @@ pub struct EventProcessor {
 }
 
 impl EventProcessor {
-    pub async fn new(config: &AppConfig, db_pool: DbClient, nats_store: Option<Nats>) -> anyhow::Result<Self> {
-        // ABIs
-        let mut contracts = Vec::with_capacity(config.contracts.len());
-        for c in config.contracts.iter() {
-            let abi = ContractAbi::load(&c.name, &c.address, &c.abi_path)?;
+    pub async fn new(config: &AppConfig, db_clients: DatabaseClients, nats_store: Option<Nats>) -> anyhow::Result<Self> {
+        // Get all contracts including implementations
+        let all_contracts = config.get_all_contracts();
+
+        let mut contracts = Vec::with_capacity(all_contracts.len());
+        for c in all_contracts.iter() {
+            let abi = ContractAbi::from_contract_with_implementation(c)?;
             contracts.push(abi);
         }
 
-        info!("Loaded contracts: {:?}", contracts.len());
+        info!("Loaded contracts: {} (including implementations)", contracts.len());
 
-        // index contracts by address for a quick lookup
-        use std::collections::BTreeMap;
+        // Index contracts by address for a quick lookup
+        // For proxy contracts, we need to map the proxy address to implementation ABI
         let mut addr_abi_map: BTreeMap<Address, ContractAbi> = BTreeMap::new();
-        for c in contracts { addr_abi_map.insert(c.address, c); }
+        for c in contracts {
+            if c.is_implementation() {
+                // For implementations, use the parent (proxy) contract address as key
+                // but keep the implementation ABI for decoding
+                let proxy_address = c.get_effective_contract_address();
+
+                // Check if we already have a contract for this address
+                // If so, we might want to merge or handle multiple implementations
+                if addr_abi_map.contains_key(&proxy_address) {
+                    debug!("Multiple implementations found for proxy address: {}", proxy_address);
+                    // For now, use the last implementation loaded
+                    // In a more sophisticated setup, we might want to merge or handle all implementations
+                }
+
+                addr_abi_map.insert(proxy_address, c);
+            } else {
+                // Regular contracts use their own address
+                addr_abi_map.insert(c.address, c);
+            }
+        }
 
         let ws = WsConnect::new(&config.chain.ws_rpc_url);
         let http_rpc = reqwest::Url::from_str(&config.chain.http_rpc_url)?;
@@ -66,7 +87,7 @@ impl EventProcessor {
 
         Ok(Self {
             addr_abi_map,
-            db_pool,
+            db_clients,
             nats_store,
             config: config.clone(),
             ws_rpc_provider,
@@ -75,14 +96,14 @@ impl EventProcessor {
         })
     }
 
-    pub async fn run(&self) -> anyhow::Result<()> {
-        let provider = self.ws_rpc_provider.clone();
+    pub async fn run(self) -> anyhow::Result<()> {
+        let self_arc = Arc::new(self);
 
-        let from_block = self.config.indexing.from_block.unwrap_or(0u64);
-        let to_block = self.config.indexing.to_block;
+        let from_block = self_arc.config.indexing.from_block.unwrap_or(0u64);
+        let to_block = self_arc.config.indexing.to_block;
 
         // build a single filter for all addresses
-        let addresses: Vec<Address> = self.addr_abi_map.iter().map(|(_addr, c)| c.address).collect();
+        let addresses: Vec<Address> = self_arc.addr_abi_map.iter().map(|(addr, _c)| *addr).collect();
 
         let mut filter = Filter::new()
             .address(addresses.clone())
@@ -98,33 +119,76 @@ impl EventProcessor {
                 .select(BlockRangeFrom(from_block..));
         }
 
-        // Grab logs from all contracts according to filer and subscribe to new ones
-        let logs = self.http_rpc_provider.get_logs(&filter).await?;
-        debug!("Received {} logs from {} contracts", logs.len(), addresses.len());
-        logs.iter().for_each(|log| {
-            debug!("Received log from contract: {}", log.address());
-            debug!("Log: {:?}", log);
-        });
+        let mut handles: Vec<JoinHandle<anyhow::Result<()>>> = Vec::new();
 
-        // Grab logs from all contracts according to filer and subscribe to new ones
-        let logs = self.ws_rpc_provider.get_logs(&filter).await?;
-        debug!("Received {} logs from {} contracts", logs.len(), addresses.len());
-        logs.iter().for_each(|log| {
-            debug!("Received log from contract: {}", log.address());
-            debug!("Log: {:?}", log);
-        });
+        // Task 1: Process historical logs if enabled
+        let process_all_logs = self_arc.config.indexing.all_logs_processing.is_some_and(|process_logs| process_logs > 0);
+        if process_all_logs {
+            let processor_for_history = Arc::clone(&self_arc);
+            let filter_for_history = filter.clone();
+            let addresses_for_history = addresses.clone();
 
-        let sub = provider.subscribe_logs(&filter).await?;
-        info!("Subscribed to logs for {} contracts", addresses.len());
-        let mut sub_stream = sub.into_stream();
-        info!("Subscribed to logs for {} contracts", addresses.len());
-        while let Some(log) = sub_stream.next().await {
-            debug!("Received log from contract: {}", log.address());
-            if let Err(e) = self.handle_log(log).await {
-                error!("Failed to handle log: {:?}", e);
-                eprintln!("Log error: {:?}", e);
+            let historical_task = tokio::spawn(async move {
+                info!("Starting historical logs processing task");
+
+                let logs = processor_for_history.ws_rpc_provider.get_logs(&filter_for_history).await?;
+                debug!("Received {} logs from {} contracts", logs.len(), addresses_for_history.len());
+
+                for log in logs.iter() {
+                    debug!("Received historical log from contract: {}", log.address());
+                    debug!("Historical log: {:?}", log);
+                    if let Err(e) = processor_for_history.handle_log(log.clone()).await {
+                        error!("Failed to handle historical log: {:?}", e);
+                        eprintln!("Historical log error: {:?}", e);
+                    }
+                }
+
+                info!("Historical logs processing task completed");
+                Ok(())
+            });
+            handles.push(historical_task);
+        }
+
+        // Task 2: Subscribe to new logs
+        let processor_for_subscription = Arc::clone(&self_arc);
+        let addresses_for_subscription = addresses.clone();
+
+        let subscription_task = tokio::spawn(async move {
+            info!("Starting subscription task");
+
+            let provider = processor_for_subscription.ws_rpc_provider.clone();
+            let sub = provider.subscribe_logs(&filter).await?;
+            info!("Subscribed to logs for {} contracts", addresses_for_subscription.len());
+
+            let mut sub_stream = sub.into_stream();
+            while let Some(log) = sub_stream.next().await {
+                debug!("Received subscription log from contract: {}", log.address());
+                if let Err(e) = processor_for_subscription.handle_log(log).await {
+                    error!("Failed to handle subscription log: {:?}", e);
+                    eprintln!("Subscription log error: {:?}", e);
+                }
+            }
+
+            info!("Subscription task completed");
+            Ok(())
+        });
+        handles.push(subscription_task);
+
+        // Wait for all tasks to complete
+        for handle in handles {
+            match handle.await {
+                Ok(Ok(())) => info!("Task completed successfully"),
+                Ok(Err(e)) => {
+                    error!("Task failed with error: {:?}", e);
+                    return Err(e);
+                }
+                Err(join_err) => {
+                    error!("Task panicked: {:?}", join_err);
+                    return Err(anyhow!("Task panicked: {:?}", join_err));
+                }
             }
         }
+
         Ok(())
     }
 
@@ -141,8 +205,26 @@ impl EventProcessor {
         let parsed_event = decoder.decode_log(&log.inner)?;
         let parsed_event_value = parsed_event.to_json()?;
 
-        let contract_name = contract.name.as_str();
-        let contract_address = contract.address.to_string();
+        // Determine contract and implementation details
+        let (contract_name, contract_address, implementation_name, implementation_address) =
+            if contract.is_implementation() {
+                // This is an implementation, so we have proxy -> implementation mapping
+                (
+                    contract.get_effective_contract_name().to_string(),
+                    contract.get_effective_contract_address().to_string(),
+                    contract.implementation_name.clone(),
+                    contract.implementation_address.map(|addr| addr.to_string()),
+                )
+            } else {
+                // This is a regular contract
+                (
+                    contract.name.clone(),
+                    contract.address.to_string(),
+                    None,
+                    None,
+                )
+            };
+
         let block_number = log.block_number.unwrap_or_default().to_string();
         let block_hash = log.block_hash
             .map(|bh| format!("0x{}", hex::encode(bh.0.as_slice())))
@@ -212,8 +294,10 @@ impl EventProcessor {
         let log_hash = format!("0x{}", hex::encode(log_hash_bytes));
 
         let payload = EventPayload {
-            contract_name: contract_name.to_string(),
+            contract_name,
             contract_address,
+            implementation_name,
+            implementation_address,
             chain_id: self.chain_id.to_string(),
             block_number,
             block_hash,
@@ -232,8 +316,9 @@ impl EventProcessor {
 
         debug!("Persisting event: {:?}", payload);
 
-        // Persist to Postgres
-        db::insert_event(&self.db_pool, &payload).await?;
+        // Persist to databases (local PostgreSQL + AWS RDS if enabled)
+        self.db_clients.insert_event(&payload).await?;
+
         // Persist to NATS Object Store
         if let Some(nats_store) = &self.nats_store {
             nats::publish_event(&nats_store.object_store, &payload).await?;

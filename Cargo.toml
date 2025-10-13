@@ -5,11 +5,10 @@ members = [
 ]
 exclude = [
     "legacy",
-    "cdk-indexer.v1.ethers",
-    "cdk-indexer.v2.alloy",
-    "cdk-indexer.v3.prototype",
-    "cdk-indexer.v4.prototype",
     "merkle-trie-generator",
+    "merkle-trie-cli",
+    "airdrop-backend",
+    "user-id-fetcher",
 ]
 
 # edition = "2021"

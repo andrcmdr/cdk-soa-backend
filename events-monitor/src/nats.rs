@@ -8,6 +8,7 @@ use std::time::Duration;
 use async_nats::jetstream::object_store::Object;
 use tracing::{error, info};
 
+#[derive(Clone)]
 pub struct Nats {
     pub client: Client,
     pub js: Context,
@@ -51,9 +52,11 @@ pub async fn publish_event(
     payload: &EventPayload,
 ) -> anyhow::Result<()> {
     let key = format!(
-        "{}::{}::{}::{}::{}::{}::{}::{}",
+        "{}::{}::{:?}::{:?}::{}::{}::{}::{}::{}::{}",
         payload.contract_name,
         payload.contract_address,
+        payload.implementation_name,
+        payload.implementation_address,
         payload.chain_id,
         payload.transaction_hash,
         payload.transaction_sender,

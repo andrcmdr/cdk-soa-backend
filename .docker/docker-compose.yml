@@ -1,46 +1,89 @@
 version: '3.9'
 
 services:
-
-  indexer:
-    build: .
-    command: ["/apps/events-monitor", "/apps/.config/events_monitor.config.yaml"]
-    depends_on:
-      - postgres
-      - nats
+  # Events Monitor Service
+  events-monitor:
+    build:
+      context: .
+      dockerfile: cdk-soa-backend.dockerfile
+      target: apps_runtime
+    container_name: events_monitor
+    command: ["./events-monitor", "./.config/events_monitor.config.yaml", "./.config/init_table.sql"]
     environment:
       RUST_LOG: debug
+      RUST_BACKTRACE: full
     volumes:
-      - ./abi/:/apps/abi/:ro
-      - ./config.toml:/apps/config.toml:ro
-      - ./config.yaml:/apps/config.yaml:ro
+      - ./.config/events_monitor.config.yaml:/apps/.config/events_monitor.config.yaml:ro
       - ./init_table.sql:/apps/init_table.sql:ro
+      - ./abi/:/apps/abi/:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
     restart: unless-stopped
+    networks:
+      - events-monitor-network
 
+  # PostgreSQL Database
   postgres:
     image: postgres:17
+    container_name: events_monitor_postgres
     environment:
       POSTGRES_DB: events_monitor_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD_FILE: /run/secrets/pg-passwd
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
+      - ./.secret/pg-passwd:/run/secrets/pg-passwd:ro
       - ./.pgdata/:/var/lib/postgresql/data/pgdata/
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airdrop_user -d airdrop_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - events-monitor-network
 
+  # NATS with JetStream
   nats:
-    image: nats:2-scratch
-    command: ["-js", "--store_dir", "/data/nats/"]
+    build:
+      context: .
+      dockerfile: cdk-soa-backend.dockerfile
+      target: apps_runtime
+    container_name: events_monitor_nats
+    command: ["CMD", "./nats-server --name 'events_monitor_bus_nats_server' --addr 127.0.0.1 --port 4222 --http_port 4242 --config ./.config/nats.config --log_size_limit 1073741824 --jetstream"]
     volumes:
-      - ./.natsdata/:/data/nats/
+      - ./.natsdata/:/apps/nats.db/
+      - ./.logs/:/apps/.logs/
+      - ./.config/nats.config:/apps/.config/nats.config:ro
     ports:
-      - "4222:4222"
-      - "4242:4242"
-      - "8222:8222"
-      - "6222:6222"
+      - "4222:4222" # NATS client connections
+      - "4242:4242" # HTTP monitoring port
+      - "8222:8222" # HTTP monitoring port
+      - "6222:6222" # Cluster connections
+    healthcheck:
+      test: ["CMD", "nats", "server", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - events-monitor-network
 
 volumes:
   .pgdata:
+    driver: local
   .natsdata:
+    driver: local
+
+networks:
+  events-monitor-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
