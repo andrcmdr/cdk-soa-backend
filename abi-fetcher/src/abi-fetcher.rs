@@ -157,7 +157,14 @@ struct Implementation {
 
 #[derive(Debug, Deserialize)]
 struct NextPageParams {
-    smart_contract_id: u64,
+    items_count: u64,
+    hash: String,
+    #[serde(default)]
+    coin_balance: Option<String>,
+    #[serde(default)]
+    transaction_count: Option<u64>,
+    #[serde(default)]
+    transactions_count: Option<u64>,
 }
 
 // API response structure for individual contract details
@@ -251,12 +258,16 @@ impl BlockscoutClient {
 
     async fn fetch_all_verified_contracts(&self) -> Result<Vec<SmartContractItem>> {
         let mut all_contracts = Vec::new();
-        let mut next_page_id: Option<u64> = None;
+        let mut next_page_params: Option<NextPageParams> = None;
 
         loop {
-            let url = if let Some(page_id) = next_page_id {
-                format!("{}/smart-contracts?smart_contract_id={}", self.base_url, page_id)
+            let url = if let Some(ref params) = next_page_params {
+                // For subsequent requests, use items_count * 2 and hash from previous response
+                let items_count = params.items_count * 2;
+                format!("{}/smart-contracts?items_count={}&hash={}",
+                    self.base_url, items_count, params.hash)
             } else {
+                // First request without pagination parameters
                 format!("{}/smart-contracts", self.base_url)
             };
 
@@ -275,10 +286,11 @@ impl BlockscoutClient {
 
             // Check if there's a next page
             if let Some(next_params) = contracts_response.next_page_params {
-                next_page_id = Some(next_params.smart_contract_id);
-                debug!("Next page ID: {}", next_params.smart_contract_id);
+                debug!("Next page params - items_count: {}, hash: {}",
+                    next_params.items_count, next_params.hash);
+                next_page_params = Some(next_params);
             } else {
-                info!("No more pages, pagination complete");
+                info!("No more pages (next_page_params is null), pagination complete");
                 break;
             }
         }
