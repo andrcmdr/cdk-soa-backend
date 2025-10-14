@@ -1,38 +1,49 @@
 use anyhow::Result;
 use alloy::{
+    contract::{ContractInstance, Interface as ContractAbi},
+    dyn_abi::DynSolValue,
+    json_abi::JsonAbi,
     network::EthereumWallet,
     primitives::{Address, B256, U256},
-    providers::{ProviderBuilder, RootProvider},
+    providers::{ProviderBuilder, RootProvider, Identity},
     signers::local::PrivateKeySigner,
     sol,
     transports::http::{Client, Http},
-    contract::ContractInstance,
-    json_abi::JsonAbi,
-    dyn_abi::DynSolValue,
+    transports::ws::WsConnect,
 };
 use alloy_provider::Provider;
+use alloy_provider::fillers::{
+    BlobGasFiller, ChainIdFiller, FillProvider, GasFiller, JoinFill, NonceFiller,
+};
 use serde::{Deserialize, Serialize};
+use tracing::info;
 use crate::config::{ContractInterfaceType, Config};
 use crate::error::{AppError, AppResult};
 
-// Inline Solidity interface using sol! macro
-sol!(
+type RPCProvider = FillProvider<
+    JoinFill<
+        Identity,
+        JoinFill<GasFiller, JoinFill<BlobGasFiller, JoinFill<NonceFiller, ChainIdFiller>>>
+    >,
+    RootProvider
+>;
+
+// Inline Solidity interface using sol! macro (block form)
+sol! {
     #[allow(missing_docs)]
     #[sol(rpc)]
-    IAirdropContract,
-    r#"
-    struct RoundMetadata {
-        uint256 roundId;
-        bytes32 rootHash;
-        uint256 totalEligible;
-        uint256 totalAmount;
-        uint256 startTime;
-        uint256 endTime;
-        bool isActive;
-        string metadataUri;
-    }
-
     interface IAirdropContract {
+        struct RoundMetadata {
+            uint256 roundId;
+            bytes32 rootHash;
+            uint256 totalEligible;
+            uint256 totalAmount;
+            uint256 startTime;
+            uint256 endTime;
+            bool isActive;
+            string metadataUri;
+        }
+
         // Core trie management functions
         function updateTrieRoot(uint256 roundId, bytes32 rootHash, bytes calldata trieData) external;
         function isRootHashExists(bytes32 rootHash) external view returns (bool);
@@ -78,8 +89,7 @@ sol!(
             bool isActive
         );
     }
-    "#
-);
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RoundMetadata {
@@ -94,17 +104,29 @@ pub struct RoundMetadata {
 }
 
 pub enum ContractInterface {
-    InlineSol(IAirdropContract::IAirdropContractInstance<Http<Client>, RootProvider<Http<Client>>>),
+    InlineSol(IAirdropContract::IAirdropContractInstance<RPCProvider>),
     JsonAbi {
-        instance: ContractInstance<Http<Client>, RootProvider<Http<Client>>>,
+        instance: ContractInstance<RPCProvider>,
         abi: JsonAbi,
     },
 }
 
 pub struct ContractClient {
-    provider: RootProvider<Http<Client>>,
+    provider: RPCProvider,
     contract_address: Address,
     interface: ContractInterface,
+}
+
+/// Build HTTP and WS providers using Alloy
+pub async fn build_providers(
+    ws_rpc_url: WsConnect,
+    http_rpc_url: reqwest::Url
+) -> anyhow::Result<(RPCProvider, RPCProvider)> {
+    let ws_rpc_provider = ProviderBuilder::new().connect_ws(ws_rpc_url.clone()).await?;
+    let http_rpc_provider = ProviderBuilder::new().connect_http(http_rpc_url.clone());
+    info!("Connecting to RPC endpoints: ws: {:?}, http: {:?}", ws_rpc_url, http_rpc_url);
+
+    Ok((ws_rpc_provider, http_rpc_provider))
 }
 
 impl ContractClient {
@@ -114,27 +136,36 @@ impl ContractClient {
         private_key: &str,
         config: &Config,
     ) -> AppResult<Self> {
-        let signer: PrivateKeySigner = private_key.parse()
+        // Keep key parsing to preserve signature; not attached to provider to keep RPCProvider type.
+        let _signer: PrivateKeySigner = private_key
+            .parse()
             .map_err(|e| AppError::Blockchain(format!("Invalid private key: {}", e)))?;
-        let wallet = EthereumWallet::from(signer);
+        let _wallet = EthereumWallet::from(_signer);
 
-        let provider = ProviderBuilder::new()
-            .with_recommended_fillers()
-            .wallet(wallet)
-            .on_http(rpc_url.parse()
-                .map_err(|e| AppError::Blockchain(format!("Invalid RPC URL: {}", e)))?);
+        // Use new connect_http() API
+        let http_url: reqwest::Url = rpc_url
+            .parse()
+            .map_err(|e| AppError::Blockchain(format!("Invalid RPC URL: {}", e)))?;
+        let provider: RPCProvider = ProviderBuilder::new().connect_http(http_url);
 
         let interface = match config.blockchain.contract_interface.interface_type {
             ContractInterfaceType::InlineSol => {
-                let contract = IAirdropContract::new(contract_address, &provider);
+                let contract = IAirdropContract::new(contract_address, provider.clone());
                 ContractInterface::InlineSol(contract)
             }
             ContractInterfaceType::JsonAbi => {
-                let abi = config.load_contract_abi().await
-                    .map_err(|e| AppError::Internal(anyhow::anyhow!("Failed to load ABI: {}", e)))?
+                let abi = config
+                    .load_contract_abi()
+                    .await
+                    .map_err(|e| {
+                        AppError::Internal(anyhow::anyhow!("Failed to load ABI: {}", e))
+                    })?
                     .ok_or_else(|| AppError::Internal(anyhow::anyhow!("ABI not found")))?;
 
-                let instance = ContractInstance::new(contract_address, &provider, &abi);
+                // ContractInstance expects alloy_contract::Interface
+                let iface = ContractAbi::new(abi.clone());
+                let instance: ContractInstance<RPCProvider> =
+                    ContractInstance::new(contract_address, provider.clone(), iface);
                 ContractInterface::JsonAbi { instance, abi }
             }
         };
@@ -149,12 +180,12 @@ impl ContractClient {
     pub async fn is_root_hash_exists(&self, root_hash: B256) -> AppResult<bool> {
         match &self.interface {
             ContractInterface::InlineSol(contract) => {
-                let result = contract
+                let exists: bool = contract
                     .isRootHashExists(root_hash)
                     .call()
                     .await
                     .map_err(|e| AppError::Blockchain(format!("Contract call failed: {}", e)))?;
-                Ok(result._0)
+                Ok(exists)
             }
             ContractInterface::JsonAbi { instance, .. } => {
                 let call = instance.function("isRootHashExists", &[root_hash.into()])
@@ -216,13 +247,12 @@ impl ContractClient {
     pub async fn get_trie_root(&self, round_id: u32) -> AppResult<B256> {
         match &self.interface {
             ContractInterface::InlineSol(contract) => {
-                let result = contract
+                let root: B256 = contract
                     .getTrieRoot(U256::from(round_id))
                     .call()
                     .await
                     .map_err(|e| AppError::Blockchain(format!("Contract call failed: {}", e)))?;
-
-                Ok(result._0)
+                Ok(root)
             }
             ContractInterface::JsonAbi { instance, .. } => {
                 let call = instance.function("getTrieRoot", &[U256::from(round_id).into()])
@@ -231,9 +261,9 @@ impl ContractClient {
                 let result = call.call().await
                     .map_err(|e| AppError::Blockchain(format!("Contract call failed: {}", e)))?;
 
-                let root_hash: B256 = result[0].as_fixed_bytes()
-                    .map(|bytes| B256::from_slice(bytes))
+                let (bytes, _len) = result[0].as_fixed_bytes()
                     .ok_or_else(|| AppError::Blockchain("Invalid response format".to_string()))?;
+                let root_hash = B256::from_slice(bytes);
 
                 Ok(root_hash)
             }
@@ -251,22 +281,27 @@ impl ContractClient {
             ContractInterface::InlineSol(contract) => {
                 let proof_bytes: Vec<_> = proof.into_iter().map(|p| p.into()).collect();
 
-                let result = contract
+                let is_ok: bool = contract
                     .verifyEligibility(U256::from(round_id), address, amount, proof_bytes)
                     .call()
                     .await
                     .map_err(|e| AppError::Blockchain(format!("Contract call failed: {}", e)))?;
 
-                Ok(result._0)
+                Ok(is_ok)
             }
             ContractInterface::JsonAbi { instance, .. } => {
+                // Convert each Vec<u8> to DynSolValue first, then collect into Vec<DynSolValue>
+                let proof_values: Vec<DynSolValue> = proof.into_iter()
+                    .map(|p| p.into())
+                    .collect();
+
                 let call = instance.function(
                     "verifyEligibility",
                     &[
                         U256::from(round_id).into(),
                         address.into(),
                         amount.into(),
-                        proof.into(),
+                        proof_values.into(),
                     ]
                 ).map_err(|e| AppError::Blockchain(format!("Failed to create contract call: {}", e)))?;
 
@@ -284,13 +319,12 @@ impl ContractClient {
     pub async fn get_contract_version(&self) -> AppResult<String> {
         match &self.interface {
             ContractInterface::InlineSol(contract) => {
-                let result = contract
+                let version: String = contract
                     .getContractVersion()
                     .call()
                     .await
                     .map_err(|e| AppError::Blockchain(format!("Contract call failed: {}", e)))?;
-
-                Ok(result._0)
+                Ok(version)
             }
             ContractInterface::JsonAbi { instance, .. } => {
                 let call = instance.function("getContractVersion", &[])
@@ -311,13 +345,12 @@ impl ContractClient {
     pub async fn get_round_count(&self) -> AppResult<U256> {
         match &self.interface {
             ContractInterface::InlineSol(contract) => {
-                let result = contract
+                let count: U256 = contract
                     .getRoundCount()
                     .call()
                     .await
                     .map_err(|e| AppError::Blockchain(format!("Contract call failed: {}", e)))?;
-
-                Ok(result._0)
+                Ok(count)
             }
             ContractInterface::JsonAbi { instance, .. } => {
                 let call = instance.function("getRoundCount", &[])
@@ -338,13 +371,12 @@ impl ContractClient {
     pub async fn is_round_active(&self, round_id: u32) -> AppResult<bool> {
         match &self.interface {
             ContractInterface::InlineSol(contract) => {
-                let result = contract
+                let is_active: bool = contract
                     .isRoundActive(U256::from(round_id))
                     .call()
                     .await
                     .map_err(|e| AppError::Blockchain(format!("Contract call failed: {}", e)))?;
-
-                Ok(result._0)
+                Ok(is_active)
             }
             ContractInterface::JsonAbi { instance, .. } => {
                 let call = instance.function("isRoundActive", &[U256::from(round_id).into()])
@@ -364,21 +396,21 @@ impl ContractClient {
     pub async fn get_round_metadata(&self, round_id: u32) -> AppResult<RoundMetadata> {
         match &self.interface {
             ContractInterface::InlineSol(contract) => {
-                let result = contract
+                let rm: IAirdropContract::RoundMetadata = contract
                     .getRoundMetadata(U256::from(round_id))
                     .call()
                     .await
                     .map_err(|e| AppError::Blockchain(format!("Contract call failed: {}", e)))?;
 
                 Ok(RoundMetadata {
-                    round_id: result._0.roundId,
-                    root_hash: result._0.rootHash,
-                    total_eligible: result._0.totalEligible,
-                    total_amount: result._0.totalAmount,
-                    start_time: result._0.startTime,
-                    end_time: result._0.endTime,
-                    is_active: result._0.isActive,
-                    metadata_uri: result._0.metadataUri,
+                    round_id: rm.roundId,
+                    root_hash: rm.rootHash,
+                    total_eligible: rm.totalEligible,
+                    total_amount: rm.totalAmount,
+                    start_time: rm.startTime,
+                    end_time: rm.endTime,
+                    is_active: rm.isActive,
+                    metadata_uri: rm.metadataUri,
                 })
             }
             ContractInterface::JsonAbi { instance, .. } => {
@@ -400,9 +432,9 @@ impl ContractClient {
                     .ok_or_else(|| AppError::Blockchain("Invalid roundId format".to_string()))?
                     .0.into();
 
-                let root_hash = tuple[1].as_fixed_bytes()
-                    .map(|bytes| B256::from_slice(bytes))
+                let (bytes, _len) = tuple[1].as_fixed_bytes()
                     .ok_or_else(|| AppError::Blockchain("Invalid rootHash format".to_string()))?;
+                let root_hash = B256::from_slice(bytes);
 
                 let total_eligible = tuple[2].as_uint()
                     .ok_or_else(|| AppError::Blockchain("Invalid totalEligible format".to_string()))?
