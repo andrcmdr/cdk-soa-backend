@@ -19,3 +19,4 @@ Contract Sources:
   - 0x604e332e32c49def0430f463fc03bff38fb72ef1 (contract_name: ArtifactManager)
   - 0xb7429f6d0921e897bc9b4adddd1e1998caa4b236 (contract_name: ArtifactManager)
   - 0x34f8458ebcff41cdfd9745cb87b7276a62750d4a (contract_name: ArtifactManager)
+  - 0xe8e9ac88fd3c3f4b6fdbdaae6c25aebb6d1f4e4e (contract_name: ArtifactManager)

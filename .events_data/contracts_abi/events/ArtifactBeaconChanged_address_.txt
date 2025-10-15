@@ -7,6 +7,7 @@ Inputs:
   0: _artifactBeacon address (indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0xB2F36b70115837F92ff9Beed5EB03Da5E364cC01 (contract_name: ArtifactFactory, verified_at: 2025-10-04T03:39:22.400623Z)
   - 0x293910bf6Cb4370e6bEF7C1d838ed4fB2F571112 (contract_name: ArtifactFactory, verified_at: 2025-09-18T06:55:27.056704Z)
   - 0x5354BCD502A06d73C51d2EE7a2052524A1650610 (contract_name: ArtifactFactory, verified_at: 2025-09-12T04:17:33.836945Z)
   - 0x1b49622e8D656CE9366e69a78Bc47892510870f4 (contract_name: ArtifactFactory, verified_at: 2025-09-12T04:17:20.980187Z)

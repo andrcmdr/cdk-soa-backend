@@ -9,6 +9,7 @@ Inputs:
   2: timestamp uint256 (not indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0xe8e9aC88FD3c3f4B6fdBdaae6c25AebB6D1F4e4E (contract_name: ArtifactManager, verified_at: 2025-10-04T03:39:02.667319Z)
   - 0x34F8458eBCff41CdFD9745Cb87B7276a62750d4A (contract_name: ArtifactManager, verified_at: 2025-09-18T06:55:08.037987Z)
   - 0xb7429f6d0921E897Bc9B4addDD1E1998cAa4B236 (contract_name: ArtifactManager, verified_at: 2025-09-12T04:19:11.105502Z)
   - 0x604e332e32c49dEF0430F463fC03Bff38fB72EF1 (contract_name: ArtifactManager, verified_at: 2025-09-12T04:18:58.163083Z)

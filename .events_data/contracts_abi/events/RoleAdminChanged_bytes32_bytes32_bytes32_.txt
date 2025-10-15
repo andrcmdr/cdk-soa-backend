@@ -9,6 +9,8 @@ Inputs:
   2: newAdminRole bytes32 (indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0xB2F36b70115837F92ff9Beed5EB03Da5E364cC01 (contract_name: ArtifactFactory, verified_at: 2025-10-04T03:39:22.400623Z)
+  - 0xe8e9aC88FD3c3f4B6fdBdaae6c25AebB6D1F4e4E (contract_name: ArtifactManager, verified_at: 2025-10-04T03:39:02.667319Z)
   - 0x76e1E992e5A19E676011E100F0665F513bA4F299 (contract_name: AirdropVault, verified_at: 2025-09-19T04:54:47.402598Z)
   - 0x6d11a25Fe882a00222fB8C708411309888eCb544 (contract_name: Treasury, verified_at: 2025-09-19T04:41:54.568597Z)
   - 0x293910bf6Cb4370e6bEF7C1d838ed4fB2F571112 (contract_name: ArtifactFactory, verified_at: 2025-09-18T06:55:27.056704Z)

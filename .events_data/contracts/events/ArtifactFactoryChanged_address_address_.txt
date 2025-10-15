@@ -10,3 +10,4 @@ Inputs:
 Contract Sources:
   - 0x74623e0f207071571747a1f6c7cfe674d86c33f5 (contract_name: ArtifactManager)
   - 0x34f8458ebcff41cdfd9745cb87b7276a62750d4a (contract_name: ArtifactManager)
+  - 0xe8e9ac88fd3c3f4b6fdbdaae6c25aebb6d1f4e4e (contract_name: ArtifactManager)

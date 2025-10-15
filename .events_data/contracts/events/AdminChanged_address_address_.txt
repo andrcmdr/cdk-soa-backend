@@ -9,3 +9,4 @@ Inputs:
 
 Contract Sources:
   - 0x528e26b25a34a4a5d0dbda1d57d318153d2ed582 (contract_name: TransparentUpgradeableProxy)
+  - 0xa40d5f56745a118d0906a34e69aec8c0db1cb8fa (contract_name: TransparentUpgradeableProxy)

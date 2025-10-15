@@ -1,0 +1,20 @@
+Event Name: StakeWeightUpdated
+Signature: StakeWeightUpdated(uint256,address,address,uint256,uint256,uint256,uint256,uint256)
+Topic Hash: 0x68cddf049b5c489cc28e2fe1fd19dd4f8118e47cd0ec5edc95c1230f3caa8d9e
+Anonymous: false
+
+Inputs:
+  0: stakeId uint256 (indexed)
+  1: user address (indexed)
+  2: artifact address (indexed)
+  3: oldWeight uint256 (not indexed)
+  4: newWeight uint256 (not indexed)
+  5: oldAmount uint256 (not indexed)
+  6: newAmount uint256 (not indexed)
+  7: timestamp uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0xFcff70858314932F71285e477F71424bbE0b2746 (contract_name: ArtifactStaking, verified_at: 2025-10-06T15:54:46.674858Z)
+  - 0x6548125881E6C867Cb255961E94734a31fe525d4 (contract_name: ArtifactStaking, verified_at: 2025-10-06T13:03:37.016070Z)
+  - 0xB6d1F3A93e561d07470e83fC8e72b2df1941A138 (contract_name: ArtifactStaking, verified_at: 2025-10-06T12:53:25.057917Z)
+  - 0x2574061733C40bCcb1da72655BEAce462F6E0277 (contract_name: ArtifactStaking, verified_at: 2025-10-04T04:13:09.085147Z)

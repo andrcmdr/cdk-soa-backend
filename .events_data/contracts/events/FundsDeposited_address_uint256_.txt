@@ -12,3 +12,6 @@ Contract Sources:
   - 0xbcaf7a004f0e16e8fa5db44079cb5236e1e06d3d (contract_name: Treasury)
   - 0x7ab7ab179cd819756d1e31876a4d22722100f826 (contract_name: Treasury)
   - 0x9c7c28d5a38505f0bc736afd011b3863d9138fae (contract_name: Treasury)
+  - 0x4c6814049ca3c00db41a7c2f303b5a51863da008 (contract_name: Treasury)
+  - 0x05de40e476f797347f4f69f9e72efea9d77a42eb (contract_name: Treasury)
+  - 0x6b66d2d852756bbc7d2b38558f1cd890dd115482 (contract_name: Treasury)

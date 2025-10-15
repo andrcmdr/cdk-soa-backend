@@ -12,3 +12,6 @@ Contract Sources:
   - 0x4f46d08569b6d96dfc576cfdea02023284c8ea46 (contract_name: Governance)
   - 0xa115f8af20849ce295cebb56230111f82d8850ee (contract_name: Governance)
   - 0xaf478e2e51efefb0334b8d948c432c7c2012214d (contract_name: Governance)
+  - 0x57c73e4b2e22da202c845ebea7f860412ead3c21 (contract_name: Governance)
+  - 0xfcb1be7d5854681e1807927e17a6e02048c6132e (contract_name: Governance)
+  - 0x4158400b4b2c6998bbbf42f785daa1359f26732f (contract_name: Governance)

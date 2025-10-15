@@ -9,6 +9,9 @@ Inputs:
   2: newAddress address (indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0xE3B3bd79ED8BD5506C16b28b2955318D9F774F92 (contract_name: Registry, verified_at: 2025-10-06T15:53:48.814954Z)
+  - 0xBEF40F7c17b0F9303Dc92EFc888f0CDad3A48c78 (contract_name: Registry, verified_at: 2025-10-06T13:02:34.312624Z)
+  - 0x5D491EB1a5F96e399d35Aa8cc372d4862674a108 (contract_name: Registry, verified_at: 2025-10-04T04:11:56.921816Z)
   - 0x658f8fDF4bb1fF668e2d93C26a87b24f7b89d61c (contract_name: Registry, verified_at: 2025-09-18T07:23:23.311738Z)
   - 0x6421Ed6b21AD276E1d77a0635df4fD839980654A (contract_name: Registry, verified_at: 2025-09-04T13:35:39.732065Z)
   - 0xb52BEB65d2f59801c272eA99b0d3Fd227c54185E (contract_name: Registry, verified_at: 2025-08-28T14:05:39.250725Z)

@@ -1,0 +1,17 @@
+Event Name: Unstaked
+Signature: Unstaked(address,uint256,uint256,uint256,uint256)
+Topic Hash: 0xdcfd2b4017d03f7e541021db793b2f9b31e4acdee005f789e52853c390e3e962
+Anonymous: false
+
+Inputs:
+  0: user address (indexed)
+  1: stakeId uint256 (not indexed)
+  2: amount uint256 (not indexed)
+  3: totalTVL uint256 (not indexed)
+  4: artifactTVL uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0xFcff70858314932F71285e477F71424bbE0b2746 (contract_name: ArtifactStaking, verified_at: 2025-10-06T15:54:46.674858Z)
+  - 0x6548125881E6C867Cb255961E94734a31fe525d4 (contract_name: ArtifactStaking, verified_at: 2025-10-06T13:03:37.016070Z)
+  - 0xB6d1F3A93e561d07470e83fC8e72b2df1941A138 (contract_name: ArtifactStaking, verified_at: 2025-10-06T12:53:25.057917Z)
+  - 0x2574061733C40bCcb1da72655BEAce462F6E0277 (contract_name: ArtifactStaking, verified_at: 2025-10-04T04:13:09.085147Z)

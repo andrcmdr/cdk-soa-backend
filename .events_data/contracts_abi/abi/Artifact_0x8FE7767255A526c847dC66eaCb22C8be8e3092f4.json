@@ -1,0 +1,407 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyInitialized",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactCommissionRateZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactExpectedAPYZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactIDEmpty",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactInitialOwnersExceedMaxLimit",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactMetadataEmpty",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactMetadataTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactNameEmpty",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactNameTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactOwnerAddressZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactOwnerSharesZero",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactOwnersEmpty",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactRepoUriEmpty",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactRepoUriTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactTypeEmpty",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArtifactTypeTooLong",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidInitialization",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NewOwnerIsZeroAddress",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NoHandoverRequest",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotInitializing",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Unauthorized",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "artifactId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "artifactName",
+        "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "string",
+        "name": "artifactType",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "metadata",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "repoUri",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "expectedApy",
+        "type": "uint16"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint16",
+        "name": "commissionRate",
+        "type": "uint16"
+      }
+    ],
+    "name": "ArtifactInitialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "version",
+        "type": "uint64"
+      }
+    ],
+    "name": "Initialized",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "pendingOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipHandoverCanceled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "pendingOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipHandoverRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "oldOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "artifactInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bytes32",
+            "name": "artifactId",
+            "type": "bytes32"
+          },
+          {
+            "internalType": "string",
+            "name": "artifactName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "artifactType",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "metadata",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "repoUri",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "createdTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "expectedApy",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "commissionRate",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IArtifact.ArtifactInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "cancelOwnershipHandover",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "pendingOwner",
+        "type": "address"
+      }
+    ],
+    "name": "completeOwnershipHandover",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_artifactId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "_artifactName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_artifactType",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_metadata",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_repoUri",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_expectedApy",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "_commissionRate",
+        "type": "uint16"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "result",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "pendingOwner",
+        "type": "address"
+      }
+    ],
+    "name": "ownershipHandoverExpiresAt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "result",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "requestOwnershipHandover",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
+]

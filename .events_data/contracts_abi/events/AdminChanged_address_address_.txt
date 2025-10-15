@@ -8,4 +8,5 @@ Inputs:
   1: newAdmin address (not indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA (contract_name: TransparentUpgradeableProxy, verified_at: 2025-09-26T02:52:54.293515Z)
   - 0x528e26b25a34a4A5d0dbDa1d57D318153d2ED582 (contract_name: TransparentUpgradeableProxy, verified_at: 2025-09-05T11:02:24.927515Z)

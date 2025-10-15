@@ -1,0 +1,18 @@
+Event Name: ArtifactInitialized
+Signature: ArtifactInitialized(bytes32,string,string,string,string,address,uint16,uint16)
+Topic Hash: 0x4ccb03c2bf9fc9afcacf373b77567262ddac37c711e4559347c464c8499c401a
+Anonymous: false
+
+Inputs:
+  0: artifactId bytes32 (indexed)
+  1: artifactName string (indexed)
+  2: artifactType string (indexed)
+  3: metadata string (not indexed)
+  4: repoUri string (not indexed)
+  5: owner address (not indexed)
+  6: expectedApy uint16 (not indexed)
+  7: commissionRate uint16 (not indexed)
+
+Contract Sources:
+  - 0x8fe7767255a526c847dc66eacb22c8be8e3092f4 (contract_name: Artifact)
+  - 0xa42679ec6d4a7417ee30a0bf54769d63b7945e4f (contract_name: Artifact)

@@ -1,0 +1,15 @@
+Event Name: GlobalStakeWeightUpdated
+Signature: GlobalStakeWeightUpdated(uint256,uint256,uint256)
+Topic Hash: 0xdc7fc07fd491efbcbd366d453d39054541cfd4f12c9f1f990de077ba9e94087a
+Anonymous: false
+
+Inputs:
+  0: oldTotalWeight uint256 (not indexed)
+  1: newTotalWeight uint256 (not indexed)
+  2: timestamp uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0xFcff70858314932F71285e477F71424bbE0b2746 (contract_name: ArtifactStaking, verified_at: 2025-10-06T15:54:46.674858Z)
+  - 0x6548125881E6C867Cb255961E94734a31fe525d4 (contract_name: ArtifactStaking, verified_at: 2025-10-06T13:03:37.016070Z)
+  - 0xB6d1F3A93e561d07470e83fC8e72b2df1941A138 (contract_name: ArtifactStaking, verified_at: 2025-10-06T12:53:25.057917Z)
+  - 0x2574061733C40bCcb1da72655BEAce462F6E0277 (contract_name: ArtifactStaking, verified_at: 2025-10-04T04:13:09.085147Z)

@@ -18,3 +18,4 @@ Contract Sources:
   - 0x1b49622e8d656ce9366e69a78bc47892510870f4 (contract_name: ArtifactFactory)
   - 0x5354bcd502a06d73c51d2ee7a2052524a1650610 (contract_name: ArtifactFactory)
   - 0x293910bf6cb4370e6bef7c1d838ed4fb2f571112 (contract_name: ArtifactFactory)
+  - 0xb2f36b70115837f92ff9beed5eb03da5e364cc01 (contract_name: ArtifactFactory)

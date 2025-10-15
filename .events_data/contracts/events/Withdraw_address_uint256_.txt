@@ -18,3 +18,5 @@ Contract Sources:
   - 0x38def18c5f16184dcc1031404b69f136f5f11d05 (contract_name: EnhancedEscrow)
   - 0x0fa299538a4360c5c3a6fc759d14dd3363d548f3 (contract_name: EnhancedEscrow)
   - 0xbbd29811627914cd561bf3a066468c32a171dd33 (contract_name: NativeDistributor)
+  - 0x421290d081a1fad537a4c702777f102727f390d6 (contract_name: NativeDistributor)
+  - 0xeaa4d9918cea4b8d1a70a1a783dad417f66994b9 (contract_name: NativeDistributor)

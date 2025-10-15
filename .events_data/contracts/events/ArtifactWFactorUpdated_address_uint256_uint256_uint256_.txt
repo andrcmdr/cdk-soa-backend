@@ -1,0 +1,15 @@
+Event Name: ArtifactWFactorUpdated
+Signature: ArtifactWFactorUpdated(address,uint256,uint256,uint256)
+Topic Hash: 0x75108a2a49ccda8feeb3674d48556cbd5fdc37665cf849aa595b6bb7022d2efa
+Anonymous: false
+
+Inputs:
+  0: artifact address (indexed)
+  1: oldWFactor uint256 (not indexed)
+  2: newWFactor uint256 (not indexed)
+  3: timestamp uint256 (not indexed)
+
+Contract Sources:
+  - 0x88dc209bb27bf38515ecf919fb036866e03e04de (contract_name: Rewards)
+  - 0x74e0e640769afc1a2d5934c4dac829069b3eb19f (contract_name: Rewards)
+  - 0xd558c2931f4856bdc78e1ac2708abf8bde197d1b (contract_name: Rewards)

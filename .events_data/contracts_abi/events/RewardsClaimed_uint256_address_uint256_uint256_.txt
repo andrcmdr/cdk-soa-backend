@@ -1,0 +1,15 @@
+Event Name: RewardsClaimed
+Signature: RewardsClaimed(uint256,address,uint256,uint256)
+Topic Hash: 0xcf409dbfc3ec40ef8f9752f4f34117a5e22dbbffe43e6da17365deae327c44ee
+Anonymous: false
+
+Inputs:
+  0: stakeId uint256 (indexed)
+  1: user address (indexed)
+  2: amount uint256 (not indexed)
+  3: blockNumber uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0xd558c2931f4856bDc78e1ac2708ABF8Bde197d1B (contract_name: Rewards, verified_at: 2025-10-06T15:55:13.399240Z)
+  - 0x74e0e640769AfC1A2d5934c4daC829069b3eb19f (contract_name: Rewards, verified_at: 2025-10-06T13:03:58.156736Z)
+  - 0x88dc209Bb27Bf38515eCf919FB036866E03e04DE (contract_name: Rewards, verified_at: 2025-10-04T04:13:44.869965Z)

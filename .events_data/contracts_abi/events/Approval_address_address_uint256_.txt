@@ -6,7 +6,7 @@ Anonymous: false
 Inputs:
   0: owner address (indexed)
   1: spender address (indexed)
-  2: amount uint256 (not indexed)
+  2: value uint256 (not indexed)
 
 Contract Sources (sorted by verification time, most recent first):
   - 0xa56cE076C2B1D2eBEC7603168a01CE98A41C3A76 (contract_name: WETH, verified_at: 2025-09-19T04:59:44.164293Z)

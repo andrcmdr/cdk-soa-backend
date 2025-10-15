@@ -7,6 +7,9 @@ Inputs:
   0: newRate uint256 (indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0x4158400B4B2C6998Bbbf42F785dAA1359f26732F (contract_name: Governance, verified_at: 2025-10-06T15:54:07.353881Z)
+  - 0xfcb1Be7D5854681e1807927E17a6E02048C6132e (contract_name: Governance, verified_at: 2025-10-06T13:02:57.615203Z)
+  - 0x57c73E4b2E22Da202c845EBEa7f860412eaD3c21 (contract_name: Governance, verified_at: 2025-10-04T04:12:15.250266Z)
   - 0xAf478E2e51EfeFb0334B8D948C432C7C2012214D (contract_name: Governance, verified_at: 2025-09-18T07:23:42.568145Z)
   - 0xA115F8af20849ce295CebB56230111f82d8850ee (contract_name: Governance, verified_at: 2025-09-12T04:16:05.966120Z)
   - 0x4f46d08569B6d96DFC576cFdEa02023284c8Ea46 (contract_name: Governance, verified_at: 2025-09-04T13:36:00.329892Z)
