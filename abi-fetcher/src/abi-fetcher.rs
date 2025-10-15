@@ -259,11 +259,16 @@ impl BlockscoutClient {
     async fn fetch_all_verified_contracts(&self) -> Result<Vec<SmartContractItem>> {
         let mut all_contracts = Vec::new();
         let mut next_page_params: Option<NextPageParams> = None;
+        let mut initial_page_size: Option<u64> = None;
+        let mut page_multiplier: u64 = 1;
 
         loop {
             let url = if let Some(ref params) = next_page_params {
-                // For subsequent requests, use items_count * 2 and hash from previous response
-                let items_count = params.items_count * 2;
+                // Use initial page size from first response multiplied by page number
+                let page_size = initial_page_size.unwrap_or(params.items_count);
+                page_multiplier += 1;
+                let items_count = page_size * page_multiplier;
+
                 format!("{}/smart-contracts?items_count={}&hash={}",
                     self.base_url, items_count, params.hash)
             } else {
@@ -286,8 +291,14 @@ impl BlockscoutClient {
 
             // Check if there's a next page
             if let Some(next_params) = contracts_response.next_page_params {
-                debug!("Next page params - items_count: {}, hash: {}",
-                    next_params.items_count, next_params.hash);
+                // Save initial page size from the first response
+                if initial_page_size.is_none() {
+                    initial_page_size = Some(next_params.items_count);
+                    info!("Initial page size: {}", next_params.items_count);
+                }
+
+                debug!("Next page params - items_count: {}, hash: {}, page_multiplier: {}",
+                    next_params.items_count, next_params.hash, page_multiplier + 1);
                 next_page_params = Some(next_params);
             } else {
                 info!("No more pages (next_page_params is null), pagination complete");
