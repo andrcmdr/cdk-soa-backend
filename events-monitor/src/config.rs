@@ -12,6 +12,8 @@ pub struct IndexingCfg {
     pub from_block: Option<u64>,
     pub to_block: Option<u64>,
     pub all_logs_processing: Option<u8>,
+    pub filter_senders: Option<Vec<String>>,
+    pub filter_receivers: Option<Vec<String>>,
 }
 
 #[derive(Debug, Deserialize, Clone)]

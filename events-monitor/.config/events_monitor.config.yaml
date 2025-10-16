@@ -9,6 +9,13 @@ indexing:
   from_block: 0
   to_block:
   all_logs_processing: 1
+  filter_senders: []
+#  filter_senders:
+#    - "0x742d35Cc6634C0532925a3b8BC342A5b6437AFCD"
+#    - "0x742d35Cc6634C0532925a3b8BC342A5b6437AFCE"
+  filter_receivers: []
+#  filter_receivers:
+#    - "0x1234567890123456789012345678901234567890"
 
 postgres:
   # Local PostgreSQL connection (primary)
