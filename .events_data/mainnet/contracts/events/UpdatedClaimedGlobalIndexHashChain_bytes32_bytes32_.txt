@@ -1,0 +1,11 @@
+Event Name: UpdatedClaimedGlobalIndexHashChain
+Signature: UpdatedClaimedGlobalIndexHashChain(bytes32,bytes32)
+Topic Hash: 0x3e5936f910a78eb5181813a939c8d4c3e4d85f87943f659380d82ac6221b0e92
+Anonymous: false
+
+Inputs:
+  0: claimedGlobalIndex bytes32 (not indexed)
+  1: newClaimedGlobalIndexHashChain bytes32 (not indexed)
+
+Contract Sources:
+  - 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c (contract_name: AgglayerBridgeL2)

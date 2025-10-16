@@ -1,0 +1,11 @@
+Event Name: AcceptGlobalExitRootRemover
+Signature: AcceptGlobalExitRootRemover(address,address)
+Topic Hash: 0xabb4abb224bcd13da954d8616357fc9fcf0ccb7057f6dd0fbb7b10624c924ec5
+Anonymous: false
+
+Inputs:
+  0: oldGlobalExitRootRemover address (not indexed)
+  1: newGlobalExitRootRemover address (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x0200143Fa295EE4dffEF22eE2616c2E008D81688 (contract_name: AgglayerGERL2, verified_at: 2025-10-14T19:41:27.937222Z)

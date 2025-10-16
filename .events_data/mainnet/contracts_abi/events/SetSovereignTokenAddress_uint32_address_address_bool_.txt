@@ -1,0 +1,13 @@
+Event Name: SetSovereignTokenAddress
+Signature: SetSovereignTokenAddress(uint32,address,address,bool)
+Topic Hash: 0xdbe8a5da6a7a916d9adfda9160167a0f8a3da415ee6610e810e753853597fce7
+Anonymous: false
+
+Inputs:
+  0: originNetwork uint32 (not indexed)
+  1: originTokenAddress address (not indexed)
+  2: sovereignTokenAddress address (not indexed)
+  3: isNotMintable bool (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C (contract_name: AgglayerBridgeL2, verified_at: 2025-10-14T19:40:39.317370Z)

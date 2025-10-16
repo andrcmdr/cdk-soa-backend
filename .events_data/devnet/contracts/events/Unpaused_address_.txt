@@ -1,0 +1,10 @@
+Event Name: Unpaused
+Signature: Unpaused(address)
+Topic Hash: 0x5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa
+Anonymous: false
+
+Inputs:
+  0: account address (not indexed)
+
+Contract Sources:
+  - 0x665553357099aa76b7e63f36365404f1f559cf9b (contract_name: Treasury)

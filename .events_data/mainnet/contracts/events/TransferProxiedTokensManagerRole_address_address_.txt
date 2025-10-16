@@ -1,0 +1,11 @@
+Event Name: TransferProxiedTokensManagerRole
+Signature: TransferProxiedTokensManagerRole(address,address)
+Topic Hash: 0x0a34baa3feb299aef9c05cb59c6e0c8e7c0bcc65cbf0a647e7a7c8a2411591e2
+Anonymous: false
+
+Inputs:
+  0: currentProxiedTokensManager address (not indexed)
+  1: newProxiedTokensManager address (not indexed)
+
+Contract Sources:
+  - 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c (contract_name: AgglayerBridgeL2)

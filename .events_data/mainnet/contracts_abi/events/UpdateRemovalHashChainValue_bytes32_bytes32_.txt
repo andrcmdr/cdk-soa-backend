@@ -1,0 +1,11 @@
+Event Name: UpdateRemovalHashChainValue
+Signature: UpdateRemovalHashChainValue(bytes32,bytes32)
+Topic Hash: 0xaafec9380147d2b2b14fe23b1343cbaa1b07f86c5adb060bd28cdf1af4c6f0d4
+Anonymous: false
+
+Inputs:
+  0: removedGlobalExitRoot bytes32 (indexed)
+  1: newRemovalHashChainValue bytes32 (indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x0200143Fa295EE4dffEF22eE2616c2E008D81688 (contract_name: AgglayerGERL2, verified_at: 2025-10-14T19:41:27.937222Z)

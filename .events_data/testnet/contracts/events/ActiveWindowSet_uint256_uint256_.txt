@@ -1,0 +1,12 @@
+Event Name: ActiveWindowSet
+Signature: ActiveWindowSet(uint256,uint256)
+Topic Hash: 0xb1eae1cc3c910aded471d513328d6c8c8e5e7b8c2f29e376445a68219d457f1d
+Anonymous: false
+
+Inputs:
+  0: startTime uint256 (not indexed)
+  1: endTime uint256 (not indexed)
+
+Contract Sources:
+  - 0x673d18f64d71439d46d6fafc9c1c8b0026f53247 (contract_name: Distributor)
+  - 0x32641081ccc174f89447cc9b99e79c3724a03e3c (contract_name: Distributor)

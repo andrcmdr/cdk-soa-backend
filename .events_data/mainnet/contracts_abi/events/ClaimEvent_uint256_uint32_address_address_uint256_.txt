@@ -1,0 +1,14 @@
+Event Name: ClaimEvent
+Signature: ClaimEvent(uint256,uint32,address,address,uint256)
+Topic Hash: 0x1df3f2a973a00d6635911755c260704e95e8a5876997546798770f76396fda4d
+Anonymous: false
+
+Inputs:
+  0: globalIndex uint256 (not indexed)
+  1: originNetwork uint32 (not indexed)
+  2: originAddress address (not indexed)
+  3: destinationAddress address (not indexed)
+  4: amount uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C (contract_name: AgglayerBridgeL2, verified_at: 2025-10-14T19:40:39.317370Z)

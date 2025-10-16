@@ -1,0 +1,17 @@
+Event Name: BridgeEvent
+Signature: BridgeEvent(uint8,uint32,address,uint32,address,uint256,bytes,uint32)
+Topic Hash: 0x501781209a1f8899323b96b4ef08b168df93e0a90c673d1e4cce39366cb62f9b
+Anonymous: false
+
+Inputs:
+  0: leafType uint8 (not indexed)
+  1: originNetwork uint32 (not indexed)
+  2: originAddress address (not indexed)
+  3: destinationNetwork uint32 (not indexed)
+  4: destinationAddress address (not indexed)
+  5: amount uint256 (not indexed)
+  6: metadata bytes (not indexed)
+  7: depositCount uint32 (not indexed)
+
+Contract Sources:
+  - 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c (contract_name: AgglayerBridgeL2)

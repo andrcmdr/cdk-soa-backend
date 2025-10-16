@@ -1,0 +1,14 @@
+Event Name: ForwardLET
+Signature: ForwardLET(uint256,bytes32,uint256,bytes32,bytes)
+Topic Hash: 0xe90f3fcbcd86a778012608da0cd7622521c8dac9919dddf25a3fb634adb3d2c8
+Anonymous: false
+
+Inputs:
+  0: previousDepositCount uint256 (not indexed)
+  1: previousRoot bytes32 (not indexed)
+  2: newDepositCount uint256 (not indexed)
+  3: newRoot bytes32 (not indexed)
+  4: newLeaves bytes (not indexed)
+
+Contract Sources:
+  - 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c (contract_name: AgglayerBridgeL2)

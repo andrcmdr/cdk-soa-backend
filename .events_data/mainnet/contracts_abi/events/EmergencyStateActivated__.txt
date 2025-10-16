@@ -1,0 +1,9 @@
+Event Name: EmergencyStateActivated
+Signature: EmergencyStateActivated()
+Topic Hash: 0x2261efe5aef6fedc1fd1550b25facc9181745623049c7901287030b9ad1a5497
+Anonymous: false
+
+Inputs:
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C (contract_name: AgglayerBridgeL2, verified_at: 2025-10-14T19:40:39.317370Z)

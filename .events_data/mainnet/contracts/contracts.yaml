@@ -1,0 +1,25 @@
+metadata:
+  generated_at: 2025-10-16T20:45:53.875016Z
+  blockscout_server: https://sentient-blockscout.eu-north-2.gateway.fm
+  total_verified: 4
+  total_unverified: 0
+  total_with_abi: 4
+  abi_directory: ./contracts/abi
+verified_contracts:
+- name: AgglayerGERL2
+  address: 0x0200143fa295ee4dffef22ee2616c2e008d81688
+  abi_file: AgglayerGERL2_0x0200143fa295ee4dffef22ee2616c2e008d81688.json
+  is_verified: true
+- name: TransparentUpgradeableProxy
+  address: 0x2a3dd3eb832af982ec71669e178424b10dca2ede
+  abi_file: TransparentUpgradeableProxy_0x2a3dd3eb832af982ec71669e178424b10dca2ede.json
+  is_verified: true
+- name: AgglayerBridgeL2
+  address: 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c
+  abi_file: AgglayerBridgeL2_0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c.json
+  is_verified: true
+- name: TransparentUpgradeableProxy
+  address: 0xa40d5f56745a118d0906a34e69aec8c0db1cb8fa
+  abi_file: TransparentUpgradeableProxy_0xa40d5f56745a118d0906a34e69aec8c0db1cb8fa.json
+  is_verified: true
+unverified_contracts: []

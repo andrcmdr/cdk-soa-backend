@@ -1,0 +1,13 @@
+Event Name: ExternalCall
+Signature: ExternalCall(address,bool,uint256,bytes)
+Topic Hash: 0x41d31787390e216345ec7db1a3d5c142d184c46b1e5f5bf02839c1c057eee4db
+Anonymous: false
+
+Inputs:
+  0: target address (not indexed)
+  1: success bool (not indexed)
+  2: gasUsed uint256 (not indexed)
+  3: returndata bytes (not indexed)
+
+Contract Sources:
+  - 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57 (contract_name: LoadTester)

@@ -1,0 +1,11 @@
+Event Name: TransferEmergencyBridgeUnpauserRole
+Signature: TransferEmergencyBridgeUnpauserRole(address,address)
+Topic Hash: 0xf01a62a06940517bbc898dec8c75794b9feabcd2d263c8de823b36dbbeb8779b
+Anonymous: false
+
+Inputs:
+  0: currentEmergencyBridgeUnpauser address (not indexed)
+  1: newEmergencyBridgeUnpauser address (not indexed)
+
+Contract Sources:
+  - 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c (contract_name: AgglayerBridgeL2)

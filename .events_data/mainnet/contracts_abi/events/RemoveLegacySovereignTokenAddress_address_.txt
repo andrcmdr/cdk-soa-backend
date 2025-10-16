@@ -1,0 +1,10 @@
+Event Name: RemoveLegacySovereignTokenAddress
+Signature: RemoveLegacySovereignTokenAddress(address)
+Topic Hash: 0xc2ae0bd0ec0fd0352bfe5bacac49637af342c1e40f1b80a7f74440dc7fe3f063
+Anonymous: false
+
+Inputs:
+  0: sovereignTokenAddress address (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C (contract_name: AgglayerBridgeL2, verified_at: 2025-10-14T19:40:39.317370Z)

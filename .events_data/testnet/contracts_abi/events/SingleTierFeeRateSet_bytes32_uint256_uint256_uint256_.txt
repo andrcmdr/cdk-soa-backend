@@ -1,0 +1,17 @@
+Event Name: SingleTierFeeRateSet
+Signature: SingleTierFeeRateSet(bytes32,uint256,uint256,uint256)
+Topic Hash: 0xf15b3734f84fd5be93889964ca805694f2d85a5380f00b4b0638a16d838a0768
+Anonymous: false
+
+Inputs:
+  0: root bytes32 (indexed)
+  1: feeRate uint256 (not indexed)
+  2: minFee uint256 (not indexed)
+  3: maxFee uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x32641081cCc174F89447cC9B99e79C3724a03e3C (contract_name: Distributor, verified_at: 2025-10-16T09:46:52.143044Z)
+  - 0x673d18f64d71439d46d6fAFc9C1C8b0026F53247 (contract_name: Distributor, verified_at: 2025-10-15T08:11:11.864693Z)
+  - 0xeAA4d9918ceA4b8D1A70A1a783DAd417F66994B9 (contract_name: NativeDistributor, verified_at: 2025-09-26T04:17:57.385957Z)
+  - 0x421290d081A1faD537A4C702777f102727f390D6 (contract_name: NativeDistributor, verified_at: 2025-09-24T12:27:40.573610Z)
+  - 0xBBd29811627914Cd561bf3A066468c32A171dd33 (contract_name: NativeDistributor, verified_at: 2025-09-19T05:01:01.901951Z)

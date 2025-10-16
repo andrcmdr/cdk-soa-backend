@@ -1,0 +1,11 @@
+Event Name: TransferGlobalExitRootUpdater
+Signature: TransferGlobalExitRootUpdater(address,address)
+Topic Hash: 0x1b87468e424189ebdac99fd548646bdb9a48aa9708cfae9f96e6b2e76aee8425
+Anonymous: false
+
+Inputs:
+  0: currentGlobalExitRootUpdater address (not indexed)
+  1: pendingGlobalExitRootUpdater address (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x0200143Fa295EE4dffEF22eE2616c2E008D81688 (contract_name: AgglayerGERL2, verified_at: 2025-10-14T19:41:27.937222Z)

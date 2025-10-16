@@ -1,0 +1,11 @@
+Event Name: UpdatedUnsetGlobalIndexHashChain
+Signature: UpdatedUnsetGlobalIndexHashChain(bytes32,bytes32)
+Topic Hash: 0xc80e0aca446a59735359a7ae46124b57c47b892827642779bc6dafc84ba90b03
+Anonymous: false
+
+Inputs:
+  0: unsetGlobalIndex bytes32 (not indexed)
+  1: newUnsetGlobalIndexHashChain bytes32 (not indexed)
+
+Contract Sources:
+  - 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c (contract_name: AgglayerBridgeL2)

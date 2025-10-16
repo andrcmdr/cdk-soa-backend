@@ -1,0 +1,11 @@
+Event Name: SetSovereignWETHAddress
+Signature: SetSovereignWETHAddress(address,bool)
+Topic Hash: 0xc7318b7ed6ba4f2908a3de396d8ab49b1dadb55db5b55123247a401f29ff8d82
+Anonymous: false
+
+Inputs:
+  0: sovereignWETHTokenAddress address (not indexed)
+  1: isNotMintable bool (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C (contract_name: AgglayerBridgeL2, verified_at: 2025-10-14T19:40:39.317370Z)

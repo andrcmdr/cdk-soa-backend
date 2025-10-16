@@ -1,0 +1,11 @@
+Event Name: HookAdded
+Signature: HookAdded(bytes32)
+Topic Hash: 0xd86d1ea68633217e54831fb1fefe8da235e38c6c90f724d939b8be43d5362782
+Anonymous: false
+
+Inputs:
+  0: configurationId bytes32 (indexed)
+
+Contract Sources:
+  - 0x673d18f64d71439d46d6fafc9c1c8b0026f53247 (contract_name: Distributor)
+  - 0x32641081ccc174f89447cc9b99e79c3724a03e3c (contract_name: Distributor)

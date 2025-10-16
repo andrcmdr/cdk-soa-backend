@@ -1,0 +1,11 @@
+Event Name: DefaultFeeApplied
+Signature: DefaultFeeApplied(bytes32)
+Topic Hash: 0x12210ee12e90745146d17abc0a475e481c9e86899562eeea70a3f734f7162128
+Anonymous: false
+
+Inputs:
+  0: root bytes32 (indexed)
+
+Contract Sources:
+  - 0x673d18f64d71439d46d6fafc9c1c8b0026f53247 (contract_name: Distributor)
+  - 0x32641081ccc174f89447cc9b99e79c3724a03e3c (contract_name: Distributor)

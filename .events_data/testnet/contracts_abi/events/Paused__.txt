@@ -1,0 +1,10 @@
+Event Name: Paused
+Signature: Paused()
+Topic Hash: 0x9e87fac88ff661f02d44f95383c817fece4bce600a3dab7a54406878b965e752
+Anonymous: false
+
+Inputs:
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x32641081cCc174F89447cC9B99e79C3724a03e3C (contract_name: Distributor, verified_at: 2025-10-16T09:46:52.143044Z)
+  - 0x673d18f64d71439d46d6fAFc9C1C8b0026F53247 (contract_name: Distributor, verified_at: 2025-10-15T08:11:11.864693Z)

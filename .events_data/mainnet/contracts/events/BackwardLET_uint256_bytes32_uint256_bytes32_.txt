@@ -1,0 +1,13 @@
+Event Name: BackwardLET
+Signature: BackwardLET(uint256,bytes32,uint256,bytes32)
+Topic Hash: 0x2f8b2f36ca0d63af2efffe9d5e728a61c2bc273a3fc0574d12b558a41f149555
+Anonymous: false
+
+Inputs:
+  0: previousDepositCount uint256 (not indexed)
+  1: previousRoot bytes32 (not indexed)
+  2: newDepositCount uint256 (not indexed)
+  3: newRoot bytes32 (not indexed)
+
+Contract Sources:
+  - 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c (contract_name: AgglayerBridgeL2)

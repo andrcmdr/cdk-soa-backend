@@ -1,0 +1,12 @@
+Event Name: FixedFeeSet
+Signature: FixedFeeSet(bytes32,uint256)
+Topic Hash: 0x025df4885db3fa8c2f03e70fb1245c33dfc0519f7017a1d59b0a214fc96d9e2e
+Anonymous: false
+
+Inputs:
+  0: root bytes32 (indexed)
+  1: fee uint256 (not indexed)
+
+Contract Sources:
+  - 0x673d18f64d71439d46d6fafc9c1c8b0026f53247 (contract_name: Distributor)
+  - 0x32641081ccc174f89447cc9b99e79c3724a03e3c (contract_name: Distributor)

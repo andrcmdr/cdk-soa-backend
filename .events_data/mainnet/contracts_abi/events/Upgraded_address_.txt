@@ -1,0 +1,11 @@
+Event Name: Upgraded
+Signature: Upgraded(address)
+Topic Hash: 0xbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b
+Anonymous: false
+
+Inputs:
+  0: implementation address (indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe (contract_name: TransparentUpgradeableProxy, verified_at: 2025-10-14T19:44:34.321852Z)
+  - 0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA (contract_name: TransparentUpgradeableProxy, verified_at: 2025-10-14T19:23:10.136777Z)

@@ -1,0 +1,12 @@
+Event Name: DelegateCall
+Signature: DelegateCall(address,bool,uint256)
+Topic Hash: 0x7f96f4e551f2e394ec4520bf410ed4f0e236e6c7d7c1176d56d19ad896fb398a
+Anonymous: false
+
+Inputs:
+  0: target address (not indexed)
+  1: success bool (not indexed)
+  2: gasUsed uint256 (not indexed)
+
+Contract Sources:
+  - 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57 (contract_name: LoadTester)

@@ -1,0 +1,52 @@
+contracts:
+- name: AgglayerBridgeL2
+  address:
+  - address: 0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C
+    verified_at: 2025-10-14T19:40:39.317370Z
+  events:
+  - event: AcceptEmergencyBridgePauserRole(address oldEmergencyBridgePauser, address newEmergencyBridgePauser)
+  - event: AcceptEmergencyBridgeUnpauserRole(address oldEmergencyBridgeUnpauser, address newEmergencyBridgeUnpauser)
+  - event: AcceptProxiedTokensManagerRole(address oldProxiedTokensManager, address newProxiedTokensManager)
+  - event: BackwardLET(uint256 previousDepositCount, bytes32 previousRoot, uint256 newDepositCount, bytes32 newRoot)
+  - event: BridgeEvent(uint8 leafType, uint32 originNetwork, address originAddress, uint32 destinationNetwork, address destinationAddress, uint256 amount, bytes metadata, uint32 depositCount)
+  - event: ClaimEvent(uint256 globalIndex, uint32 originNetwork, address originAddress, address destinationAddress, uint256 amount)
+  - event: DetailedClaimEvent(bytes32[32] smtProofLocalExitRoot, bytes32[32] smtProofRollupExitRoot, uint256 indexed globalIndex, bytes32 mainnetExitRoot, bytes32 rollupExitRoot, uint32 originNetwork, address originTokenAddress, uint32 destinationNetwork, address indexed destinationAddress, uint256 amount, bytes metadata)
+  - event: EmergencyStateActivated()
+  - event: EmergencyStateDeactivated()
+  - event: ForwardLET(uint256 previousDepositCount, bytes32 previousRoot, uint256 newDepositCount, bytes32 newRoot, bytes newLeaves)
+  - event: Initialized(uint8 version)
+  - event: MigrateLegacyToken(address sender, address legacyTokenAddress, address updatedTokenAddress, uint256 amount)
+  - event: NewWrappedToken(uint32 originNetwork, address originTokenAddress, address wrappedTokenAddress, bytes metadata)
+  - event: RemoveLegacySovereignTokenAddress(address sovereignTokenAddress)
+  - event: SetBridgeManager(address bridgeManager)
+  - event: SetClaim(uint32 leafIndex, uint32 sourceNetwork)
+  - event: SetLocalBalanceTree(uint32 indexed originNetwork, address indexed originTokenAddress, uint256 newAmount)
+  - event: SetSovereignTokenAddress(uint32 originNetwork, address originTokenAddress, address sovereignTokenAddress, bool isNotMintable)
+  - event: SetSovereignWETHAddress(address sovereignWETHTokenAddress, bool isNotMintable)
+  - event: TransferEmergencyBridgePauserRole(address currentEmergencyBridgePauser, address newEmergencyBridgePauser)
+  - event: TransferEmergencyBridgeUnpauserRole(address currentEmergencyBridgeUnpauser, address newEmergencyBridgeUnpauser)
+  - event: TransferProxiedTokensManagerRole(address currentProxiedTokensManager, address newProxiedTokensManager)
+  - event: UpdatedClaimedGlobalIndexHashChain(bytes32 claimedGlobalIndex, bytes32 newClaimedGlobalIndexHashChain)
+  - event: UpdatedUnsetGlobalIndexHashChain(bytes32 unsetGlobalIndex, bytes32 newUnsetGlobalIndexHashChain)
+- name: AgglayerGERL2
+  address:
+  - address: 0x0200143Fa295EE4dffEF22eE2616c2E008D81688
+    verified_at: 2025-10-14T19:41:27.937222Z
+  events:
+  - event: AcceptGlobalExitRootRemover(address oldGlobalExitRootRemover, address newGlobalExitRootRemover)
+  - event: AcceptGlobalExitRootUpdater(address oldGlobalExitRootUpdater, address newGlobalExitRootUpdater)
+  - event: Initialized(uint8 version)
+  - event: TransferGlobalExitRootRemover(address currentGlobalExitRootRemover, address pendingGlobalExitRootRemover)
+  - event: TransferGlobalExitRootUpdater(address currentGlobalExitRootUpdater, address pendingGlobalExitRootUpdater)
+  - event: UpdateHashChainValue(bytes32 indexed newGlobalExitRoot, bytes32 indexed newHashChainValue)
+  - event: UpdateRemovalHashChainValue(bytes32 indexed removedGlobalExitRoot, bytes32 indexed newRemovalHashChainValue)
+- name: TransparentUpgradeableProxy
+  address:
+  - address: 0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe
+    verified_at: 2025-10-14T19:44:34.321852Z
+  - address: 0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA
+    verified_at: 2025-10-14T19:23:10.136777Z
+  events:
+  - event: AdminChanged(address previousAdmin, address newAdmin)
+  - event: BeaconUpgraded(address indexed beacon)
+  - event: Upgraded(address indexed implementation)

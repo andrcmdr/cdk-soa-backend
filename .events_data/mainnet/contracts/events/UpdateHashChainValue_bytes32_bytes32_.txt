@@ -1,0 +1,11 @@
+Event Name: UpdateHashChainValue
+Signature: UpdateHashChainValue(bytes32,bytes32)
+Topic Hash: 0x65d3bf36615f1f02a134d12dfa9ea6b1d4a52386e825973cd27ddb70895c2319
+Anonymous: false
+
+Inputs:
+  0: newGlobalExitRoot bytes32 (indexed)
+  1: newHashChainValue bytes32 (indexed)
+
+Contract Sources:
+  - 0x0200143fa295ee4dffef22ee2616c2e008d81688 (contract_name: AgglayerGERL2)

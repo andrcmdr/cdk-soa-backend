@@ -1,0 +1,12 @@
+Event Name: RoleRevoked
+Signature: RoleRevoked(bytes32,address,address)
+Topic Hash: 0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b
+Anonymous: false
+
+Inputs:
+  0: role bytes32 (indexed)
+  1: account address (indexed)
+  2: sender address (indexed)
+
+Contract Sources:
+  - 0x665553357099aa76b7e63f36365404f1f559cf9b (contract_name: Treasury)

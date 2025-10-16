@@ -1,0 +1,20 @@
+Event Name: DetailedClaimEvent
+Signature: DetailedClaimEvent(bytes32[32],bytes32[32],uint256,bytes32,bytes32,uint32,address,uint32,address,uint256,bytes)
+Topic Hash: 0x7fee792f28e46481b8f3ff0ce0983de269108f87dd43f7c7c10f7c922897a944
+Anonymous: false
+
+Inputs:
+  0: smtProofLocalExitRoot bytes32[32] (not indexed)
+  1: smtProofRollupExitRoot bytes32[32] (not indexed)
+  2: globalIndex uint256 (indexed)
+  3: mainnetExitRoot bytes32 (not indexed)
+  4: rollupExitRoot bytes32 (not indexed)
+  5: originNetwork uint32 (not indexed)
+  6: originTokenAddress address (not indexed)
+  7: destinationNetwork uint32 (not indexed)
+  8: destinationAddress address (indexed)
+  9: amount uint256 (not indexed)
+  10: metadata bytes (not indexed)
+
+Contract Sources:
+  - 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c (contract_name: AgglayerBridgeL2)

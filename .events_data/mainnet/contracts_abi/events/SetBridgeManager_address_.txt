@@ -1,0 +1,10 @@
+Event Name: SetBridgeManager
+Signature: SetBridgeManager(address)
+Topic Hash: 0x32cf74f8a6d5f88593984d2cd52be5592bfa6884f5896175801a5069ef09cd67
+Anonymous: false
+
+Inputs:
+  0: bridgeManager address (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C (contract_name: AgglayerBridgeL2, verified_at: 2025-10-14T19:40:39.317370Z)

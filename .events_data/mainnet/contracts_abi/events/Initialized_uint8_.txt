@@ -1,0 +1,11 @@
+Event Name: Initialized
+Signature: Initialized(uint8)
+Topic Hash: 0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
+Anonymous: false
+
+Inputs:
+  0: version uint8 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x0200143Fa295EE4dffEF22eE2616c2E008D81688 (contract_name: AgglayerGERL2, verified_at: 2025-10-14T19:41:27.937222Z)
+  - 0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C (contract_name: AgglayerBridgeL2, verified_at: 2025-10-14T19:40:39.317370Z)

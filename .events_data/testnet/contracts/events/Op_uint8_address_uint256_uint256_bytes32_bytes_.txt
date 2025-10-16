@@ -1,0 +1,15 @@
+Event Name: Op
+Signature: Op(uint8,address,uint256,uint256,bytes32,bytes)
+Topic Hash: 0xd649be461c232c81eeaafd0d3add566ff0b7ee63d62a05f1f05efa8989460dec
+Anonymous: false
+
+Inputs:
+  0: kind uint8 (not indexed)
+  1: caller address (indexed)
+  2: beforeGas uint256 (not indexed)
+  3: afterGas uint256 (not indexed)
+  4: tag bytes32 (indexed)
+  5: payload bytes (not indexed)
+
+Contract Sources:
+  - 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57 (contract_name: LoadTester)

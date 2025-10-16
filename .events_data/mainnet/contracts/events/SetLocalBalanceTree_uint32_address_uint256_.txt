@@ -1,0 +1,12 @@
+Event Name: SetLocalBalanceTree
+Signature: SetLocalBalanceTree(uint32,address,uint256)
+Topic Hash: 0x73a03a6d9efc14b9f22a3af967e98580549eb76b1113b6a09a57ce1dae36ecd2
+Anonymous: false
+
+Inputs:
+  0: originNetwork uint32 (indexed)
+  1: originTokenAddress address (indexed)
+  2: newAmount uint256 (not indexed)
+
+Contract Sources:
+  - 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c (contract_name: AgglayerBridgeL2)

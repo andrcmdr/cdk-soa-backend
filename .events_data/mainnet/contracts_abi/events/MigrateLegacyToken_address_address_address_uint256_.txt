@@ -1,0 +1,13 @@
+Event Name: MigrateLegacyToken
+Signature: MigrateLegacyToken(address,address,address,uint256)
+Topic Hash: 0xb7f8fd4d1faf9b2929dc269f59c53e3a2bccc44e9950f33a568fcbcb37eb69a9
+Anonymous: false
+
+Inputs:
+  0: sender address (not indexed)
+  1: legacyTokenAddress address (not indexed)
+  2: updatedTokenAddress address (not indexed)
+  3: amount uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C (contract_name: AgglayerBridgeL2, verified_at: 2025-10-14T19:40:39.317370Z)

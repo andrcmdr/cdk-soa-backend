@@ -1,0 +1,11 @@
+Event Name: SetClaim
+Signature: SetClaim(uint32,uint32)
+Topic Hash: 0xab48452e173be3f004b3208cc344b14cc7f8d977fc1ca28171286a7abb5d7570
+Anonymous: false
+
+Inputs:
+  0: leafIndex uint32 (not indexed)
+  1: sourceNetwork uint32 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C (contract_name: AgglayerBridgeL2, verified_at: 2025-10-14T19:40:39.317370Z)

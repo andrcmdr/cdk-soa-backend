@@ -1,0 +1,11 @@
+Event Name: PaymasterFunded
+Signature: PaymasterFunded(address,uint256)
+Topic Hash: 0xb2097ab3550c8bc1e581acecec9827cfa285137c2311429263ab8e6cdb814a73
+Anonymous: false
+
+Inputs:
+  0: paymaster address (indexed)
+  1: amount uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x665553357099AA76b7E63F36365404F1F559CF9b (contract_name: Treasury, verified_at: 2025-07-15T15:41:26.978522Z)
