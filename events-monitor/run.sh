@@ -26,8 +26,11 @@ docker compose up --build
 # via Docker
 
 docker pull postgres:17
+docker rmi postgres:17
 docker pull nats:2-scratch
+docker rmi nats:2-scratch
 DOCKER_BUILDKIT=1 docker build --no-cache -f ./cdk-soa-backend.dockerfile -t "cdk-soa-backend" ./
+docker rmi cdk-soa-backend
 
 mkdir -vp ./.secret/; pwgen -1cnys 20 1 | tr -d "\n" > ./.secret/pg-passwd
 docker stop postgres_17 ; docker rm postgres_17

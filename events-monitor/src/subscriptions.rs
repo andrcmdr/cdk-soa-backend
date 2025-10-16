@@ -36,6 +36,8 @@ pub struct EventProcessor {
     ws_rpc_provider: RPCProvider,
     http_rpc_provider: RPCProvider,
     chain_id: u64,
+    filter_senders: Option<Vec<Address>>,
+    filter_receivers: Option<Vec<Address>>,
 }
 
 impl EventProcessor {
@@ -85,6 +87,38 @@ impl EventProcessor {
         }
         info!("Chain ID: {}", chain_id);
 
+        // Parse sender filtering addresses from configuration
+        let filter_senders = if let Some(senders) = &config.indexing.filter_senders {
+            if !senders.is_empty() {
+                let parsed: Result<Vec<Address>, _> = senders.iter()
+                    .map(|s| Address::from_str(s))
+                    .collect();
+                let parsed = parsed?;
+                info!("Filter senders configured: {} addresses", parsed.len());
+                Some(parsed)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        // Parse receiver filtering addresses from configuration
+        let filter_receivers = if let Some(receivers) = &config.indexing.filter_receivers {
+            if !receivers.is_empty() {
+                let parsed: Result<Vec<Address>, _> = receivers.iter()
+                    .map(|s| Address::from_str(s))
+                    .collect();
+                let parsed = parsed?;
+                info!("Filter receivers configured: {} addresses", parsed.len());
+                Some(parsed)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
         Ok(Self {
             addr_abi_map,
             db_clients,
@@ -93,6 +127,8 @@ impl EventProcessor {
             ws_rpc_provider,
             http_rpc_provider,
             chain_id,
+            filter_senders,
+            filter_receivers,
         })
     }
 
@@ -192,12 +228,72 @@ impl EventProcessor {
         Ok(())
     }
 
-    async fn handle_log(
-        &self,
-        log: RpcLog,
-    ) -> anyhow::Result<()> {
+    async fn handle_log(&self, log: RpcLog) -> anyhow::Result<()> {
         let addr = log.address();
         debug!("Received log from contract: {}", addr);
+
+        // Retrieve tx sender using transaction hash
+        let tx_sender = if let Some(h) = log.transaction_hash {
+            match self.http_rpc_provider.get_transaction_by_hash(h).await? {
+                Some(tx) => Some(tx.from()),
+                None => None,
+            }
+        } else { None };
+
+        // Retrieve tx receiver using transaction hash
+        let tx_receiver = if let Some(h) = log.transaction_hash {
+            match self.http_rpc_provider.get_transaction_by_hash(h).await? {
+                Some(tx) => if let Some(addr) = tx.to() { Some(addr) } else { None },
+                None => None,
+            }
+        } else { None };
+
+        // Apply sender filtering if configured
+        if let Some(filter_senders) = &self.filter_senders {
+            if !filter_senders.is_empty() {
+                if let Some(sender) = tx_sender {
+                    if !filter_senders.contains(&sender) {
+                        debug!("Filtering out log: sender {} not in filter list", sender);
+                        return Ok(());
+                    }
+                } else {
+                    debug!("Filtering out log: no sender found in transaction");
+                    return Ok(());
+                }
+            }
+        }
+
+        // Apply receiver filtering if configured
+        if let Some(filter_receivers) = &self.filter_receivers {
+            if !filter_receivers.is_empty() {
+                if let Some(receiver) = tx_receiver {
+                    if !filter_receivers.contains(&receiver) {
+                        debug!("Filtering out log: receiver {} not in filter list", receiver);
+                        return Ok(());
+                    }
+                } else {
+                    debug!("Filtering out log: no receiver found in transaction");
+                    return Ok(());
+                }
+            }
+        }
+
+        let transaction_sender = tx_sender
+            .map(|addr| addr.to_string())
+            .ok_or_else(|| {
+                error!("Missing sender address in transaction data");
+                anyhow!("Missing sender address in transaction data")
+            })
+            .unwrap_or("".to_string());
+
+        let transaction_receiver = tx_receiver
+            .map(|addr| addr.to_string())
+            .ok_or_else(|| {
+                error!("Missing receiver address in transaction data");
+                anyhow!("Missing receiver address in transaction data")
+            })
+            .unwrap_or("".to_string());
+
         let Some(contract) = self.addr_abi_map.get(&addr) else { return Ok(()); };
 
         let abi = Arc::new(contract.abi.clone());
@@ -254,38 +350,6 @@ impl EventProcessor {
                 anyhow!("Missing event signature/hash in parsed event data: anonymous event")
             })
             .unwrap_or("0x".to_string());
-
-        // Retrieve tx sender using transaction hash
-        let tx_sender = if let Some(h) = log.transaction_hash {
-            match self.http_rpc_provider.get_transaction_by_hash(h).await? {
-                Some(tx) => Some(tx.from()),
-                None => None,
-            }
-        } else { None };
-
-        // Retrieve tx receiver using transaction hash
-        let tx_receiver = if let Some(h) = log.transaction_hash {
-            match self.http_rpc_provider.get_transaction_by_hash(h).await? {
-                Some(tx) => if let Some(addr) = tx.to() { Some(addr) } else { None },
-                None => None,
-            }
-        } else { None };
-
-        let transaction_sender = tx_sender
-            .map(|addr| addr.to_string())
-            .ok_or_else(|| {
-                error!("Missing sender address in transaction data");
-                anyhow!("Missing sender address in transaction data")
-            })
-            .unwrap_or("".to_string());
-
-        let transaction_receiver = tx_receiver
-            .map(|addr| addr.to_string())
-            .ok_or_else(|| {
-                error!("Missing receiver address in transaction data");
-                anyhow!("Missing receiver address in transaction data")
-            })
-            .unwrap_or("".to_string());
 
         // Compute unique log hash using the Log's `hash()` with SHA3-256 hasher
         let mut hasher = Sha3_256StdHasher::default();
