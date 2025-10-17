@@ -166,7 +166,7 @@ The project demonstrates:
 - AP2-style mandate creation + ed25519 signing (mandate JSON),
 - an x402 HTTP client flow that detects `402 Payment Required`, pays on-chain using **Alloy v1.0**, then retries with `X-402-Payment` and the AP2 mandate.
 
-```rust
+```toml
 # Cargo.toml
 [package]
 name = "ap2_x402_alloy_example"
@@ -186,9 +186,10 @@ ed25519-dalek = { version = "1.0", features = ["std"] }
 base64 = "0.21"
 # tokio runtime
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+```
 
-
-# src/main.rs
+```rust
+// src/main.rs
 use std::error::Error;
 
 mod ap2_mandate;
