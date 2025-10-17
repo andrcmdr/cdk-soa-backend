@@ -2,6 +2,7 @@
 members = [
     "events-monitor",
     "abi-fetcher",
+    "abi2sol",
 ]
 exclude = [
     "legacy",
