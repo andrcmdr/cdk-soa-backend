@@ -28,6 +28,10 @@ struct Args {
     #[arg(short = 't', long, default_value_t = true)]
     types: bool,
 
+    /// Categorize functions by type (view, pure, payable, state-changing)
+    #[arg(long, default_value_t = false)]
+    categorize: bool,
+
     /// Compact output (no comments)
     #[arg(short, long, default_value_t = false)]
     compact: bool,
@@ -68,6 +72,31 @@ fn read_stdin() -> Result<String> {
     Ok(buffer)
 }
 
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+enum FunctionCategory {
+    Constructor,
+    Pure,
+    View,
+    Payable,
+    StateChanging,
+    Fallback,
+    Receive,
+}
+
+impl FunctionCategory {
+    fn comment(&self) -> &str {
+        match self {
+            FunctionCategory::Constructor => "Constructor",
+            FunctionCategory::Pure => "Pure functions (no state read or write)",
+            FunctionCategory::View => "View functions (read-only)",
+            FunctionCategory::Payable => "Payable functions (can receive ETH)",
+            FunctionCategory::StateChanging => "State-changing functions",
+            FunctionCategory::Fallback => "Fallback function",
+            FunctionCategory::Receive => "Receive function",
+        }
+    }
+}
+
 fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
     let mut output = String::new();
 
@@ -79,15 +108,17 @@ fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
 
     output.push_str(&format!("interface {} {{\n", args.interface_name));
 
-    // Collect and sort items by type for better organization
+    // Collect and categorize items
     let mut structs = Vec::new();
-    let mut functions = Vec::new();
+    let mut functions_by_category: std::collections::BTreeMap<FunctionCategory, Vec<alloy::json_abi::Function>> = std::collections::BTreeMap::new();
     let mut events = Vec::new();
     let mut errors = Vec::new();
 
     // Process constructor
     if let Some(constructor) = &abi.constructor {
-        if !args.compact {
+        if !args.compact && args.categorize {
+            output.push_str(&format!("    // {}\n", FunctionCategory::Constructor.comment()));
+        } else if !args.compact {
             output.push_str("    // Constructor\n");
         }
         output.push_str("    constructor(");
@@ -100,7 +131,31 @@ fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
         output.push_str(");\n\n");
     }
 
-    // Extract user-defined types (structs)
+    // Process fallback
+    if let Some(fallback) = &abi.fallback {
+        let func = alloy::json_abi::Function {
+            name: "".to_string(),
+            inputs: vec![],
+            outputs: vec![],
+            state_mutability: fallback.state_mutability,
+        };
+        let category = categorize_function(&func);
+        functions_by_category.entry(category).or_default().push(func);
+    }
+
+    // Process receive
+    if let Some(receive) = &abi.receive {
+        let func = alloy::json_abi::Function {
+            name: "".to_string(),
+            inputs: vec![],
+            outputs: vec![],
+            state_mutability: receive.state_mutability,
+        };
+        let category = categorize_function(&func);
+        functions_by_category.entry(category).or_default().push(func);
+    }
+
+    // Extract items from ABI
     for item in abi.items() {
         match item {
             alloy::json_abi::AbiItem::Error(err) => {
@@ -114,7 +169,8 @@ fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
                 }
             }
             alloy::json_abi::AbiItem::Function(func) => {
-                functions.push((func.name.clone(), func));
+                let category = categorize_function(func.as_ref());
+                functions_by_category.entry(category).or_default().push(func.as_ref().clone());
             }
             _ => {}
         }
@@ -125,18 +181,20 @@ fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
         let mut seen_structs = std::collections::HashSet::new();
 
         // Scan all functions and events for tuple types (structs)
-        for (_, func) in &functions {
-            for input in &func.inputs {
-                if let Some(struct_def) = extract_struct_from_param(&input.ty, &input.components) {
-                    if seen_structs.insert(input.name.clone()) {
-                        structs.push(struct_def);
+        for funcs in functions_by_category.values() {
+            for func in funcs {
+                for input in &func.inputs {
+                    if let Some(struct_def) = extract_struct_from_param(&input.ty, &input.components, &input.name) {
+                        if seen_structs.insert(get_struct_name(&input.ty, &input.internal_type, &input.name)) {
+                            structs.push(struct_def);
+                        }
                     }
                 }
-            }
-            for output in &func.outputs {
-                if let Some(struct_def) = extract_struct_from_param(&output.ty, &output.components) {
-                    if seen_structs.insert(output.name.clone()) {
-                        structs.push(struct_def);
+                for output in &func.outputs {
+                    if let Some(struct_def) = extract_struct_from_param(&output.ty, &output.components, &output.name) {
+                        if seen_structs.insert(get_struct_name(&output.ty, &output.internal_type, &output.name)) {
+                            structs.push(struct_def);
+                        }
                     }
                 }
             }
@@ -154,61 +212,37 @@ fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
         }
     }
 
-    // Generate functions
-    if !functions.is_empty() {
-        if !args.compact {
-            output.push_str("    // Functions\n");
-        }
-        for (_, func) in functions {
-            output.push_str("    function ");
-            output.push_str(&func.name);
-            output.push('(');
+    // Generate functions (categorized or not)
+    if !functions_by_category.is_empty() {
+        if args.categorize {
+            // Output functions by category
+            for (category, funcs) in functions_by_category {
+                if funcs.is_empty() {
+                    continue;
+                }
 
-            let params: Vec<String> = func
-                .inputs
-                .iter()
-                .map(|p| {
-                    let param_type = format_type(&p.ty, &p.internal_type);
-                    if p.name.is_empty() {
-                        param_type
-                    } else {
-                        format!("{} {}", param_type, p.name)
-                    }
-                })
-                .collect();
-            output.push_str(&params.join(", "));
-            output.push_str(") external");
+                if !args.compact {
+                    output.push_str(&format!("    // {}\n", category.comment()));
+                }
 
-            // Add state mutability
-            match func.state_mutability {
-                alloy::json_abi::StateMutability::Pure => output.push_str(" pure"),
-                alloy::json_abi::StateMutability::View => output.push_str(" view"),
-                alloy::json_abi::StateMutability::Payable => output.push_str(" payable"),
-                alloy::json_abi::StateMutability::NonPayable => {}
+                for func in funcs {
+                    output.push_str(&format_function(&func, &category));
+                }
+                output.push('\n');
             }
-
-            // Add return types
-            if !func.outputs.is_empty() {
-                output.push_str(" returns (");
-                let returns: Vec<String> = func
-                    .outputs
-                    .iter()
-                    .map(|p| {
-                        let return_type = format_type(&p.ty, &p.internal_type);
-                        if p.name.is_empty() {
-                            return_type
-                        } else {
-                            format!("{} {}", return_type, p.name)
-                        }
-                    })
-                    .collect();
-                output.push_str(&returns.join(", "));
-                output.push(')');
+        } else {
+            // Output all functions together
+            if !args.compact {
+                output.push_str("    // Functions\n");
             }
-
-            output.push_str(";\n");
+            for funcs in functions_by_category.values() {
+                for func in funcs {
+                    let category = categorize_function(func);
+                    output.push_str(&format_function(&func, &category));
+                }
+            }
+            output.push('\n');
         }
-        output.push('\n');
     }
 
     // Generate events
@@ -272,6 +306,107 @@ fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
     Ok(output)
 }
 
+fn categorize_function(func: &alloy::json_abi::Function) -> FunctionCategory {
+    if func.name.is_empty() && func.inputs.is_empty() {
+        return FunctionCategory::Receive;
+    }
+    if func.name.is_empty() {
+        return FunctionCategory::Fallback;
+    }
+
+    match func.state_mutability {
+        alloy::json_abi::StateMutability::Pure => FunctionCategory::Pure,
+        alloy::json_abi::StateMutability::View => FunctionCategory::View,
+        alloy::json_abi::StateMutability::Payable => FunctionCategory::Payable,
+        alloy::json_abi::StateMutability::NonPayable => FunctionCategory::StateChanging,
+    }
+}
+
+fn format_function(func: &alloy::json_abi::Function, category: &FunctionCategory) -> String {
+    let mut output = String::new();
+
+    // Handle special functions
+    match category {
+        FunctionCategory::Fallback => {
+            output.push_str("    fallback(");
+            let params: Vec<String> = func
+                .inputs
+                .iter()
+                .map(|p| {
+                    let param_type = format_type(&p.ty, &p.internal_type);
+                    if p.name.is_empty() {
+                        param_type
+                    } else {
+                        format!("{} {}", param_type, p.name)
+                    }
+                })
+                .collect();
+            output.push_str(&params.join(", "));
+            output.push_str(") external");
+            if func.state_mutability == alloy::json_abi::StateMutability::Payable {
+                output.push_str(" payable");
+            }
+            output.push_str(";\n");
+            return output;
+        }
+        FunctionCategory::Receive => {
+            output.push_str("    receive() external payable;\n");
+            return output;
+        }
+        _ => {}
+    }
+
+    // Regular function
+    output.push_str("    function ");
+    output.push_str(&func.name);
+    output.push('(');
+
+    let params: Vec<String> = func
+        .inputs
+        .iter()
+        .map(|p| {
+            let param_type = format_type(&p.ty, &p.internal_type);
+            if p.name.is_empty() {
+                param_type
+            } else {
+                format!("{} {}", param_type, p.name)
+            }
+        })
+        .collect();
+    output.push_str(&params.join(", "));
+    output.push_str(") external");
+
+    // Add state mutability
+    match func.state_mutability {
+        alloy::json_abi::StateMutability::Pure => output.push_str(" pure"),
+        alloy::json_abi::StateMutability::View => output.push_str(" view"),
+        alloy::json_abi::StateMutability::Payable => output.push_str(" payable"),
+        alloy::json_abi::StateMutability::NonPayable => {}
+    }
+
+    // Add return types
+    if !func.outputs.is_empty() {
+        output.push_str(" returns (");
+        let returns: Vec<String> = func
+            .outputs
+            .iter()
+            .map(|p| {
+                let return_type = format_type(&p.ty, &p.internal_type);
+                if p.name.is_empty() {
+                    return_type
+                } else {
+                    format!("{} {}", return_type, p.name)
+                }
+            })
+            .collect();
+        output.push_str(&returns.join(", "));
+        output.push(')');
+    }
+
+    output.push_str(";\n");
+    output
+}
+
 fn format_type(ty: &str, internal_type: &Option<alloy::json_abi::InternalType>) -> String {
     // Use internal type if available for better struct names
     if let Some(internal) = internal_type {
@@ -289,17 +424,54 @@ fn format_type(ty: &str, internal_type: &Option<alloy::json_abi::InternalType>) 
     ty.to_string()
 }
 
+fn get_struct_name(
+    ty: &str,
+    internal_type: &Option<alloy::json_abi::InternalType>,
+    param_name: &str,
+) -> String {
+    if let Some(internal) = internal_type {
+        match internal {
+            alloy::json_abi::InternalType::Struct { contract: _, ty } => {
+                return ty.clone();
+            }
+            _ => {}
+        }
+    }
+
+    // Fallback: use parameter name or generic name
+    if !param_name.is_empty() {
+        // Convert camelCase to PascalCase
+        let mut chars = param_name.chars();
+        if let Some(first) = chars.next() {
+            return format!("{}{}", first.to_uppercase(), chars.as_str());
+        }
+    }
+
+    "CustomStruct".to_string()
+}
+
 fn extract_struct_from_param(
     ty: &str,
     components: &[alloy::json_abi::Param],
+    param_name: &str,
 ) -> Option<String> {
     // Check if this is a tuple type (struct)
     if !ty.starts_with("tuple") || components.is_empty() {
         return None;
     }
 
-    // Try to derive a struct name from the type string or use a generic name
-    let struct_name = "CustomStruct"; // In practice, this should be extracted from context
+    // Get struct name from internal type or derive from parameter name
+    let struct_name = if !param_name.is_empty() {
+        // Convert camelCase to PascalCase
+        let mut chars = param_name.chars();
+        if let Some(first) = chars.next() {
+            format!("{}{}", first.to_uppercase(), chars.as_str())
+        } else {
+            "CustomStruct".to_string()
+        }
+    } else {
+        "CustomStruct".to_string()
+    };
 
     let mut struct_def = format!("    struct {} {{\n", struct_name);
 
