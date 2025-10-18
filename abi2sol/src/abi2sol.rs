@@ -97,6 +97,14 @@ impl FunctionCategory {
     }
 }
 
+// Enum to distinguish between regular functions and special functions
+#[derive(Debug, Clone)]
+enum FunctionType {
+    Regular(alloy::json_abi::Function),
+    Fallback(alloy::json_abi::Fallback),
+    Receive(alloy::json_abi::Receive),
+}
+
 fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
     let mut output = String::new();
 
@@ -110,7 +118,7 @@ fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
 
     // Collect and categorize items
     let mut structs = Vec::new();
-    let mut functions_by_category: std::collections::BTreeMap<FunctionCategory, Vec<alloy::json_abi::Function>> = std::collections::BTreeMap::new();
+    let mut functions_by_category: std::collections::BTreeMap<FunctionCategory, Vec<FunctionType>> = std::collections::BTreeMap::new();
     let mut events = Vec::new();
     let mut errors = Vec::new();
 
@@ -133,26 +141,16 @@ fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
 
     // Process fallback
     if let Some(fallback) = &abi.fallback {
-        let func = alloy::json_abi::Function {
-            name: "".to_string(),
-            inputs: vec![],
-            outputs: vec![],
-            state_mutability: fallback.state_mutability,
-        };
-        let category = categorize_function(&func);
-        functions_by_category.entry(category).or_default().push(func);
+        let fallback_owned = fallback.clone();
+        let category = categorize_function_type(&FunctionType::Fallback(fallback_owned.clone()));
+        functions_by_category.entry(category).or_default().push(FunctionType::Fallback(fallback_owned));
     }
 
     // Process receive
     if let Some(receive) = &abi.receive {
-        let func = alloy::json_abi::Function {
-            name: "".to_string(),
-            inputs: vec![],
-            outputs: vec![],
-            state_mutability: receive.state_mutability,
-        };
-        let category = categorize_function(&func);
-        functions_by_category.entry(category).or_default().push(func);
+        let receive_owned = receive.clone();
+        let category = categorize_function_type(&FunctionType::Receive(receive_owned.clone()));
+        functions_by_category.entry(category).or_default().push(FunctionType::Receive(receive_owned));
     }
 
     // Extract items from ABI
@@ -169,8 +167,9 @@ fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
                 }
             }
             alloy::json_abi::AbiItem::Function(func) => {
-                let category = categorize_function(func.as_ref());
-                functions_by_category.entry(category).or_default().push(func.as_ref().clone());
+                let func_owned = func.as_ref().clone();
+                let category = categorize_function_type(&FunctionType::Regular(func_owned.clone()));
+                functions_by_category.entry(category).or_default().push(FunctionType::Regular(func_owned));
             }
             _ => {}
         }
@@ -182,18 +181,20 @@ fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
 
         // Scan all functions and events for tuple types (structs)
         for funcs in functions_by_category.values() {
-            for func in funcs {
-                for input in &func.inputs {
-                    if let Some(struct_def) = extract_struct_from_param(&input.ty, &input.components, &input.name) {
-                        if seen_structs.insert(get_struct_name(&input.ty, &input.internal_type, &input.name)) {
-                            structs.push(struct_def);
+            for func_type in funcs {
+                if let FunctionType::Regular(func) = func_type {
+                    for input in &func.inputs {
+                        if let Some(struct_def) = extract_struct_from_param(&input.ty, &input.components, &input.name) {
+                            if seen_structs.insert(get_struct_name(&input.ty, &input.internal_type, &input.name)) {
+                                structs.push(struct_def);
+                            }
                         }
                     }
-                }
-                for output in &func.outputs {
-                    if let Some(struct_def) = extract_struct_from_param(&output.ty, &output.components, &output.name) {
-                        if seen_structs.insert(get_struct_name(&output.ty, &output.internal_type, &output.name)) {
-                            structs.push(struct_def);
+                    for output in &func.outputs {
+                        if let Some(struct_def) = extract_struct_from_param(&output.ty, &output.components, &output.name) {
+                            if seen_structs.insert(get_struct_name(&output.ty, &output.internal_type, &output.name)) {
+                                structs.push(struct_def);
+                            }
                         }
                     }
                 }
@@ -225,8 +226,8 @@ fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
                     output.push_str(&format!("    // {}\n", category.comment()));
                 }
 
-                for func in funcs {
-                    output.push_str(&format_function(&func, &category));
+                for func_type in funcs {
+                    output.push_str(&format_function_type(&func_type));
                 }
                 output.push('\n');
             }
@@ -236,9 +237,8 @@ fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
                 output.push_str("    // Functions\n");
             }
             for funcs in functions_by_category.values() {
-                for func in funcs {
-                    let category = categorize_function(func);
-                    output.push_str(&format_function(&func, &category));
+                for func_type in funcs {
+                    output.push_str(&format_function_type(func_type));
                 }
             }
             output.push('\n');
@@ -306,57 +306,65 @@ fn generate_sol_interface(abi: &JsonAbi, args: &Args) -> Result<String> {
     Ok(output)
 }
 
-fn categorize_function(func: &alloy::json_abi::Function) -> FunctionCategory {
-    if func.name.is_empty() && func.inputs.is_empty() {
-        return FunctionCategory::Receive;
-    }
-    if func.name.is_empty() {
-        return FunctionCategory::Fallback;
-    }
-
-    match func.state_mutability {
-        alloy::json_abi::StateMutability::Pure => FunctionCategory::Pure,
-        alloy::json_abi::StateMutability::View => FunctionCategory::View,
-        alloy::json_abi::StateMutability::Payable => FunctionCategory::Payable,
-        alloy::json_abi::StateMutability::NonPayable => FunctionCategory::StateChanging,
+fn categorize_function_type(func_type: &FunctionType) -> FunctionCategory {
+    match func_type {
+        FunctionType::Fallback(_) => FunctionCategory::Fallback,
+        FunctionType::Receive(_) => FunctionCategory::Receive,
+        FunctionType::Regular(func) => {
+            match func.state_mutability {
+                alloy::json_abi::StateMutability::Pure => FunctionCategory::Pure,
+                alloy::json_abi::StateMutability::View => FunctionCategory::View,
+                alloy::json_abi::StateMutability::Payable => FunctionCategory::Payable,
+                alloy::json_abi::StateMutability::NonPayable => FunctionCategory::StateChanging,
+            }
+        }
     }
 }
 
-fn format_function(func: &alloy::json_abi::Function, category: &FunctionCategory) -> String {
+fn format_function_type(func_type: &FunctionType) -> String {
+    match func_type {
+        FunctionType::Fallback(fallback) => format_fallback(fallback),
+        FunctionType::Receive(receive) => format_receive(receive),
+        FunctionType::Regular(func) => format_function(func),
+    }
+}
+
+fn format_fallback(fallback: &alloy::json_abi::Fallback) -> String {
+    let mut output = String::new();
+    /*
+    // For future inputs (function signature parameters) parsing
+    output.push_str("    fallback(");
+    let params: Vec<String> = fallback
+        .inputs
+        .iter()
+        .map(|p| {
+            let param_type = format_type(&p.ty, &p.internal_type);
+            if p.name.is_empty() {
+                param_type
+            } else {
+                format!("{} {}", param_type, p.name)
+            }
+        })
+        .collect();
+    output.push_str(&params.join(", "));
+    output.push_str(") external");
+    */
+    output.push_str("    fallback() external");
+
+    if fallback.state_mutability == alloy::json_abi::StateMutability::Payable {
+        output.push_str(" payable");
+    }
+    output.push_str(";\n");
+    output
+}
+
+fn format_receive(receive: &alloy::json_abi::Receive) -> String {
+    "    receive() external payable;\n".to_string()
+}
+
+fn format_function(func: &alloy::json_abi::Function) -> String {
     let mut output = String::new();
 
-    // Handle special functions
-    match category {
-        FunctionCategory::Fallback => {
-            output.push_str("    fallback(");
-            let params: Vec<String> = func
-                .inputs
-                .iter()
-                .map(|p| {
-                    let param_type = format_type(&p.ty, &p.internal_type);
-                    if p.name.is_empty() {
-                        param_type
-                    } else {
-                        format!("{} {}", param_type, p.name)
-                    }
-                })
-                .collect();
-            output.push_str(&params.join(", "));
-            output.push_str(") external");
-            if func.state_mutability == alloy::json_abi::StateMutability::Payable {
-                output.push_str(" payable");
-            }
-            output.push_str(";\n");
-            return output;
-        }
-        FunctionCategory::Receive => {
-            output.push_str("    receive() external payable;\n");
-            return output;
-        }
-        _ => {}
-    }
-
-    // Regular function
     output.push_str("    function ");
     output.push_str(&func.name);
     output.push('(');
