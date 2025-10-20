@@ -10,6 +10,7 @@ exclude = [
     "merkle-trie-cli",
     "airdrop-backend",
     "user-id-fetcher",
+    "tx-producer",
 ]
 
 # edition = "2021"

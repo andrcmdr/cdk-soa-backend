@@ -1,0 +1,52 @@
+[package]
+name = "tx-producer"
+version = "0.1.0"
+edition = "2021"
+authors = ["Andrew Bednoff <andrew@commandr.stream>"]
+license = "Apache-2.0"
+description = "Universal Ethereum transaction producer and contract interaction library using Alloy"
+repository = "https://github.com/andrcmdr/cdk-soa-backend/tree/main/tx-producer"
+keywords = ["ethereum", "blockchain", "alloy", "transactions", "web3"]
+categories = ["cryptography::cryptocurrencies", "api-bindings"]
+
+[lib]
+name = "tx_producer"
+crate-type = ["rlib", "cdylib"]  # Both Rust library and dynamic library
+
+[dependencies]
+# Alloy dependencies (Ethereum) - version 1.0.38
+alloy = { version = "1.0.38", features = ["full", "node-bindings", "rpc-types", "signer-local"] }
+alloy-primitives = "1.4.0"
+alloy-sol-types = "1.4.0"
+alloy-dyn-abi = "1.4.0"
+alloy-json-abi = "1.4.0"
+alloy-contract = "1.0.38"
+alloy-signer = "1.0.38"
+alloy-signer-local = "1.0.38"
+alloy-provider = "1.0.38"
+alloy-network = "1.0.38"
+alloy-transport-http = "1.0.38"
+alloy-transport-ws = "1.0.38"
+
+# Core dependencies
+tokio = { version = "1.47.1", features = ["full"] }
+serde = { version = "1.0.226", features = ["derive"] }
+serde_json = "1.0.145"
+anyhow = "1.0.100"
+thiserror = "1.0.69"
+tracing = "0.1.41"
+hex = "0.4.3"
+reqwest = { version = "0.12.23", features = ["json"] }
+
+# OpenSSL vendored statically binded
+openssl = { version = "0.10", features = ["vendored"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+mockito = "1.0"
+
+[features]
+default = []
+full = []
+
+[workspace]
