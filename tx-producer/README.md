@@ -9,9 +9,12 @@ A flexible Rust library for interacting with any Ethereum smart contract using J
 - 🔧 **Universal Contract Interaction** - Works with any EVM-compatible contract
 - 📄 **JSON ABI Support** - No need for `sol!()` macros or inline definitions
 - ✍️ **Transaction Building** - Easy-to-use builder pattern for transactions
+- 🚀 **Batch Transaction Support** - Execute multiple transactions efficiently
 - 🔐 **Signing Support** - Built-in transaction signing with private keys
 - 🌐 **Provider Management** - Flexible RPC provider configuration
 - 🔍 **Read & Write Operations** - Support for both view and state-changing functions
+- ⚡ **Parallel Execution** - Execute transactions in parallel with rate limiting
+- 🔄 **Error Handling** - Comprehensive error handling and retry logic
 - 📦 **Library Ready** - Can be used as Rust crate or compiled to `.so`
 
 ## Transaction Producer Library - Design Overview
@@ -80,6 +83,158 @@ async fn main() -> Result<()> {
     ).await?;
 
     Ok(())
+}
+```
+
+## Batch Transactions
+
+### Simple Batch Execution
+
+```rust
+use tx_producer::prelude::*;
+
+// Execute multiple transactions in parallel
+let batch_result = BatchTransactionBuilder::new(&contract)
+    .add("tx1".to_string(), "setValue".to_string(), vec![
+        serde_json::json!("100"),
+    ])
+    .add("tx2".to_string(), "setValue".to_string(), vec![
+        serde_json::json!("200"),
+    ])
+    .add("tx3".to_string(), "setValue".to_string(), vec![
+        serde_json::json!("300"),
+    ])
+    .strategy(BatchExecutionStrategy::ParallelRateLimited { max_concurrent: 5 })
+    .execute()
+    .await?;
+
+println!("Batch completed: {} successful, {} failed",
+         batch_result.successful, batch_result.failed);
+```
+
+### Batch Execution Strategies
+
+```rust
+// 1. Sequential execution (one after another)
+let batch_result = BatchTransactionBuilder::new(&contract)
+    .add_transactions(transactions)
+    .strategy(BatchExecutionStrategy::Sequential)
+    .execute()
+    .await?;
+
+// 2. Parallel execution (all at once)
+let batch_result = BatchTransactionBuilder::new(&contract)
+    .add_transactions(transactions)
+    .strategy(BatchExecutionStrategy::Parallel)
+    .execute()
+    .await?;
+
+// 3. Rate-limited parallel execution (recommended)
+let batch_result = BatchTransactionBuilder::new(&contract)
+    .add_transactions(transactions)
+    .strategy(BatchExecutionStrategy::ParallelRateLimited { max_concurrent: 10 })
+    .execute()
+    .await?;
+```
+
+### Custom Batch Transactions
+
+```rust
+let custom_batch = vec![
+    BatchTransaction {
+        id: "tx1".to_string(),
+        contract_address: None,
+        function_name: "updateData".to_string(),
+        args: vec![
+            serde_json::json!("1"),
+            serde_json::json!("0x1234..."),
+            serde_json::json!("0xabcd..."),
+        ],
+        gas_limit: Some(200000),
+        gas_price: None,
+        value: None,
+    },
+    // ... more transactions
+];
+
+let result = BatchTransactionBuilder::new(&contract)
+    .add_transactions(custom_batch)
+    .continue_on_error(true) // Continue even if some fail
+    .execute()
+    .await?;
+```
+
+### Batch Read Calls
+
+```rust
+// Execute multiple read calls in parallel
+let results = BatchCallBuilder::new(&contract)
+    .add_call("call1".to_string(), "getValue".to_string(), vec![])
+    .add_call("call2".to_string(), "getVersion".to_string(), vec![])
+    .add_call("call3".to_string(), "getRoundCount".to_string(), vec![])
+    .execute_parallel()
+    .await?;
+
+for (id, result) in results.iter() {
+    println!("Call {}: {:?}", id, result);
+}
+```
+
+### Handling Batch Results
+
+```rust
+let batch_result = BatchTransactionBuilder::new(&contract)
+    .add_transactions(transactions)
+    .execute()
+    .await?;
+
+// Check if all succeeded
+if batch_result.all_succeeded() {
+    println!("All transactions successful!");
+} else {
+    println!("Some transactions failed");
+
+    // Get failed transaction IDs
+    let failed_ids = batch_result.failed_ids();
+    println!("Failed: {:?}", failed_ids);
+
+    // Get successful transaction hashes
+    let successful_hashes = batch_result.successful_hashes();
+    println!("Successful hashes: {:?}", successful_hashes);
+}
+
+// Detailed results
+for tx_result in &batch_result.results {
+    if tx_result.success {
+        println!("✓ {} - Hash: {:?}", tx_result.id, tx_result.tx_hash);
+    } else {
+        println!("✗ {} - Error: {:?}", tx_result.id, tx_result.error);
+    }
+}
+```
+
+### Retry Logic for Failed Transactions
+
+```rust
+let max_retries = 3;
+let mut transactions = /* your transactions */;
+let mut retry_count = 0;
+
+while retry_count < max_retries {
+    let result = BatchTransactionBuilder::new(&contract)
+        .add_transactions(transactions.clone())
+        .execute()
+        .await?;
+
+    if result.all_succeeded() {
+        break;
+    }
+
+    // Keep only failed transactions for retry
+    let failed_ids = result.failed_ids();
+    transactions.retain(|tx| failed_ids.contains(&tx.id));
+
+    retry_count += 1;
 }
 ```
 
@@ -185,6 +340,22 @@ let function = contract.get_function("transfer")?;
 println!("Function signature: {}", function.signature());
 ```
 
+## Real-World Examples
+
+Check the `examples/` directory for complete working examples:
+
+- `basic_usage.rs` - Basic contract interaction
+- `batch_transactions.rs` - Various batch execution patterns
+- `batch_with_error_handling.rs` - Advanced error handling and retry logic
+- `airdrop_batch.rs` - Complete airdrop processing example
+
+Run an example:
+
+```bash
+cargo run --example batch_transactions
+cargo run --example airdrop_batch
+```
+
 ## Building as Shared Library
 
 To build as a `.so` library:
@@ -194,6 +365,35 @@ cargo build --release --lib
 ```
 
 The library will be available at `target/release/libtx_producer.so` (or `.dylib` on macOS, `.dll` on Windows).
+
+## Performance Considerations
+
+### Batch Size
+
+- **Small batches (1-10 txs)**: Use `Sequential` or `Parallel`
+- **Medium batches (10-50 txs)**: Use `ParallelRateLimited` with max_concurrent: 5-10
+- **Large batches (50+ txs)**: Use `ParallelRateLimited` with max_concurrent: 10-20
+
+### Rate Limiting
+
+Always use rate limiting for production to avoid:
+- RPC rate limits
+- Network congestion
+- Nonce conflicts
+
+```rust
+.strategy(BatchExecutionStrategy::ParallelRateLimited { max_concurrent: 10 })
+```
+
+### Gas Optimization
+
+```rust
+// Set appropriate gas limits
+BatchTransaction {
+    gas_limit: Some(200000), // Adjust based on function complexity
+    // ...
+}
+```
 
 ## ABI File Format
 
@@ -239,36 +439,26 @@ match contract.call_function("getValue", &[]).await {
 }
 ```
 
+## Testing
+
+Run tests:
+
+```bash
+cargo test
+```
+
+Run with output:
+
+```bash
+cargo test -- --nocapture
+```
+
 ## License
 
 Licensed under:
 
 - Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
 
-## Summary
+## Contributing
 
-This repository contains a comprehensive **universal transaction producer library** (`tx-producer`) that:
-
-### Key Features:
-1. **✅ JSON ABI Only** - No `sol!()` macros, pure JSON ABI files
-2. **✅ Universal Contract Support** - Works with any EVM-compatible contract
-3. **✅ Transaction Production** - Build, sign, and send transactions
-4. **✅ Provider Management** - Flexible RPC configuration
-5. **✅ Library Format** - Can be used as Rust crate or compiled to `.so`
-6. **✅ Alloy 1.0.38** - Built on latest Alloy framework
-7. **✅ Type-safe** - Strong typing with proper error handling
-
-### Structure:
-```
-tx-producer/
-├── Cargo.toml
-├── README.md
-├── src/
-│   ├── lib.rs          # Main entry point
-│   ├── provider.rs     # Provider management
-│   ├── contract.rs     # Contract interaction
-│   ├── transaction.rs  # Transaction building
-│   └── error.rs        # Error types
-└── examples/
-    └── basic_usage.rs  # Usage examples
-```
+Contributions are welcome! Please feel free to submit a Pull Request.
