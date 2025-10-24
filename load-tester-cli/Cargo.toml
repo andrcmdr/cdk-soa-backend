@@ -10,7 +10,7 @@ keywords = ["ethereum", "blockchain", "alloy", "transactions", "web3", "load-tes
 categories = ["cryptography::cryptocurrencies", "api-bindings", "load-testing", "stress-testing", "benchmarking"]
 
 [[bin]]
-name = "load-tester"
+name = "load-tester-cli"
 path = "src/main.rs"
 
 [dependencies]
@@ -22,6 +22,7 @@ clap = { version = "4.5.48", features = ["derive", "color", "suggestions"] }
 
 # Async runtime
 tokio = { version = "1.47.1", features = ["full"] }
+async-trait = "0.1"
 
 # Serialization
 serde = { version = "1.0.226", features = ["derive"] }
@@ -49,7 +50,10 @@ hdrhistogram = "7.5"
 rand = "0.8.5"
 
 # Alloy types
-alloy-primitives = "1.0.38"
+alloy-primitives = "1.4.0"
+
+# Futures
+futures = "0.3.31"
 
 [dev-dependencies]
 tempfile = "3.8"
