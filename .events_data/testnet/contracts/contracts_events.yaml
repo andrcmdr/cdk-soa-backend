@@ -497,6 +497,7 @@ contracts:
   - event: Transfer(address indexed from, address indexed to, uint256 value)
 - name: LoadTester
   address:
+  - address: 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5
   - address: 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57
   events:
   - event: DelegateCall(address target, bool success, uint256 gasUsed)
@@ -616,6 +617,38 @@ contracts:
   - event: RewardsClaimed(uint256 indexed stakeId, address indexed user, uint256 amount, uint256 blockNumber)
   - event: SnapshotRegistered(uint256 indexed snapshotId, uint256 indexed checkpoint, uint256 indexed rewardPool)
   - event: Upgraded(address indexed implementation)
+- name: SentientRewardDistributor
+  address:
+  - address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+  events:
+  - event: LogApproveMerkleRoot(address indexed token, uint256 indexed epoch)
+  - event: LogClaimRewards(address indexed token, address indexed user, uint256 amount, uint256 indexed epoch)
+  - event: LogDenyMerkleRoot(address indexed token, bytes32 indexed merkleRoot)
+  - event: LogEmergencyWithdraw(address indexed token, uint256 amount, bool indexed isNative)
+  - event: LogSetAuthorizedApprover(address indexed approver, bool indexed isAuthorized)
+  - event: LogSetMerkleProofPendingPeriod(uint256 indexed newPeriod)
+  - event: LogSetMerkleRoot(address indexed token, bytes32 indexed merkleRoot)
+  - event: LogSetPaused(bool indexed isPaused)
+  - event: OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner)
+  - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+  - event: Paused(address account)
+  - event: Unpaused(address account)
+- name: SentientStakingDepositManager
+  address:
+  - address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+  events:
+  - event: LogDeposit(address indexed user, address indexed artifact, address indexed token, uint256 lockedUntil, uint256 amount, uint256 tokenId)
+  - event: LogEmergencyWithdraw(address indexed token, uint256 amount, bool indexed isNative)
+  - event: LogSetApprovedTtl(uint256 indexed ttl, bool indexed approvedTtl)
+  - event: LogSetArtifactManager(address indexed artifactManager)
+  - event: LogSetDepositEnabled(bool indexed depositEnabled)
+  - event: LogSetPaused(bool indexed paused)
+  - event: LogSetWithdrawEnabled(bool indexed withdrawEnabled)
+  - event: LogWithdraw(address indexed user, address indexed artifact, address indexed token, uint256 lockedUntil, uint256 amount, uint256 tokenId)
+  - event: OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner)
+  - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+  - event: Paused(address account)
+  - event: Unpaused(address account)
 - name: SignMessageLib
   address:
   - address: 0xa65387f16b013cf2af4605ad8aa5ec25a2cba3a2
@@ -727,3 +760,9 @@ contracts:
   - event: Deposit(address indexed dst, uint256 wad)
   - event: Transfer(address indexed src, address indexed dst, uint256 wad)
   - event: Withdrawal(address indexed src, uint256 wad)
+- name: WSENT
+  address:
+  - address: 0x6c942dddb450522764609d5a58d67a37f65b01a8
+  events:
+  - event: Approval(address indexed owner, address indexed spender, uint256 value)
+  - event: Transfer(address indexed from, address indexed to, uint256 value)

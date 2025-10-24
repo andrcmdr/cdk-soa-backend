@@ -9,6 +9,7 @@ Inputs:
   2: value uint256 (not indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0x6c942DdDB450522764609D5a58D67A37f65b01A8 (contract_name: WSENT, verified_at: 2025-10-22T13:56:35.927874Z)
   - 0xa56cE076C2B1D2eBEC7603168a01CE98A41C3A76 (contract_name: WETH, verified_at: 2025-09-19T04:59:44.164293Z)
   - 0x29A04250ed17A0A3368Bf79DFdF463676a76Aa6A (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:21:37.598738Z)
   - 0x2713065948d70BdC68C3008Fc8808716A7eb5c8E (contract_name: OwnershipERC20, verified_at: 2025-09-12T04:20:38.879281Z)

@@ -1,0 +1,12 @@
+Event Name: OwnershipTransferStarted
+Signature: OwnershipTransferStarted(address,address)
+Topic Hash: 0x38d16b8cac22d99fc7c124b9cd0de2d3fa1faef420bfe791d8c362d765e22700
+Anonymous: false
+
+Inputs:
+  0: previousOwner address (indexed)
+  1: newOwner address (indexed)
+
+Contract Sources:
+  - 0xfd011598b79509afa2d7843d7d6e079c14f58e52 (contract_name: SentientRewardDistributor)
+  - 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122 (contract_name: SentientStakingDepositManager)

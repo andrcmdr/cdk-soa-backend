@@ -1,9 +1,9 @@
 metadata:
-  generated_at: 2025-10-16T20:15:05.443844Z
+  generated_at: 2025-10-23T20:09:31.702287Z
   blockscout_server: https://sentient-testnet-blockscout.eu-north-2.gateway.fm
-  total_verified: 384
-  total_unverified: 238
-  total_with_abi: 384
+  total_verified: 388
+  total_unverified: 237
+  total_with_abi: 388
   abi_directory: ./contracts/abi
 verified_contracts:
 - name: ERC1967Proxy
@@ -161,6 +161,10 @@ verified_contracts:
 - name: DefaultCallbackHandler
   address: 0x1ac114c2099afaf5261731655dc6c306bfcd4dbd
   abi_file: DefaultCallbackHandler_0x1ac114c2099afaf5261731655dc6c306bfcd4dbd.json
+  is_verified: true
+- name: LoadTester
+  address: 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5
+  abi_file: LoadTester_0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5.json
   is_verified: true
 - name: ArtifactFactory
   address: 0x1b49622e8d656ce9366e69a78bc47892510870f4
@@ -409,6 +413,10 @@ verified_contracts:
 - name: ERC1967Proxy
   address: 0x3f0adb862ae38bf429a71b00f0f8fd9dd6168391
   abi_file: ERC1967Proxy_0x3f0adb862ae38bf429a71b00f0f8fd9dd6168391.json
+  is_verified: true
+- name: SentientStakingDepositManager
+  address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+  abi_file: SentientStakingDepositManager_0x3f8f00b55c5acff23b366b71fd4a42acd98a5122.json
   is_verified: true
 - name: GnosisSafeProxy
   address: 0x40217f7b02161dc26d31a8f61c7980f82c606d02
@@ -697,6 +705,10 @@ verified_contracts:
 - name: GnosisSafeProxy
   address: 0x6c5daa84e5de9ae90ed25b4d3a268ef0f39177e6
   abi_file: GnosisSafeProxy_0x6c5daa84e5de9ae90ed25b4d3a268ef0f39177e6.json
+  is_verified: true
+- name: WSENT
+  address: 0x6c942dddb450522764609d5a58d67a37f65b01a8
+  abi_file: WSENT_0x6c942dddb450522764609d5a58d67a37f65b01a8.json
   is_verified: true
 - name: Artifact
   address: 0x6cd4c6eb245d736794a1d320c1c1d200a96d3763
@@ -1522,6 +1534,10 @@ verified_contracts:
   address: 0xfcff70858314932f71285e477f71424bbe0b2746
   abi_file: ArtifactStaking_0xfcff70858314932f71285e477f71424bbe0b2746.json
   is_verified: true
+- name: SentientRewardDistributor
+  address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+  abi_file: SentientRewardDistributor_0xfd011598b79509afa2d7843d7d6e079c14f58e52.json
+  is_verified: true
 - name: UpgradeableBeacon
   address: 0xfe42bd377915231ee8149ca31f1303833aed11c4
   abi_file: UpgradeableBeacon_0xfe42bd377915231ee8149ca31f1303833aed11c4.json
@@ -1613,10 +1629,6 @@ unverified_contracts:
   is_verified: false
 - name: null
   address: 0x18dc2d0c2bda082de6d497a17a06e654204a19d5
-  abi_file: null
-  is_verified: false
-- name: null
-  address: 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5
   abi_file: null
   is_verified: false
 - name: null

@@ -1,0 +1,10 @@
+Event Name: LogSetMerkleProofPendingPeriod
+Signature: LogSetMerkleProofPendingPeriod(uint256)
+Topic Hash: 0x9887b63f643a5583dd3c5019e29d6613c26ff2657af484fc0355f8c62cb100b8
+Anonymous: false
+
+Inputs:
+  0: newPeriod uint256 (indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0xFD011598B79509AfA2D7843d7d6e079c14F58E52 (contract_name: SentientRewardDistributor, verified_at: 2025-10-22T13:56:43.493871Z)

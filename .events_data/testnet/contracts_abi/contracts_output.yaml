@@ -1,11 +1,39 @@
 metadata:
-  generated_at: 2025-10-16T20:14:43.164082Z
+  generated_at: 2025-10-23T20:09:13.125026Z
   blockscout_server: https://sentient-testnet-blockscout.eu-north-2.gateway.fm
-  total_verified: 384
+  total_verified: 388
   total_unverified: 0
-  total_with_abi: 384
+  total_with_abi: 388
   abi_directory: ./contracts_abi/abi
 verified_contracts:
+- name: LoadTester
+  address: 0x1B3e98760Ce8EC5a481124A76b45fD373CE14BD5
+  abi_file: LoadTester_0x1B3e98760Ce8EC5a481124A76b45fD373CE14BD5.json
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-23T12:33:36.234443Z
+  implementations: null
+- name: SentientStakingDepositManager
+  address: 0x3F8f00B55C5ACff23b366b71Fd4a42acD98a5122
+  abi_file: SentientStakingDepositManager_0x3F8f00B55C5ACff23b366b71Fd4a42acD98a5122.json
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-22T13:57:00.576102Z
+  implementations: null
+- name: SentientRewardDistributor
+  address: 0xFD011598B79509AfA2D7843d7d6e079c14F58E52
+  abi_file: SentientRewardDistributor_0xFD011598B79509AfA2D7843d7d6e079c14F58E52.json
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-22T13:56:43.493871Z
+  implementations: null
+- name: WSENT
+  address: 0x6c942DdDB450522764609D5a58D67A37f65b01A8
+  abi_file: WSENT_0x6c942DdDB450522764609D5a58D67A37f65b01A8.json
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-22T13:56:35.927874Z
+  implementations: null
 - name: LoadTester
   address: 0xFB917D69208768EDFDA4fc6e42B22bB4e5cB8E57
   abi_file: LoadTester_0xFB917D69208768EDFDA4fc6e42B22bB4e5cB8E57.json

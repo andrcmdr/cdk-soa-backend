@@ -13,3 +13,4 @@ Inputs:
 
 Contract Sources:
   - 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57 (contract_name: LoadTester)
+  - 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5 (contract_name: LoadTester)

@@ -1,0 +1,15 @@
+Event Name: LogDeposit
+Signature: LogDeposit(address,address,address,uint256,uint256,uint256)
+Topic Hash: 0x7832d48c33e09f122d3f5d3b299819c849dd61d04e4c59294072c898fc9cad3d
+Anonymous: false
+
+Inputs:
+  0: user address (indexed)
+  1: artifact address (indexed)
+  2: token address (indexed)
+  3: lockedUntil uint256 (not indexed)
+  4: amount uint256 (not indexed)
+  5: tokenId uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x3F8f00B55C5ACff23b366b71Fd4a42acD98a5122 (contract_name: SentientStakingDepositManager, verified_at: 2025-10-22T13:57:00.576102Z)

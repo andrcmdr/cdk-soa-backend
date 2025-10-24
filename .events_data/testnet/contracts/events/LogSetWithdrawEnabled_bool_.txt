@@ -1,0 +1,10 @@
+Event Name: LogSetWithdrawEnabled
+Signature: LogSetWithdrawEnabled(bool)
+Topic Hash: 0xe18944e95b0f5e89d8ed526c7b215a44c6fc9bd14cf757e1cf18f30e7da75a4f
+Anonymous: false
+
+Inputs:
+  0: withdrawEnabled bool (indexed)
+
+Contract Sources:
+  - 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122 (contract_name: SentientStakingDepositManager)

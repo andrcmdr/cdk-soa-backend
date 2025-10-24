@@ -7,6 +7,9 @@ Inputs:
   0: account address (not indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0x1B3e98760Ce8EC5a481124A76b45fD373CE14BD5 (contract_name: LoadTester, verified_at: 2025-10-23T12:33:36.234443Z)
+  - 0x3F8f00B55C5ACff23b366b71Fd4a42acD98a5122 (contract_name: SentientStakingDepositManager, verified_at: 2025-10-22T13:57:00.576102Z)
+  - 0xFD011598B79509AfA2D7843d7d6e079c14F58E52 (contract_name: SentientRewardDistributor, verified_at: 2025-10-22T13:56:43.493871Z)
   - 0xFB917D69208768EDFDA4fc6e42B22bB4e5cB8E57 (contract_name: LoadTester, verified_at: 2025-10-16T14:29:33.394354Z)
   - 0x76e1E992e5A19E676011E100F0665F513bA4F299 (contract_name: AirdropVault, verified_at: 2025-09-19T04:54:47.402598Z)
   - 0x6d11a25Fe882a00222fB8C708411309888eCb544 (contract_name: Treasury, verified_at: 2025-09-19T04:41:54.568597Z)

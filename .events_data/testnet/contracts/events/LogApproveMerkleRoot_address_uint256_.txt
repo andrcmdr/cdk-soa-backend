@@ -1,0 +1,11 @@
+Event Name: LogApproveMerkleRoot
+Signature: LogApproveMerkleRoot(address,uint256)
+Topic Hash: 0x339cbb7bd5d094ad8908e8442c328069709dbdedea4514be20261aca79006e67
+Anonymous: false
+
+Inputs:
+  0: token address (indexed)
+  1: epoch uint256 (indexed)
+
+Contract Sources:
+  - 0xfd011598b79509afa2d7843d7d6e079c14f58e52 (contract_name: SentientRewardDistributor)

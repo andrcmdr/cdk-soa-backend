@@ -1,0 +1,10 @@
+Event Name: LogSetDepositEnabled
+Signature: LogSetDepositEnabled(bool)
+Topic Hash: 0xfdccf38b3d4a3b6a792871099dbf7d2ac415b96e67be84ef4bd040f94d7c3d9c
+Anonymous: false
+
+Inputs:
+  0: depositEnabled bool (indexed)
+
+Contract Sources:
+  - 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122 (contract_name: SentientStakingDepositManager)

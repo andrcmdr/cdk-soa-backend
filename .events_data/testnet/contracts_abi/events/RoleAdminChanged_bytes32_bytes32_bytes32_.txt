@@ -9,6 +9,7 @@ Inputs:
   2: newAdminRole bytes32 (indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0x1B3e98760Ce8EC5a481124A76b45fD373CE14BD5 (contract_name: LoadTester, verified_at: 2025-10-23T12:33:36.234443Z)
   - 0xFB917D69208768EDFDA4fc6e42B22bB4e5cB8E57 (contract_name: LoadTester, verified_at: 2025-10-16T14:29:33.394354Z)
   - 0xB2F36b70115837F92ff9Beed5EB03Da5E364cC01 (contract_name: ArtifactFactory, verified_at: 2025-10-04T03:39:22.400623Z)
   - 0xe8e9aC88FD3c3f4B6fdBdaae6c25AebB6D1F4e4E (contract_name: ArtifactManager, verified_at: 2025-10-04T03:39:02.667319Z)

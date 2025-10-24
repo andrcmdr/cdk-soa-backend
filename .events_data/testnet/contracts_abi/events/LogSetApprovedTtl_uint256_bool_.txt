@@ -1,0 +1,11 @@
+Event Name: LogSetApprovedTtl
+Signature: LogSetApprovedTtl(uint256,bool)
+Topic Hash: 0xc1d9ed2f5b81a0b16c48e097468d09fff78d58fd1a396c1eaa3b61ded014186c
+Anonymous: false
+
+Inputs:
+  0: ttl uint256 (indexed)
+  1: approvedTtl bool (indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x3F8f00B55C5ACff23b366b71Fd4a42acD98a5122 (contract_name: SentientStakingDepositManager, verified_at: 2025-10-22T13:57:00.576102Z)

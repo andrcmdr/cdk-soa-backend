@@ -1,8 +1,8 @@
 metadata:
-  generated_at: 2025-10-16T20:15:05.441946Z
+  generated_at: 2025-10-23T20:09:31.699464Z
   blockscout_server: https://sentient-testnet-blockscout.eu-north-2.gateway.fm
-  total_events: 142
-  total_unique_signatures: 142
+  total_events: 157
+  total_unique_signatures: 157
   events_directory: ./contracts/events
 events:
 - name: ActiveWindowSet
@@ -233,6 +233,8 @@ events:
     contract_name: OwnershipERC20
   - address: 0xa56ce076c2b1d2ebec7603168a01ce98a41c3a76
     contract_name: WETH
+  - address: 0x6c942dddb450522764609d5a58d67a37f65b01a8
+    contract_name: WSENT
   signature_file: Approval_address_address_uint256_.txt
 - name: ApproveHash
   signature: ApproveHash(bytes32,address)
@@ -403,34 +405,6 @@ events:
     contract_name: ArtifactFactory
   signature_file: ArtifactBeaconChanged_address_.txt
 - name: ArtifactCreated
-  signature: ArtifactCreated(bytes32,string,string,address,address)
-  topic_hash: 0x61f6226016fbc1388bd2cf935f481665a0181f423f71c10b537f6604aa7bbe6c
-  anonymous: false
-  inputs:
-  - name: artifactId
-    input_type: bytes32
-    indexed: true
-  - name: artifactName
-    input_type: string
-    indexed: false
-  - name: artifactType
-    input_type: string
-    indexed: false
-  - name: artifactAddress
-    input_type: address
-    indexed: true
-  - name: owner
-    input_type: address
-    indexed: true
-  contract_sources:
-  - address: 0xa643f0d8ffdc2c7d7a15a46a2683953fb0bcc407
-    contract_name: ArtifactFactory
-  - address: 0x293910bf6cb4370e6bef7c1d838ed4fb2f571112
-    contract_name: ArtifactFactory
-  - address: 0xb2f36b70115837f92ff9beed5eb03da5e364cc01
-    contract_name: ArtifactFactory
-  signature_file: ArtifactCreated_bytes32_string_string_address_address_.txt
-- name: ArtifactCreated
   signature: ArtifactCreated(bytes32,address)
   topic_hash: 0xdc723ddd9f108c62f91fce655c012a626d9567fb664b0027679b001834896513
   anonymous: false
@@ -483,6 +457,34 @@ events:
   - address: 0xcfb541d62148defd2d0c7f4f3984603d8d0a357d
     contract_name: ArtifactFactory
   signature_file: ArtifactCreated_bytes32_string_uint8_address_tuple___.txt
+- name: ArtifactCreated
+  signature: ArtifactCreated(bytes32,string,string,address,address)
+  topic_hash: 0x61f6226016fbc1388bd2cf935f481665a0181f423f71c10b537f6604aa7bbe6c
+  anonymous: false
+  inputs:
+  - name: artifactId
+    input_type: bytes32
+    indexed: true
+  - name: artifactName
+    input_type: string
+    indexed: false
+  - name: artifactType
+    input_type: string
+    indexed: false
+  - name: artifactAddress
+    input_type: address
+    indexed: true
+  - name: owner
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0xa643f0d8ffdc2c7d7a15a46a2683953fb0bcc407
+    contract_name: ArtifactFactory
+  - address: 0x293910bf6cb4370e6bef7c1d838ed4fb2f571112
+    contract_name: ArtifactFactory
+  - address: 0xb2f36b70115837f92ff9beed5eb03da5e364cc01
+    contract_name: ArtifactFactory
+  signature_file: ArtifactCreated_bytes32_string_string_address_address_.txt
 - name: ArtifactFactoryChanged
   signature: ArtifactFactoryChanged(address,address)
   topic_hash: 0xfd3c30401caba6e86edd3ad95d896de1028d5787fee934dee51a134bd7cff8f6
@@ -1161,6 +1163,8 @@ events:
   contract_sources:
   - address: 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57
     contract_name: LoadTester
+  - address: 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5
+    contract_name: LoadTester
   signature_file: DelegateCall_address_bool_uint256_.txt
 - name: DelegateChanged
   signature: DelegateChanged(address,address,address)
@@ -1551,6 +1555,8 @@ events:
   contract_sources:
   - address: 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57
     contract_name: LoadTester
+  - address: 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5
+    contract_name: LoadTester
   signature_file: ExternalCall_address_bool_uint256_bytes_.txt
 - name: FeeSet
   signature: FeeSet(uint256)
@@ -1644,6 +1650,8 @@ events:
   contract_sources:
   - address: 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57
     contract_name: LoadTester
+  - address: 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5
+    contract_name: LoadTester
   signature_file: FundsMoved_address_address_uint256_.txt
 - name: FundsWithdrawn
   signature: FundsWithdrawn(address,uint256)
@@ -1735,18 +1743,6 @@ events:
   - address: 0x32641081ccc174f89447cc9b99e79c3724a03e3c
     contract_name: Distributor
   signature_file: HookAdded_bytes32_.txt
-- name: Initialized
-  signature: Initialized(uint8)
-  topic_hash: 0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
-  anonymous: false
-  inputs:
-  - name: version
-    input_type: uint8
-    indexed: false
-  contract_sources:
-  - address: 0x8bd36ca1a55e389335004872aa3c3be0969d3aa7
-    contract_name: PolygonZkEVMBridgeV2
-  signature_file: Initialized_uint8_.txt
 - name: Initialized
   signature: Initialized(uint64)
   topic_hash: 0xc7f505b2f371ae2175ee4913f4499e1f2633a7b5936321eed1cdaeb6115181d2
@@ -2009,6 +2005,18 @@ events:
   - address: 0xd558c2931f4856bdc78e1ac2708abf8bde197d1b
     contract_name: Rewards
   signature_file: Initialized_uint64_.txt
+- name: Initialized
+  signature: Initialized(uint8)
+  topic_hash: 0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
+  anonymous: false
+  inputs:
+  - name: version
+    input_type: uint8
+    indexed: false
+  contract_sources:
+  - address: 0x8bd36ca1a55e389335004872aa3c3be0969d3aa7
+    contract_name: PolygonZkEVMBridgeV2
+  signature_file: Initialized_uint8_.txt
 - name: LockDurationsUpdated
   signature: LockDurationsUpdated(uint256,uint256)
   topic_hash: 0xfb6643f1917d4ac31b0c062fdf49db2da21205d50d01ffd6c07ed5e73389f600
@@ -2038,6 +2046,238 @@ events:
   - address: 0x4158400b4b2c6998bbbf42f785daa1359f26732f
     contract_name: Governance
   signature_file: LockDurationsUpdated_uint256_uint256_.txt
+- name: LogApproveMerkleRoot
+  signature: LogApproveMerkleRoot(address,uint256)
+  topic_hash: 0x339cbb7bd5d094ad8908e8442c328069709dbdedea4514be20261aca79006e67
+  anonymous: false
+  inputs:
+  - name: token
+    input_type: address
+    indexed: true
+  - name: epoch
+    input_type: uint256
+    indexed: true
+  contract_sources:
+  - address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+    contract_name: SentientRewardDistributor
+  signature_file: LogApproveMerkleRoot_address_uint256_.txt
+- name: LogClaimRewards
+  signature: LogClaimRewards(address,address,uint256,uint256)
+  topic_hash: 0x929e62ade048a21deb7124b46424be646cd7e07e557114412571f40bf02cfba9
+  anonymous: false
+  inputs:
+  - name: token
+    input_type: address
+    indexed: true
+  - name: user
+    input_type: address
+    indexed: true
+  - name: amount
+    input_type: uint256
+    indexed: false
+  - name: epoch
+    input_type: uint256
+    indexed: true
+  contract_sources:
+  - address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+    contract_name: SentientRewardDistributor
+  signature_file: LogClaimRewards_address_address_uint256_uint256_.txt
+- name: LogDenyMerkleRoot
+  signature: LogDenyMerkleRoot(address,bytes32)
+  topic_hash: 0x8064ae7fe6257f02e4c0bc16b506f550b878c8d925f31bb401e98cf1091461ae
+  anonymous: false
+  inputs:
+  - name: token
+    input_type: address
+    indexed: true
+  - name: merkleRoot
+    input_type: bytes32
+    indexed: true
+  contract_sources:
+  - address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+    contract_name: SentientRewardDistributor
+  signature_file: LogDenyMerkleRoot_address_bytes32_.txt
+- name: LogDeposit
+  signature: LogDeposit(address,address,address,uint256,uint256,uint256)
+  topic_hash: 0x7832d48c33e09f122d3f5d3b299819c849dd61d04e4c59294072c898fc9cad3d
+  anonymous: false
+  inputs:
+  - name: user
+    input_type: address
+    indexed: true
+  - name: artifact
+    input_type: address
+    indexed: true
+  - name: token
+    input_type: address
+    indexed: true
+  - name: lockedUntil
+    input_type: uint256
+    indexed: false
+  - name: amount
+    input_type: uint256
+    indexed: false
+  - name: tokenId
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+    contract_name: SentientStakingDepositManager
+  signature_file: LogDeposit_address_address_address_uint256_uint256_uint256_.txt
+- name: LogEmergencyWithdraw
+  signature: LogEmergencyWithdraw(address,uint256,bool)
+  topic_hash: 0x05d60ee336bf8f532951632c1d9927806c2d5f2af36955b28c1918610d7082e5
+  anonymous: false
+  inputs:
+  - name: token
+    input_type: address
+    indexed: true
+  - name: amount
+    input_type: uint256
+    indexed: false
+  - name: isNative
+    input_type: bool
+    indexed: true
+  contract_sources:
+  - address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+    contract_name: SentientRewardDistributor
+  - address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+    contract_name: SentientStakingDepositManager
+  signature_file: LogEmergencyWithdraw_address_uint256_bool_.txt
+- name: LogSetApprovedTtl
+  signature: LogSetApprovedTtl(uint256,bool)
+  topic_hash: 0xc1d9ed2f5b81a0b16c48e097468d09fff78d58fd1a396c1eaa3b61ded014186c
+  anonymous: false
+  inputs:
+  - name: ttl
+    input_type: uint256
+    indexed: true
+  - name: approvedTtl
+    input_type: bool
+    indexed: true
+  contract_sources:
+  - address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+    contract_name: SentientStakingDepositManager
+  signature_file: LogSetApprovedTtl_uint256_bool_.txt
+- name: LogSetArtifactManager
+  signature: LogSetArtifactManager(address)
+  topic_hash: 0xc96a61f03a86afcb2f1e0b9ad5bb665f8eca058adb17cb01079092d02e12f31c
+  anonymous: false
+  inputs:
+  - name: artifactManager
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+    contract_name: SentientStakingDepositManager
+  signature_file: LogSetArtifactManager_address_.txt
+- name: LogSetAuthorizedApprover
+  signature: LogSetAuthorizedApprover(address,bool)
+  topic_hash: 0x26c5b4ba69fd845aa2a98f6e8c45e1be455ace9364aad82f401744b81a603f62
+  anonymous: false
+  inputs:
+  - name: approver
+    input_type: address
+    indexed: true
+  - name: isAuthorized
+    input_type: bool
+    indexed: true
+  contract_sources:
+  - address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+    contract_name: SentientRewardDistributor
+  signature_file: LogSetAuthorizedApprover_address_bool_.txt
+- name: LogSetDepositEnabled
+  signature: LogSetDepositEnabled(bool)
+  topic_hash: 0xfdccf38b3d4a3b6a792871099dbf7d2ac415b96e67be84ef4bd040f94d7c3d9c
+  anonymous: false
+  inputs:
+  - name: depositEnabled
+    input_type: bool
+    indexed: true
+  contract_sources:
+  - address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+    contract_name: SentientStakingDepositManager
+  signature_file: LogSetDepositEnabled_bool_.txt
+- name: LogSetMerkleProofPendingPeriod
+  signature: LogSetMerkleProofPendingPeriod(uint256)
+  topic_hash: 0x9887b63f643a5583dd3c5019e29d6613c26ff2657af484fc0355f8c62cb100b8
+  anonymous: false
+  inputs:
+  - name: newPeriod
+    input_type: uint256
+    indexed: true
+  contract_sources:
+  - address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+    contract_name: SentientRewardDistributor
+  signature_file: LogSetMerkleProofPendingPeriod_uint256_.txt
+- name: LogSetMerkleRoot
+  signature: LogSetMerkleRoot(address,bytes32)
+  topic_hash: 0xa15c455c8dd3fb166935e9f04cf5cd265ec6ef3cd76ab3c2a2e76027b2399ab9
+  anonymous: false
+  inputs:
+  - name: token
+    input_type: address
+    indexed: true
+  - name: merkleRoot
+    input_type: bytes32
+    indexed: true
+  contract_sources:
+  - address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+    contract_name: SentientRewardDistributor
+  signature_file: LogSetMerkleRoot_address_bytes32_.txt
+- name: LogSetPaused
+  signature: LogSetPaused(bool)
+  topic_hash: 0x762127fb40e16638e9c1464ad60242d434d3bb7ec1079b26af34ebf7c9e372d2
+  anonymous: false
+  inputs:
+  - name: isPaused
+    input_type: bool
+    indexed: true
+  contract_sources:
+  - address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+    contract_name: SentientRewardDistributor
+  - address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+    contract_name: SentientStakingDepositManager
+  signature_file: LogSetPaused_bool_.txt
+- name: LogSetWithdrawEnabled
+  signature: LogSetWithdrawEnabled(bool)
+  topic_hash: 0xe18944e95b0f5e89d8ed526c7b215a44c6fc9bd14cf757e1cf18f30e7da75a4f
+  anonymous: false
+  inputs:
+  - name: withdrawEnabled
+    input_type: bool
+    indexed: true
+  contract_sources:
+  - address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+    contract_name: SentientStakingDepositManager
+  signature_file: LogSetWithdrawEnabled_bool_.txt
+- name: LogWithdraw
+  signature: LogWithdraw(address,address,address,uint256,uint256,uint256)
+  topic_hash: 0x8b1d91f2e5384d194512bc56ec8419df129a0b4e327a1ac46710a14e8fc6c46f
+  anonymous: false
+  inputs:
+  - name: user
+    input_type: address
+    indexed: true
+  - name: artifact
+    input_type: address
+    indexed: true
+  - name: token
+    input_type: address
+    indexed: true
+  - name: lockedUntil
+    input_type: uint256
+    indexed: false
+  - name: amount
+    input_type: uint256
+    indexed: false
+  - name: tokenId
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+    contract_name: SentientStakingDepositManager
+  signature_file: LogWithdraw_address_address_address_uint256_uint256_uint256_.txt
 - name: MerkleConfigurationUpdate
   signature: MerkleConfigurationUpdate(bytes32,bytes32)
   topic_hash: 0x5f8f4c6efebc2c9c76d8cadfd5f9bd9cf6611483e79417c706c86997840e9573
@@ -2125,26 +2365,6 @@ events:
     contract_name: EnhancedArtifact
   signature_file: MerkleRootUpdated_bytes32_.txt
 - name: ModelUsage
-  signature: ModelUsage(address,uint256,uint256)
-  topic_hash: 0x13807030a34436b32919810fc44cbce6cd53ca63523a750b957bee98dc49a7a3
-  anonymous: false
-  inputs:
-  - name: contributor
-    input_type: address
-    indexed: true
-  - name: usageAmount
-    input_type: uint256
-    indexed: false
-  - name: apiCreditUsed
-    input_type: uint256
-    indexed: false
-  contract_sources:
-  - address: 0x2263e66d70aa362c6058c9e04b88de14a2c4418c
-    contract_name: Artifact
-  - address: 0x2086be28ce3b80fa7ec8405268a19bba01f3b041
-    contract_name: Artifact
-  signature_file: ModelUsage_address_uint256_uint256_.txt
-- name: ModelUsage
   signature: ModelUsage(uint256,uint256)
   topic_hash: 0x1fa5ad242f58a5bdd94f8d05d112d1bb12f47ba376ce7069f3857fabb1e32b05
   anonymous: false
@@ -2173,6 +2393,26 @@ events:
   - address: 0x793563b85df251e1d7aba6f096728c064dd37a64
     contract_name: EnhancedArtifact
   signature_file: ModelUsage_uint256_uint256_.txt
+- name: ModelUsage
+  signature: ModelUsage(address,uint256,uint256)
+  topic_hash: 0x13807030a34436b32919810fc44cbce6cd53ca63523a750b957bee98dc49a7a3
+  anonymous: false
+  inputs:
+  - name: contributor
+    input_type: address
+    indexed: true
+  - name: usageAmount
+    input_type: uint256
+    indexed: false
+  - name: apiCreditUsed
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x2263e66d70aa362c6058c9e04b88de14a2c4418c
+    contract_name: Artifact
+  - address: 0x2086be28ce3b80fa7ec8405268a19bba01f3b041
+    contract_name: Artifact
+  signature_file: ModelUsage_address_uint256_uint256_.txt
 - name: NewWrappedToken
   signature: NewWrappedToken(uint32,address,address,bytes)
   topic_hash: 0x490e59a1701b938786ac72570a1efeac994a3dbe96e2e883e19e902ace6e6a39
@@ -2219,6 +2459,8 @@ events:
     indexed: false
   contract_sources:
   - address: 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57
+    contract_name: LoadTester
+  - address: 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5
     contract_name: LoadTester
   signature_file: Op_uint8_address_uint256_uint256_bytes32_bytes_.txt
 - name: OwnershipHandoverCanceled
@@ -2697,6 +2939,23 @@ events:
   - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
     contract_name: ArtifactFactory
   signature_file: OwnershipTokenBeaconChanged_address_.txt
+- name: OwnershipTransferStarted
+  signature: OwnershipTransferStarted(address,address)
+  topic_hash: 0x38d16b8cac22d99fc7c124b9cd0de2d3fa1faef420bfe791d8c362d765e22700
+  anonymous: false
+  inputs:
+  - name: previousOwner
+    input_type: address
+    indexed: true
+  - name: newOwner
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+    contract_name: SentientRewardDistributor
+  - address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+    contract_name: SentientStakingDepositManager
+  signature_file: OwnershipTransferStarted_address_address_.txt
 - name: OwnershipTransferred
   signature: OwnershipTransferred(address,address)
   topic_hash: 0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0
@@ -3003,6 +3262,10 @@ events:
     contract_name: Distributor
   - address: 0x32641081ccc174f89447cc9b99e79c3724a03e3c
     contract_name: Distributor
+  - address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+    contract_name: SentientRewardDistributor
+  - address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+    contract_name: SentientStakingDepositManager
   signature_file: OwnershipTransferred_address_address_.txt
 - name: Paused
   signature: Paused(address)
@@ -3022,6 +3285,12 @@ events:
   - address: 0x76e1e992e5a19e676011e100f0665f513ba4f299
     contract_name: AirdropVault
   - address: 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57
+    contract_name: LoadTester
+  - address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+    contract_name: SentientRewardDistributor
+  - address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+    contract_name: SentientStakingDepositManager
+  - address: 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5
     contract_name: LoadTester
   signature_file: Paused_address_.txt
 - name: Paused
@@ -3314,31 +3583,6 @@ events:
     contract_name: Rewards
   signature_file: RewardsClaimed_address_uint256_uint256_.txt
 - name: RewardsClaimed
-  signature: RewardsClaimed(uint256,address,uint256,uint256)
-  topic_hash: 0xcf409dbfc3ec40ef8f9752f4f34117a5e22dbbffe43e6da17365deae327c44ee
-  anonymous: false
-  inputs:
-  - name: stakeId
-    input_type: uint256
-    indexed: true
-  - name: user
-    input_type: address
-    indexed: true
-  - name: amount
-    input_type: uint256
-    indexed: false
-  - name: blockNumber
-    input_type: uint256
-    indexed: false
-  contract_sources:
-  - address: 0x88dc209bb27bf38515ecf919fb036866e03e04de
-    contract_name: Rewards
-  - address: 0x74e0e640769afc1a2d5934c4dac829069b3eb19f
-    contract_name: Rewards
-  - address: 0xd558c2931f4856bdc78e1ac2708abf8bde197d1b
-    contract_name: Rewards
-  signature_file: RewardsClaimed_uint256_address_uint256_uint256_.txt
-- name: RewardsClaimed
   signature: RewardsClaimed(address,uint256)
   topic_hash: 0xfc30cddea38e2bf4d6ea7d3f9ed3b6ad7f176419f4963bd81318067a4aee73fe
   anonymous: false
@@ -3385,6 +3629,31 @@ events:
   - address: 0x2e2ebb4b97b9de9d5bca343987e3b4d76df36d25
     contract_name: Rewards
   signature_file: RewardsClaimed_address_uint256_.txt
+- name: RewardsClaimed
+  signature: RewardsClaimed(uint256,address,uint256,uint256)
+  topic_hash: 0xcf409dbfc3ec40ef8f9752f4f34117a5e22dbbffe43e6da17365deae327c44ee
+  anonymous: false
+  inputs:
+  - name: stakeId
+    input_type: uint256
+    indexed: true
+  - name: user
+    input_type: address
+    indexed: true
+  - name: amount
+    input_type: uint256
+    indexed: false
+  - name: blockNumber
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x88dc209bb27bf38515ecf919fb036866e03e04de
+    contract_name: Rewards
+  - address: 0x74e0e640769afc1a2d5934c4dac829069b3eb19f
+    contract_name: Rewards
+  - address: 0xd558c2931f4856bdc78e1ac2708abf8bde197d1b
+    contract_name: Rewards
+  signature_file: RewardsClaimed_uint256_address_uint256_uint256_.txt
 - name: RewardsUpdated
   signature: RewardsUpdated(address,address)
   topic_hash: 0x52cb9bd420e692b24367bfe6cc4e8640928dc4a9011c4bb0f1c36fac91b9a6da
@@ -3449,6 +3718,8 @@ events:
     contract_name: ArtifactFactory
   - address: 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57
     contract_name: LoadTester
+  - address: 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5
+    contract_name: LoadTester
   signature_file: RoleAdminChanged_bytes32_bytes32_bytes32_.txt
 - name: RoleGranted
   signature: RoleGranted(bytes32,address,address)
@@ -3489,6 +3760,8 @@ events:
     contract_name: ArtifactFactory
   - address: 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57
     contract_name: LoadTester
+  - address: 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5
+    contract_name: LoadTester
   signature_file: RoleGranted_bytes32_address_address_.txt
 - name: RoleRevoked
   signature: RoleRevoked(bytes32,address,address)
@@ -3528,6 +3801,8 @@ events:
   - address: 0xb2f36b70115837f92ff9beed5eb03da5e364cc01
     contract_name: ArtifactFactory
   - address: 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57
+    contract_name: LoadTester
+  - address: 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5
     contract_name: LoadTester
   signature_file: RoleRevoked_bytes32_address_address_.txt
 - name: RolesUpdated
@@ -3799,6 +4074,30 @@ events:
     contract_name: ArtifactStaking
   signature_file: StakeWeightUpdated_uint256_address_address_uint256_uint256_uint256_uint256_uint256_.txt
 - name: Staked
+  signature: Staked(address,uint256,uint256,uint256,uint256)
+  topic_hash: 0x9cfd25589d1eb8ad71e342a86a8524e83522e3936c0803048c08f6d9ad974f40
+  anonymous: false
+  inputs:
+  - name: artifact
+    input_type: address
+    indexed: true
+  - name: stakeId
+    input_type: uint256
+    indexed: true
+  - name: amount
+    input_type: uint256
+    indexed: true
+  - name: lockDuration
+    input_type: uint256
+    indexed: false
+  - name: stakeWeight
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x9052deaaf20d183c2d64006508ed8f63f76fbf58
+    contract_name: ArtifactStaking
+  signature_file: Staked_address_uint256_uint256_uint256_uint256_.txt
+- name: Staked
   signature: Staked(address,address,uint256,uint256,uint256,uint256,uint256,uint256)
   topic_hash: 0xdb28ad832b2e8b0aa95810734d683d9e33982f24542db740566af451b4ec4141
   anonymous: false
@@ -3837,30 +4136,6 @@ events:
   - address: 0xfcff70858314932f71285e477f71424bbe0b2746
     contract_name: ArtifactStaking
   signature_file: Staked_address_address_uint256_uint256_uint256_uint256_uint256_uint256_.txt
-- name: Staked
-  signature: Staked(address,uint256,uint256,uint256,uint256)
-  topic_hash: 0x9cfd25589d1eb8ad71e342a86a8524e83522e3936c0803048c08f6d9ad974f40
-  anonymous: false
-  inputs:
-  - name: artifact
-    input_type: address
-    indexed: true
-  - name: stakeId
-    input_type: uint256
-    indexed: true
-  - name: amount
-    input_type: uint256
-    indexed: true
-  - name: lockDuration
-    input_type: uint256
-    indexed: false
-  - name: stakeWeight
-    input_type: uint256
-    indexed: false
-  contract_sources:
-  - address: 0x9052deaaf20d183c2d64006508ed8f63f76fbf58
-    contract_name: ArtifactStaking
-  signature_file: Staked_address_uint256_uint256_uint256_uint256_.txt
 - name: Staked
   signature: Staked(address,address,uint256,uint256,uint256,uint256)
   topic_hash: 0x1a239cfcc9eee66af37729671dcbd82e1544f57835d53fa02eb9220a930a8f87
@@ -3905,6 +4180,8 @@ events:
     indexed: false
   contract_sources:
   - address: 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57
+    contract_name: LoadTester
+  - address: 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5
     contract_name: LoadTester
   signature_file: StorageTouched_uint256_uint256_.txt
 - name: SubscriptionActivated
@@ -4036,6 +4313,26 @@ events:
     contract_name: Distributor
   signature_file: TokenSet_address_.txt
 - name: TokensTransferred
+  signature: TokensTransferred(address,address,uint256)
+  topic_hash: 0x1b89874203ff7f0bba87c969ada3f32fda22ed38a6706d35199d21280c7811b1
+  anonymous: false
+  inputs:
+  - name: token
+    input_type: address
+    indexed: true
+  - name: to
+    input_type: address
+    indexed: true
+  - name: amount
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x80e6f0937fe177415a868e78e00e2e1d768b8533
+    contract_name: Treasury
+  - address: 0x1a3329e7813a35c7e5b4189bb3b21bd112ec6536
+    contract_name: Treasury
+  signature_file: TokensTransferred_address_address_uint256_.txt
+- name: TokensTransferred
   signature: TokensTransferred(address,address,uint256,bytes)
   topic_hash: 0xee4e25c0af5a87a6eae736c2253f1285a404e9a5d788abfb811c5ffbc817fa07
   anonymous: false
@@ -4056,26 +4353,6 @@ events:
   - address: 0x6d11a25fe882a00222fb8c708411309888ecb544
     contract_name: Treasury
   signature_file: TokensTransferred_address_address_uint256_bytes_.txt
-- name: TokensTransferred
-  signature: TokensTransferred(address,address,uint256)
-  topic_hash: 0x1b89874203ff7f0bba87c969ada3f32fda22ed38a6706d35199d21280c7811b1
-  anonymous: false
-  inputs:
-  - name: token
-    input_type: address
-    indexed: true
-  - name: to
-    input_type: address
-    indexed: true
-  - name: amount
-    input_type: uint256
-    indexed: false
-  contract_sources:
-  - address: 0x80e6f0937fe177415a868e78e00e2e1d768b8533
-    contract_name: Treasury
-  - address: 0x1a3329e7813a35c7e5b4189bb3b21bd112ec6536
-    contract_name: Treasury
-  signature_file: TokensTransferred_address_address_uint256_.txt
 - name: TokensWithdrawn
   signature: TokensWithdrawn(address,address,uint256)
   topic_hash: 0x6337ed398c0e8467698c581374fdce4db14922df487b5a39483079f5f59b60a4
@@ -4165,6 +4442,8 @@ events:
     contract_name: OwnershipERC20
   - address: 0xa56ce076c2b1d2ebec7603168a01ce98a41c3a76
     contract_name: WETH
+  - address: 0x6c942dddb450522764609d5a58d67a37f65b01a8
+    contract_name: WSENT
   signature_file: Transfer_address_address_uint256_.txt
 - name: TreasuryFunded
   signature: TreasuryFunded(address,uint256)
@@ -4211,17 +4490,6 @@ events:
     contract_name: Registry
   signature_file: TreasuryUpdated_address_address_.txt
 - name: Unpaused
-  signature: Unpaused()
-  topic_hash: 0xa45f47fdea8a1efdd9029a5691c7f759c32b7c698632b563573e155625d16933
-  anonymous: false
-  inputs: []
-  contract_sources:
-  - address: 0x673d18f64d71439d46d6fafc9c1c8b0026f53247
-    contract_name: Distributor
-  - address: 0x32641081ccc174f89447cc9b99e79c3724a03e3c
-    contract_name: Distributor
-  signature_file: Unpaused__.txt
-- name: Unpaused
   signature: Unpaused(address)
   topic_hash: 0x5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa
   anonymous: false
@@ -4240,7 +4508,24 @@ events:
     contract_name: AirdropVault
   - address: 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57
     contract_name: LoadTester
+  - address: 0xfd011598b79509afa2d7843d7d6e079c14f58e52
+    contract_name: SentientRewardDistributor
+  - address: 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122
+    contract_name: SentientStakingDepositManager
+  - address: 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5
+    contract_name: LoadTester
   signature_file: Unpaused_address_.txt
+- name: Unpaused
+  signature: Unpaused()
+  topic_hash: 0xa45f47fdea8a1efdd9029a5691c7f759c32b7c698632b563573e155625d16933
+  anonymous: false
+  inputs: []
+  contract_sources:
+  - address: 0x673d18f64d71439d46d6fafc9c1c8b0026f53247
+    contract_name: Distributor
+  - address: 0x32641081ccc174f89447cc9b99e79c3724a03e3c
+    contract_name: Distributor
+  signature_file: Unpaused__.txt
 - name: Unstaked
   signature: Unstaked(address,uint256,uint256)
   topic_hash: 0x7fc4727e062e336010f2c282598ef5f14facb3de68cf8195c2f23e1454b2b74e

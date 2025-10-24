@@ -1,0 +1,10 @@
+Event Name: LogSetArtifactManager
+Signature: LogSetArtifactManager(address)
+Topic Hash: 0xc96a61f03a86afcb2f1e0b9ad5bb665f8eca058adb17cb01079092d02e12f31c
+Anonymous: false
+
+Inputs:
+  0: artifactManager address (indexed)
+
+Contract Sources:
+  - 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122 (contract_name: SentientStakingDepositManager)

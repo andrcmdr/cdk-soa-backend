@@ -23,3 +23,4 @@ Contract Sources:
   - 0x2713065948d70bdc68c3008fc8808716a7eb5c8e (contract_name: OwnershipERC20)
   - 0x29a04250ed17a0a3368bf79dfdf463676a76aa6a (contract_name: OwnershipERC20)
   - 0xa56ce076c2b1d2ebec7603168a01ce98a41c3a76 (contract_name: WETH)
+  - 0x6c942dddb450522764609d5a58d67a37f65b01a8 (contract_name: WSENT)

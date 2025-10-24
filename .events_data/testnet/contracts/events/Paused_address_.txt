@@ -12,3 +12,6 @@ Contract Sources:
   - 0x6d11a25fe882a00222fb8c708411309888ecb544 (contract_name: Treasury)
   - 0x76e1e992e5a19e676011e100f0665f513ba4f299 (contract_name: AirdropVault)
   - 0xfb917d69208768edfda4fc6e42b22bb4e5cb8e57 (contract_name: LoadTester)
+  - 0xfd011598b79509afa2d7843d7d6e079c14f58e52 (contract_name: SentientRewardDistributor)
+  - 0x3f8f00b55c5acff23b366b71fd4a42acd98a5122 (contract_name: SentientStakingDepositManager)
+  - 0x1b3e98760ce8ec5a481124a76b45fd373ce14bd5 (contract_name: LoadTester)
