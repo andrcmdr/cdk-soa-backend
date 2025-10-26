@@ -1,0 +1,15 @@
+{
+  "rpc_url": "http://localhost:8545",
+  "contract_address": "0x1234567890123456789012345678901234567890",
+  "private_key": "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+  "chain_id": 1,
+  "abi_path": "abi/LoadTester.json",
+  "workers": 50,
+  "duration": 600,
+  "rate_limit": 0,
+  "scenario": {
+    "type": "Mixed",
+    "duration": 600,
+    "profile": "Balanced"
+  }
+}
