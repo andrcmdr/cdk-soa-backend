@@ -26,6 +26,10 @@ struct BlockscoutConfig {
     request_timeout_seconds: u64,
     #[serde(default = "default_max_retries")]
     max_retries: u32,
+    #[serde(default)]
+    max_implementations_per_contract: Option<usize>,
+    #[serde(default)]
+    max_implementation_nesting_depth: Option<usize>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -136,6 +140,7 @@ struct SmartContractsResponse {
 #[derive(Debug, Deserialize)]
 struct SmartContractItem {
     address: ContractAddressResponse,
+    verified_at: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -145,14 +150,12 @@ struct ContractAddressResponse {
     is_contract: Option<bool>,
     is_verified: Option<bool>,
     name: Option<String>,
-    verified_at: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 struct Implementation {
     address: String,
     name: Option<String>,
-    verified_at: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -717,47 +720,75 @@ async fn process_implementations_recursively(
     contract_events_list: &mut Vec<ContractEventInfo>,
     processed_addresses: &mut HashMap<String, ProcessedContract>,
     depth: usize,
+    max_depth: Option<usize>,
+    max_per_level: Option<usize>,
 ) -> Result<Vec<ImplementationInfo>> {
-    if depth > 10 {
+    // Check max depth limit
+    if let Some(max) = max_depth {
+        if depth >= max {
+            warn!("Maximum implementation nesting depth ({}) reached, stopping implementation processing", max);
+            return Ok(Vec::new());
+        }
+    } else if depth > 10 {
+        // Fallback to hardcoded limit if no config provided
         warn!("Maximum recursion depth reached, stopping implementation processing");
         return Ok(Vec::new());
     }
 
+    // Limit the number of implementations to process at this level
+    let impls_to_process = if let Some(max) = max_per_level {
+        if implementations.len() > max {
+            info!("Limited implementations at depth {} to {} (from {})", depth, max, implementations.len());
+        }
+        implementations.into_iter().take(max).collect::<Vec<_>>()
+    } else {
+        implementations
+    };
+
     let mut impl_infos = Vec::new();
 
-    for implementation in implementations {
+    for implementation in impls_to_process {
         let impl_address = &implementation.address;
 
-        // Check if already processed and compare verification times
+        // Check if already processed - implementations from list response don't have verified_at
+        // so we need to fetch details to check
         if let Some(existing_contract) = processed_addresses.get(impl_address) {
-            if !is_more_recent_verification(&existing_contract.verified_at, &implementation.verified_at) {
-                debug!("Skipping implementation {} - already processed with more recent or equal verification time", impl_address);
-                continue;
-            } else {
-                debug!("Re-processing implementation {} - found more recent verification time", impl_address);
+            // We don't have verified_at from list response, so fetch details first
+            match client.fetch_contract_details(impl_address).await {
+                Ok(impl_details) => {
+                    if !is_more_recent_verification(&existing_contract.verified_at, &impl_details.verified_at) {
+                        debug!("Skipping implementation {} - already processed with more recent or equal verification time", impl_address);
+                        continue;
+                    } else {
+                        debug!("Re-processing implementation {} - found more recent verification time", impl_address);
+                    }
+                }
+                Err(e) => {
+                    error!("Failed to fetch implementation details for {}: {:?}", impl_address, e);
+                    continue;
+                }
             }
         }
 
-        // Update processed addresses with current contract info
-        processed_addresses.insert(impl_address.clone(), ProcessedContract {
-            verified_at: implementation.verified_at.clone(),
-            processed_time: chrono::Utc::now(),
-        });
-
         match client.fetch_contract_details(impl_address).await {
             Ok(impl_details) => {
+                // Update processed addresses with verified_at from details response
+                processed_addresses.insert(impl_address.clone(), ProcessedContract {
+                    verified_at: impl_details.verified_at.clone(),
+                    processed_time: chrono::Utc::now(),
+                });
+
                 let is_verified = is_contract_verified(impl_details.is_verified, impl_details.is_fully_verified);
 
                 let impl_abi_file = if is_verified {
                     if let Some(abi) = &impl_details.abi {
                         // Parse events from this ABI
-                        let final_verified_at = impl_details.verified_at.as_ref().or(implementation.verified_at.as_ref());
                         let final_contract_name = impl_details.name.as_deref().or(implementation.name.as_deref());
                         if let Err(e) = parse_abi_events(
                             abi,
                             impl_address,
                             final_contract_name,
-                            &final_verified_at.cloned(),
+                            &impl_details.verified_at,
                             events_map,
                             contract_events_list
                         ) {
@@ -787,6 +818,8 @@ async fn process_implementations_recursively(
                         contract_events_list,
                         processed_addresses,
                         depth + 1,
+                        max_depth,
+                        max_per_level,
                     )).await?;
 
                     if nested_impl_infos.is_empty() { None } else { Some(nested_impl_infos) }
@@ -800,7 +833,7 @@ async fn process_implementations_recursively(
                     abi_file: impl_abi_file,
                     is_verified,
                     is_fully_verified: impl_details.is_fully_verified,
-                    verified_at: impl_details.verified_at.or(implementation.verified_at.clone()),
+                    verified_at: impl_details.verified_at,
                     implementations: nested_implementations,
                 });
             }
@@ -821,12 +854,14 @@ async fn process_contract_with_implementations(
     events_map: &mut HashMap<String, EventDefinition>,
     contract_events_list: &mut Vec<ContractEventInfo>,
     processed_addresses: &mut HashMap<String, ProcessedContract>,
+    max_depth: Option<usize>,
+    max_per_level: Option<usize>,
 ) -> Result<ContractInfo> {
     let address = &contract_item.address.hash;
 
     // Check if already processed and compare verification times
     if let Some(existing_contract) = processed_addresses.get(address) {
-        if !is_more_recent_verification(&existing_contract.verified_at, &contract_item.address.verified_at) {
+        if !is_more_recent_verification(&existing_contract.verified_at, &contract_item.verified_at) {
             debug!("Skipping contract {} - already processed with more recent or equal verification time", address);
             return Ok(ContractInfo {
                 name: contract_item.address.name.clone(),
@@ -834,7 +869,7 @@ async fn process_contract_with_implementations(
                 abi_file: None,
                 is_verified: is_contract_verified(contract_item.address.is_verified, None),
                 is_fully_verified: None,
-                verified_at: contract_item.address.verified_at.clone(),
+                verified_at: contract_item.verified_at.clone(),
                 implementations: None,
             });
         } else {
@@ -844,7 +879,7 @@ async fn process_contract_with_implementations(
 
     // Update processed addresses with current contract info
     processed_addresses.insert(address.clone(), ProcessedContract {
-        verified_at: contract_item.address.verified_at.clone(),
+        verified_at: contract_item.verified_at.clone(),
         processed_time: chrono::Utc::now(),
     });
 
@@ -858,7 +893,7 @@ async fn process_contract_with_implementations(
     let abi_file = if is_verified {
         if let Some(abi) = &contract_details.abi {
             // Parse events from this ABI
-            let final_verified_at = contract_details.verified_at.as_ref().or(contract_item.address.verified_at.as_ref());
+            let final_verified_at = contract_details.verified_at.as_ref().or(contract_item.verified_at.as_ref());
             let final_contract_name = contract_details.name.as_deref().or(contract_item.address.name.as_deref());
             if let Err(e) = parse_abi_events(
                 abi,
@@ -894,6 +929,8 @@ async fn process_contract_with_implementations(
             contract_events_list,
             processed_addresses,
             0, // Start at depth 0
+            max_depth,
+            max_per_level,
         ).await?;
 
         if impl_infos.is_empty() { None } else { Some(impl_infos) }
@@ -907,7 +944,7 @@ async fn process_contract_with_implementations(
         abi_file,
         is_verified,
         is_fully_verified: contract_details.is_fully_verified,
-        verified_at: contract_details.verified_at.or(contract_item.address.verified_at.clone()),
+        verified_at: contract_details.verified_at.or(contract_item.verified_at.clone()),
         implementations,
     })
 }
@@ -1057,6 +1094,18 @@ async fn main() -> Result<()> {
     info!("Loaded configuration from config.yaml");
     info!("Blockscout server: {}", config.blockscout.server);
 
+    // Log implementation limits if configured
+    if let Some(max_impls) = config.blockscout.max_implementations_per_contract {
+        info!("Max implementations per contract: {}", max_impls);
+    } else {
+        info!("Max implementations per contract: unlimited");
+    }
+    if let Some(max_depth) = config.blockscout.max_implementation_nesting_depth {
+        info!("Max implementation nesting depth: {}", max_depth);
+    } else {
+        info!("Max implementation nesting depth: unlimited (fallback to 10)");
+    }
+
     // Ensure directories exist
     let abi_dir = Path::new(&config.output.abi_directory);
     let events_dir = Path::new(&config.output.events_directory);
@@ -1093,6 +1142,8 @@ async fn main() -> Result<()> {
             &mut events_map,
             &mut contract_events_list,
             &mut processed_addresses,
+            config.blockscout.max_implementation_nesting_depth,
+            config.blockscout.max_implementations_per_contract,
         ).await {
             Ok(contract_info) => {
                 contract_infos.push(contract_info);

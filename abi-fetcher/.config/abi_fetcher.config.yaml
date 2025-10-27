@@ -12,6 +12,9 @@ blockscout:
   # Maximum retries for failed requests (optional, defaults to 3)
   max_retries: 10
 
+  max_implementations_per_contract: null # 1  # Set to null or omit for unlimited
+  max_implementation_nesting_depth: null # 0  # Set to null or omit for unlimited (defaults to 10)
+
 output:
   # Output file path for contracts YAML
   contracts_file: "contracts_output.yaml"
