@@ -195,7 +195,8 @@ struct ContractsMetadata {
     blockscout_server: String,
     total_verified: usize,
     total_unverified: usize,
-    total_with_abi: usize,
+    total_contracts_with_abi: usize,
+    total_impls_with_abi: usize,
     abi_directory: String,
 }
 
@@ -752,23 +753,23 @@ async fn process_implementations_recursively(
 
         // Check if already processed - implementations from list response don't have verified_at
         // so we need to fetch details to check
-        if let Some(existing_contract) = processed_addresses.get(impl_address) {
-            // We don't have verified_at from list response, so fetch details first
-            match client.fetch_contract_details(impl_address).await {
-                Ok(impl_details) => {
-                    if !is_more_recent_verification(&existing_contract.verified_at, &impl_details.verified_at) {
-                        debug!("Skipping implementation {} - already processed with more recent or equal verification time", impl_address);
-                        continue;
-                    } else {
-                        debug!("Re-processing implementation {} - found more recent verification time", impl_address);
-                    }
-                }
-                Err(e) => {
-                    error!("Failed to fetch implementation details for {}: {:?}", impl_address, e);
-                    continue;
-                }
-            }
-        }
+//        if let Some(existing_contract) = processed_addresses.get(impl_address) {
+//            // We don't have verified_at from list response, so fetch details first
+//            match client.fetch_contract_details(impl_address).await {
+//                Ok(impl_details) => {
+//                    if !is_more_recent_verification(&existing_contract.verified_at, &impl_details.verified_at) {
+//                        debug!("Skipping implementation {} - already processed with more recent or equal verification time", impl_address);
+//                        continue;
+//                    } else {
+//                        debug!("Re-processing implementation {} - found more recent verification time", impl_address);
+//                    }
+//                }
+//                Err(e) => {
+//                    error!("Failed to fetch implementation details for {}: {:?}", impl_address, e);
+//                    continue;
+//                }
+//            }
+//        }
 
         match client.fetch_contract_details(impl_address).await {
             Ok(impl_details) => {
@@ -860,22 +861,22 @@ async fn process_contract_with_implementations(
     let address = &contract_item.address.hash;
 
     // Check if already processed and compare verification times
-    if let Some(existing_contract) = processed_addresses.get(address) {
-        if !is_more_recent_verification(&existing_contract.verified_at, &contract_item.verified_at) {
-            debug!("Skipping contract {} - already processed with more recent or equal verification time", address);
-            return Ok(ContractInfo {
-                name: contract_item.address.name.clone(),
-                address: address.clone(),
-                abi_file: None,
-                is_verified: is_contract_verified(contract_item.address.is_verified, None),
-                is_fully_verified: None,
-                verified_at: contract_item.verified_at.clone(),
-                implementations: None,
-            });
-        } else {
-            debug!("Re-processing contract {} - found more recent verification time", address);
-        }
-    }
+//    if let Some(existing_contract) = processed_addresses.get(address) {
+//        if !is_more_recent_verification(&existing_contract.verified_at, &contract_item.verified_at) {
+//            debug!("Skipping contract {} - already processed with more recent or equal verification time", address);
+//            return Ok(ContractInfo {
+//                name: contract_item.address.name.clone(),
+//                address: address.clone(),
+//                abi_file: None,
+//                is_verified: is_contract_verified(contract_item.address.is_verified, None),
+//                is_fully_verified: None,
+//                verified_at: contract_item.verified_at.clone(),
+//                implementations: None,
+//            });
+//        } else {
+//            debug!("Re-processing contract {} - found more recent verification time", address);
+//        }
+//    }
 
     // Update processed addresses with current contract info
     processed_addresses.insert(address.clone(), ProcessedContract {
@@ -949,20 +950,21 @@ async fn process_contract_with_implementations(
     })
 }
 
-fn count_abi_files_recursively(contracts: &[ContractInfo]) -> usize {
-    let mut count = 0;
+fn count_abi_files_recursively(contracts: &[ContractInfo]) -> (usize, usize) {
+    let mut contract_abis = 0;
+    let mut impl_abis = 0;
 
     for contract in contracts {
         if contract.abi_file.is_some() {
-            count += 1;
+            contract_abis += 1;
         }
 
         if let Some(implementations) = &contract.implementations {
-            count += count_implementation_abi_files(implementations);
+            impl_abis += count_implementation_abi_files(implementations);
         }
     }
 
-    count
+    (contract_abis, impl_abis)
 }
 
 fn count_implementation_abi_files(implementations: &[ImplementationInfo]) -> usize {
@@ -1171,9 +1173,12 @@ async fn main() -> Result<()> {
     sort_contracts_by_verified_at(&mut verified_contracts);
     sort_contracts_by_verified_at(&mut unverified_contracts);
 
+    let (verified_contract_abis, verified_impl_abis) = count_abi_files_recursively(&verified_contracts);
+    let (unverified_contract_abis, unverified_impl_abis) = count_abi_files_recursively(&unverified_contracts);
+
     // Count total ABI files
-    let total_abi_files = count_abi_files_recursively(&verified_contracts) +
-                         count_abi_files_recursively(&unverified_contracts);
+    let total_abi_files = verified_contract_abis + unverified_contract_abis;
+    let total_impl_abi_files = verified_impl_abis + unverified_impl_abis;
 
     // Save event signature files and prepare events output
     let mut events_list: Vec<EventDefinition> = events_map.into_values().collect();
@@ -1214,7 +1219,8 @@ async fn main() -> Result<()> {
             blockscout_server: config.blockscout.server.clone(),
             total_verified: verified_contracts.len(),
             total_unverified: unverified_contracts.len(),
-            total_with_abi: total_abi_files,
+            total_contracts_with_abi: total_abi_files,
+            total_impls_with_abi: total_impl_abi_files,
             abi_directory: config.output.abi_directory.clone(),
         },
         verified_contracts,
@@ -1232,10 +1238,11 @@ async fn main() -> Result<()> {
         .context("Failed to save contracts events to YAML file")?;
 
     info!(
-        "Successfully processed {} verified and {} unverified contracts with {} ABI files created",
+        "Successfully processed {} verified and {} unverified contracts with {} ABI files created and {} ABI files for implementations",
         contracts_output.metadata.total_verified,
         contracts_output.metadata.total_unverified,
-        contracts_output.metadata.total_with_abi
+        contracts_output.metadata.total_contracts_with_abi,
+        contracts_output.metadata.total_impls_with_abi,
     );
 
     info!(
