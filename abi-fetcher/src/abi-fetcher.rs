@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Serializer};
 use serde_json::Value;
 use serde_yaml;
 use std::collections::{HashMap, HashSet};
@@ -43,6 +43,64 @@ struct OutputConfig {
 
 fn default_request_timeout() -> u64 { 30 }
 fn default_max_retries() -> u32 { 3 }
+
+// Custom serializer for quoted strings
+fn serialize_quoted_string<S>(value: &str, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    serializer.serialize_str(&format!("\"{}\"", value))
+}
+
+fn serialize_quoted_option_string<S>(value: &Option<String>, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    match value {
+        Some(v) => serializer.serialize_str(&format!("\"{}\"", v)),
+        None => serializer.serialize_none(),
+    }
+}
+
+// Wrapper types for explicit quoting
+#[derive(Debug, Clone)]
+struct QuotedString(String);
+
+impl Serialize for QuotedString {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&format!("\"{}\"", self.0))
+    }
+}
+
+#[derive(Debug, Clone)]
+struct QuotedOptionString(Option<String>);
+
+impl Serialize for QuotedOptionString {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match &self.0 {
+            Some(v) => serializer.serialize_str(&format!("\"{}\"", v)),
+            None => serializer.serialize_none(),
+        }
+    }
+}
+
+impl From<String> for QuotedString {
+    fn from(s: String) -> Self {
+        QuotedString(s)
+    }
+}
+
+impl From<&str> for QuotedString {
+    fn from(s: &str) -> Self {
+        QuotedString(s.to_string())
+    }
+}
 
 // ABI-specific structures for event parsing
 #[derive(Debug, Deserialize)]
@@ -204,9 +262,9 @@ struct ContractsMetadata {
 
 #[derive(Debug, Serialize)]
 struct ContractInfo {
-    name: Option<String>,
-    address: String,
-    abi_file: Option<String>,
+    name: QuotedOptionString,
+    address: QuotedString,
+    abi_file: QuotedOptionString,
     is_verified: bool,
     is_fully_verified: Option<bool>,
     verified_at: Option<String>,
@@ -215,9 +273,9 @@ struct ContractInfo {
 
 #[derive(Debug, Serialize)]
 struct ImplementationInfo {
-    name: Option<String>,
-    address: String,
-    abi_file: Option<String>,
+    name: QuotedOptionString,
+    address: QuotedString,
+    abi_file: QuotedOptionString,
     is_verified: bool,
     is_fully_verified: Option<bool>,
     verified_at: Option<String>,
@@ -814,9 +872,9 @@ async fn process_implementations_recursively(
                 };
 
                 impl_infos.push(ImplementationInfo {
-                    name: impl_details.name.or(implementation.name.clone()),
-                    address: impl_address.clone(),
-                    abi_file: impl_abi_file,
+                    name: QuotedOptionString(impl_details.name.or(implementation.name.clone())),
+                    address: QuotedString(impl_address.clone()),
+                    abi_file: QuotedOptionString(impl_abi_file),
                     is_verified,
                     is_fully_verified: impl_details.is_fully_verified,
                     verified_at: impl_details.verified_at,
@@ -917,9 +975,9 @@ async fn process_contract_with_implementations(
     };
 
     Ok(ContractInfo {
-        name: contract_details.name.or(contract_item.address.name.clone()),
-        address: address.clone(),
-        abi_file,
+        name: QuotedOptionString(contract_details.name.or(contract_item.address.name.clone())),
+        address: QuotedString(address.clone()),
+        abi_file: QuotedOptionString(abi_file),
         is_verified,
         is_fully_verified: contract_details.is_fully_verified,
         verified_at: contract_details.verified_at.or(contract_item.verified_at.clone()),
@@ -934,7 +992,7 @@ fn sort_contracts_by_verified_at(contracts: &mut Vec<ContractInfo>) {
             (Some(a_ts), Some(b_ts)) => b_ts.cmp(&a_ts), // Descending order (most recent first)
             (Some(_), None) => std::cmp::Ordering::Less, // Verified contracts first
             (None, Some(_)) => std::cmp::Ordering::Greater,
-            (None, None) => a.address.cmp(&b.address), // Fallback to address comparison
+            (None, None) => a.address.0.cmp(&b.address.0), // Fallback to address comparison
         }
     });
 
@@ -952,7 +1010,7 @@ fn sort_implementations_by_verified_at(implementations: &mut Vec<ImplementationI
             (Some(a_ts), Some(b_ts)) => b_ts.cmp(&a_ts), // Descending order (most recent first)
             (Some(_), None) => std::cmp::Ordering::Less,
             (None, Some(_)) => std::cmp::Ordering::Greater,
-            (None, None) => a.address.cmp(&b.address),
+            (None, None) => a.address.0.cmp(&b.address.0),
         }
     });
 
