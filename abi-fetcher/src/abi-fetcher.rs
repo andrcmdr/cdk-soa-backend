@@ -32,7 +32,7 @@ struct BlockscoutConfig {
     max_implementation_nesting_depth: Option<usize>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 struct OutputConfig {
     contracts_file: String,
     abi_directory: String,
@@ -86,7 +86,7 @@ struct EventDefinition {
     topic_hash: String,
     anonymous: bool,
     inputs: Vec<EventInput>,
-    contract_sources: Vec<ContractSource>, // Uses ContractSource with contract_name
+    contract_sources: Vec<ContractSource>,
     signature_file: String,
 }
 
@@ -121,7 +121,7 @@ struct ContractsEventsOutput {
 #[derive(Debug, Serialize)]
 struct ContractEvents {
     name: Option<String>,
-    address: Vec<ContractAddress>, // Uses simpler ContractAddress structure
+    address: Vec<ContractAddress>,
     events: Vec<EventSignature>,
 }
 
@@ -195,8 +195,10 @@ struct ContractsMetadata {
     blockscout_server: String,
     total_verified: usize,
     total_unverified: usize,
-    total_contracts_with_abi: usize,
-    total_impls_with_abi: usize,
+    total_verified_with_abi: usize,
+    total_unverified_with_abi: usize,
+    total_verified_implementations_with_abi: usize,
+    total_unverified_implementations_with_abi: usize,
     abi_directory: String,
 }
 
@@ -231,11 +233,13 @@ struct ContractEventInfo {
     events: Vec<String>, // Extended event signatures
 }
 
-// Structure to track processed addresses with their verification times
-#[derive(Debug, Clone)]
-struct ProcessedContract {
-    verified_at: Option<String>,
-    processed_time: chrono::DateTime<chrono::Utc>,
+// Counter for ABI files
+#[derive(Debug, Default)]
+struct AbiFileCounters {
+    verified_contracts: usize,
+    unverified_contracts: usize,
+    verified_implementations: usize,
+    unverified_implementations: usize,
 }
 
 struct BlockscoutClient {
@@ -372,19 +376,6 @@ fn parse_verified_at_timestamp(verified_at: &Option<String>) -> Option<i64> {
     })
 }
 
-// Helper function to compare verification times, returning true if new_verified_at is more recent
-fn is_more_recent_verification(
-    existing_verified_at: &Option<String>,
-    new_verified_at: &Option<String>
-) -> bool {
-    match (parse_verified_at_timestamp(existing_verified_at), parse_verified_at_timestamp(new_verified_at)) {
-        (Some(existing_ts), Some(new_ts)) => new_ts > existing_ts,
-        (None, Some(_)) => true, // New has timestamp, existing doesn't
-        (Some(_), None) => false, // Existing has timestamp, new doesn't
-        (None, None) => false, // Neither has timestamp, keep existing
-    }
-}
-
 // Helper function to sort contract sources by verified_at in descending order (most recent first)
 fn sort_contract_sources_by_verified_at_desc(contract_sources: &mut Vec<ContractSource>) {
     contract_sources.sort_by(|a, b| {
@@ -416,7 +407,8 @@ fn parse_abi_events(
     contract_name: Option<&str>,
     verified_at: &Option<String>,
     events_map: &mut HashMap<String, EventDefinition>,
-    contract_events: &mut Vec<ContractEventInfo>
+    contract_events: &mut Vec<ContractEventInfo>,
+    events_dir: &str,
 ) -> Result<()> {
     let abi_array: Vec<AbiItem> = serde_json::from_value(abi.clone())
         .context("Failed to parse ABI")?;
@@ -449,6 +441,9 @@ fn parse_abi_events(
                 // Add to contract-specific events list
                 current_contract_events.push(extended_signature.clone());
 
+                let signature_filename = format!("{}.txt", sanitize_filename(&signature));
+                let signature_file_path = format!("{}/{}", events_dir, signature_filename);
+
                 // Use signature as key to group events from different contracts
                 if let Some(existing_event) = events_map.get_mut(&signature) {
                     // Add this contract to the sources if not already present
@@ -473,7 +468,7 @@ fn parse_abi_events(
                             verified_at: verified_at.clone(),
                             contract_name: contract_name.map(|s| s.to_string()),
                         }],
-                        signature_file: format!("{}.txt", sanitize_filename(&signature)),
+                        signature_file: signature_file_path,
                     });
                 }
             }
@@ -566,7 +561,8 @@ fn save_event_signature_to_file(
     event: &EventDefinition,
     events_dir: &Path,
 ) -> Result<()> {
-    let file_path = events_dir.join(&event.signature_file);
+    let filename = event.signature_file.split('/').last().unwrap_or(&event.signature_file);
+    let file_path = events_dir.join(filename);
 
     let mut content = String::new();
     content.push_str(&format!("Event Name: {}\n", event.name));
@@ -685,44 +681,45 @@ fn save_abi_to_file(
     contract_name: Option<&str>,
     contract_address: &str,
     abi_dir: &Path,
+    parent_address: Option<&str>,
+    abi_dir_name: &str,
 ) -> Result<String> {
-    let filename = if let Some(name) = contract_name {
-        format!("{}.json", sanitize_filename(name))
+    let base_filename = if let Some(name) = contract_name {
+        sanitize_filename(name)
     } else {
-        format!("{}.json", contract_address)
+        contract_address.to_string()
+    };
+
+    let filename = if let Some(parent) = parent_address {
+        format!("{}_{}_parent_{}.json", base_filename, contract_address, parent)
+    } else {
+        format!("{}_{}.json", base_filename, contract_address)
     };
 
     let file_path = abi_dir.join(&filename);
 
-    let final_path = if file_path.exists() {
-        let stem = file_path.file_stem().unwrap().to_str().unwrap();
-        let unique_filename = format!("{}_{}.json", stem, &contract_address);
-        abi_dir.join(unique_filename)
-    } else {
-        let stem = file_path.file_stem().unwrap().to_str().unwrap();
-        let unique_filename = format!("{}_{}.json", stem, &contract_address);
-        abi_dir.join(unique_filename)
-    };
-
     let abi_json = serde_json::to_string_pretty(abi)
         .context("Failed to serialize ABI to JSON")?;
 
-    fs::write(&final_path, abi_json)
-        .with_context(|| format!("Failed to write ABI file: {:?}", final_path))?;
+    fs::write(&file_path, abi_json)
+        .with_context(|| format!("Failed to write ABI file: {:?}", file_path))?;
 
-    Ok(final_path.file_name().unwrap().to_str().unwrap().to_string())
+    Ok(format!("{}/{}", abi_dir_name, filename))
 }
 
 async fn process_implementations_recursively(
     client: &BlockscoutClient,
     implementations: Vec<Implementation>,
+    parent_address: &str,
     abi_dir: &Path,
+    abi_dir_name: &str,
     events_map: &mut HashMap<String, EventDefinition>,
     contract_events_list: &mut Vec<ContractEventInfo>,
-    processed_addresses: &mut HashMap<String, ProcessedContract>,
     depth: usize,
     max_depth: Option<usize>,
     max_per_level: Option<usize>,
+    events_dir: &str,
+    counters: &mut AbiFileCounters,
 ) -> Result<Vec<ImplementationInfo>> {
     // Check max depth limit
     if let Some(max) = max_depth {
@@ -751,34 +748,8 @@ async fn process_implementations_recursively(
     for implementation in impls_to_process {
         let impl_address = &implementation.address;
 
-        // Check if already processed - implementations from list response don't have verified_at
-        // so we need to fetch details to check
-//        if let Some(existing_contract) = processed_addresses.get(impl_address) {
-//            // We don't have verified_at from list response, so fetch details first
-//            match client.fetch_contract_details(impl_address).await {
-//                Ok(impl_details) => {
-//                    if !is_more_recent_verification(&existing_contract.verified_at, &impl_details.verified_at) {
-//                        debug!("Skipping implementation {} - already processed with more recent or equal verification time", impl_address);
-//                        continue;
-//                    } else {
-//                        debug!("Re-processing implementation {} - found more recent verification time", impl_address);
-//                    }
-//                }
-//                Err(e) => {
-//                    error!("Failed to fetch implementation details for {}: {:?}", impl_address, e);
-//                    continue;
-//                }
-//            }
-//        }
-
         match client.fetch_contract_details(impl_address).await {
             Ok(impl_details) => {
-                // Update processed addresses with verified_at from details response
-                processed_addresses.insert(impl_address.clone(), ProcessedContract {
-                    verified_at: impl_details.verified_at.clone(),
-                    processed_time: chrono::Utc::now(),
-                });
-
                 let is_verified = is_contract_verified(impl_details.is_verified, impl_details.is_fully_verified);
 
                 let impl_abi_file = if is_verified {
@@ -791,21 +762,32 @@ async fn process_implementations_recursively(
                             final_contract_name,
                             &impl_details.verified_at,
                             events_map,
-                            contract_events_list
+                            contract_events_list,
+                            events_dir,
                         ) {
                             warn!("Failed to parse events from implementation {}: {:?}", impl_address, e);
                         }
 
-                        Some(save_abi_to_file(
+                        let abi_file_path = save_abi_to_file(
                             abi,
                             final_contract_name,
                             impl_address,
                             abi_dir,
-                        )?)
+                            Some(parent_address),
+                            abi_dir_name,
+                        )?;
+
+                        // Update counters
+                        counters.verified_implementations += 1;
+
+                        Some(abi_file_path)
                     } else {
                         None
                     }
                 } else {
+                    if impl_details.abi.is_some() {
+                        counters.unverified_implementations += 1;
+                    }
                     None
                 };
 
@@ -814,13 +796,16 @@ async fn process_implementations_recursively(
                     let nested_impl_infos = Box::pin(process_implementations_recursively(
                         client,
                         nested_impls,
+                        impl_address,
                         abi_dir,
+                        abi_dir_name,
                         events_map,
                         contract_events_list,
-                        processed_addresses,
                         depth + 1,
                         max_depth,
                         max_per_level,
+                        events_dir,
+                        counters,
                     )).await?;
 
                     if nested_impl_infos.is_empty() { None } else { Some(nested_impl_infos) }
@@ -852,37 +837,15 @@ async fn process_contract_with_implementations(
     client: &BlockscoutClient,
     contract_item: &SmartContractItem,
     abi_dir: &Path,
+    abi_dir_name: &str,
     events_map: &mut HashMap<String, EventDefinition>,
     contract_events_list: &mut Vec<ContractEventInfo>,
-    processed_addresses: &mut HashMap<String, ProcessedContract>,
     max_depth: Option<usize>,
     max_per_level: Option<usize>,
+    events_dir: &str,
+    counters: &mut AbiFileCounters,
 ) -> Result<ContractInfo> {
     let address = &contract_item.address.hash;
-
-    // Check if already processed and compare verification times
-//    if let Some(existing_contract) = processed_addresses.get(address) {
-//        if !is_more_recent_verification(&existing_contract.verified_at, &contract_item.verified_at) {
-//            debug!("Skipping contract {} - already processed with more recent or equal verification time", address);
-//            return Ok(ContractInfo {
-//                name: contract_item.address.name.clone(),
-//                address: address.clone(),
-//                abi_file: None,
-//                is_verified: is_contract_verified(contract_item.address.is_verified, None),
-//                is_fully_verified: None,
-//                verified_at: contract_item.verified_at.clone(),
-//                implementations: None,
-//            });
-//        } else {
-//            debug!("Re-processing contract {} - found more recent verification time", address);
-//        }
-//    }
-
-    // Update processed addresses with current contract info
-    processed_addresses.insert(address.clone(), ProcessedContract {
-        verified_at: contract_item.verified_at.clone(),
-        processed_time: chrono::Utc::now(),
-    });
 
     // Fetch contract details
     let contract_details = client.fetch_contract_details(address).await
@@ -902,21 +865,32 @@ async fn process_contract_with_implementations(
                 final_contract_name,
                 &final_verified_at.cloned(),
                 events_map,
-                contract_events_list
+                contract_events_list,
+                events_dir,
             ) {
                 warn!("Failed to parse events from contract {}: {:?}", address, e);
             }
 
-            Some(save_abi_to_file(
+            let abi_file_path = save_abi_to_file(
                 abi,
                 final_contract_name,
                 address,
                 abi_dir,
-            )?)
+                None,
+                abi_dir_name,
+            )?;
+
+            // Update counters
+            counters.verified_contracts += 1;
+
+            Some(abi_file_path)
         } else {
             None
         }
     } else {
+        if contract_details.abi.is_some() {
+            counters.unverified_contracts += 1;
+        }
         None
     };
 
@@ -925,13 +899,16 @@ async fn process_contract_with_implementations(
         let impl_infos = process_implementations_recursively(
             client,
             impls,
+            address,
             abi_dir,
+            abi_dir_name,
             events_map,
             contract_events_list,
-            processed_addresses,
             0, // Start at depth 0
             max_depth,
             max_per_level,
+            events_dir,
+            counters,
         ).await?;
 
         if impl_infos.is_empty() { None } else { Some(impl_infos) }
@@ -948,39 +925,6 @@ async fn process_contract_with_implementations(
         verified_at: contract_details.verified_at.or(contract_item.verified_at.clone()),
         implementations,
     })
-}
-
-fn count_abi_files_recursively(contracts: &[ContractInfo]) -> (usize, usize) {
-    let mut contract_abis = 0;
-    let mut impl_abis = 0;
-
-    for contract in contracts {
-        if contract.abi_file.is_some() {
-            contract_abis += 1;
-        }
-
-        if let Some(implementations) = &contract.implementations {
-            impl_abis += count_implementation_abi_files(implementations);
-        }
-    }
-
-    (contract_abis, impl_abis)
-}
-
-fn count_implementation_abi_files(implementations: &[ImplementationInfo]) -> usize {
-    let mut count = 0;
-
-    for impl_info in implementations {
-        if impl_info.abi_file.is_some() {
-            count += 1;
-        }
-
-        if let Some(nested_impls) = &impl_info.implementations {
-            count += count_implementation_abi_files(nested_impls);
-        }
-    }
-
-    count
 }
 
 // Add sorting functions - changed to descending order for contracts output
@@ -1131,21 +1075,23 @@ async fn main() -> Result<()> {
     info!("Processing {} contracts and their implementations...", contract_items.len());
 
     // Process each contract and its implementations
-    let mut processed_addresses = HashMap::new();
     let mut contract_infos = Vec::new();
     let mut events_map: HashMap<String, EventDefinition> = HashMap::new();
     let mut contract_events_list: Vec<ContractEventInfo> = Vec::new();
+    let mut counters = AbiFileCounters::default();
 
     for contract_item in contract_items {
         match process_contract_with_implementations(
             &client,
             &contract_item,
             abi_dir,
+            &config.output.abi_directory,
             &mut events_map,
             &mut contract_events_list,
-            &mut processed_addresses,
             config.blockscout.max_implementation_nesting_depth,
             config.blockscout.max_implementations_per_contract,
+            &config.output.events_directory,
+            &mut counters,
         ).await {
             Ok(contract_info) => {
                 contract_infos.push(contract_info);
@@ -1172,13 +1118,6 @@ async fn main() -> Result<()> {
     // Sort contracts by verified_at timestamp (descending order - most recent first)
     sort_contracts_by_verified_at(&mut verified_contracts);
     sort_contracts_by_verified_at(&mut unverified_contracts);
-
-    let (verified_contract_abis, verified_impl_abis) = count_abi_files_recursively(&verified_contracts);
-    let (unverified_contract_abis, unverified_impl_abis) = count_abi_files_recursively(&unverified_contracts);
-
-    // Count total ABI files
-    let total_abi_files = verified_contract_abis + unverified_contract_abis;
-    let total_impl_abi_files = verified_impl_abis + unverified_impl_abis;
 
     // Save event signature files and prepare events output
     let mut events_list: Vec<EventDefinition> = events_map.into_values().collect();
@@ -1219,8 +1158,10 @@ async fn main() -> Result<()> {
             blockscout_server: config.blockscout.server.clone(),
             total_verified: verified_contracts.len(),
             total_unverified: unverified_contracts.len(),
-            total_contracts_with_abi: total_abi_files,
-            total_impls_with_abi: total_impl_abi_files,
+            total_verified_with_abi: counters.verified_contracts,
+            total_unverified_with_abi: counters.unverified_contracts,
+            total_verified_implementations_with_abi: counters.verified_implementations,
+            total_unverified_implementations_with_abi: counters.unverified_implementations,
             abi_directory: config.output.abi_directory.clone(),
         },
         verified_contracts,
@@ -1238,11 +1179,17 @@ async fn main() -> Result<()> {
         .context("Failed to save contracts events to YAML file")?;
 
     info!(
-        "Successfully processed {} verified and {} unverified contracts with {} ABI files created and {} ABI files for implementations",
+        "Successfully processed {} verified and {} unverified contracts",
         contracts_output.metadata.total_verified,
-        contracts_output.metadata.total_unverified,
-        contracts_output.metadata.total_contracts_with_abi,
-        contracts_output.metadata.total_impls_with_abi,
+        contracts_output.metadata.total_unverified
+    );
+
+    info!(
+        "ABI files created - Verified contracts: {}, Unverified contracts: {}, Verified implementations: {}, Unverified implementations: {}",
+        counters.verified_contracts,
+        counters.unverified_contracts,
+        counters.verified_implementations,
+        counters.unverified_implementations
     );
 
     info!(
@@ -1334,18 +1281,5 @@ mod tests {
         assert!(parse_verified_at_timestamp(&valid_timestamp).is_some());
         assert!(parse_verified_at_timestamp(&invalid_timestamp).is_none());
         assert!(parse_verified_at_timestamp(&none_timestamp).is_none());
-    }
-
-    #[test]
-    fn test_is_more_recent_verification() {
-        let older_timestamp = Some("2023-09-10T10:30:45Z".to_string());
-        let newer_timestamp = Some("2023-09-11T10:30:45Z".to_string());
-        let none_timestamp: Option<String> = None;
-
-        assert!(is_more_recent_verification(&older_timestamp, &newer_timestamp));
-        assert!(!is_more_recent_verification(&newer_timestamp, &older_timestamp));
-        assert!(is_more_recent_verification(&none_timestamp, &newer_timestamp));
-        assert!(!is_more_recent_verification(&newer_timestamp, &none_timestamp));
-        assert!(!is_more_recent_verification(&none_timestamp, &none_timestamp));
     }
 }
