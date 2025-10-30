@@ -1,6 +1,5 @@
 use anyhow::{Context, Result};
-use serde::{Deserialize, Serialize, Serializer};
-use serde::ser::SerializeStruct;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use serde_yaml;
 use std::collections::{HashMap, HashSet};
@@ -45,31 +44,6 @@ struct OutputConfig {
 fn default_request_timeout() -> u64 { 30 }
 fn default_max_retries() -> u32 { 3 }
 
-// Helper struct to wrap strings with explicit quotes
-#[derive(Debug, Clone)]
-struct QuotedString(String);
-
-impl Serialize for QuotedString {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        serializer.serialize_str(&format!("\"{}\"", self.0))
-    }
-}
-
-impl From<String> for QuotedString {
-    fn from(s: String) -> Self {
-        QuotedString(s)
-    }
-}
-
-impl From<&str> for QuotedString {
-    fn from(s: &str) -> Self {
-        QuotedString(s.to_string())
-    }
-}
-
 // ABI-specific structures for event parsing
 #[derive(Debug, Deserialize)]
 struct AbiItem {
@@ -105,7 +79,7 @@ struct EventsMetadata {
     events_directory: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 struct EventDefinition {
     name: String,
     signature: String,
@@ -114,23 +88,6 @@ struct EventDefinition {
     inputs: Vec<EventInput>,
     contract_sources: Vec<ContractSource>,
     signature_file: String,
-}
-
-impl Serialize for EventDefinition {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut state = serializer.serialize_struct("EventDefinition", 7)?;
-        state.serialize_field("name", &self.name)?;
-        state.serialize_field("signature", &self.signature)?;
-        state.serialize_field("topic_hash", &self.topic_hash)?;
-        state.serialize_field("anonymous", &self.anonymous)?;
-        state.serialize_field("inputs", &self.inputs)?;
-        state.serialize_field("contract_sources", &self.contract_sources)?;
-        state.serialize_field("signature_file", &QuotedString::from(self.signature_file.clone()))?;
-        state.end()
-    }
 }
 
 #[derive(Debug, Serialize)]
@@ -245,7 +202,7 @@ struct ContractsMetadata {
     abi_directory: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 struct ContractInfo {
     name: Option<String>,
     address: String,
@@ -256,37 +213,7 @@ struct ContractInfo {
     implementations: Option<Vec<ImplementationInfo>>,
 }
 
-impl Serialize for ContractInfo {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut state = serializer.serialize_struct("ContractInfo", 7)?;
-
-        // Serialize name with quotes
-        match &self.name {
-            Some(name) => state.serialize_field("name", &QuotedString::from(name.clone()))?,
-            None => state.serialize_field("name", &None::<String>)?,
-        }
-
-        // Serialize address with quotes
-        state.serialize_field("address", &QuotedString::from(self.address.clone()))?;
-
-        // Serialize abi_file with quotes
-        match &self.abi_file {
-            Some(abi_file) => state.serialize_field("abi_file", &QuotedString::from(abi_file.clone()))?,
-            None => state.serialize_field("abi_file", &None::<String>)?,
-        }
-
-        state.serialize_field("is_verified", &self.is_verified)?;
-        state.serialize_field("is_fully_verified", &self.is_fully_verified)?;
-        state.serialize_field("verified_at", &self.verified_at)?;
-        state.serialize_field("implementations", &self.implementations)?;
-        state.end()
-    }
-}
-
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 struct ImplementationInfo {
     name: Option<String>,
     address: String,
@@ -295,36 +222,6 @@ struct ImplementationInfo {
     is_fully_verified: Option<bool>,
     verified_at: Option<String>,
     implementations: Option<Vec<ImplementationInfo>>,
-}
-
-impl Serialize for ImplementationInfo {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut state = serializer.serialize_struct("ImplementationInfo", 7)?;
-
-        // Serialize name with quotes
-        match &self.name {
-            Some(name) => state.serialize_field("name", &QuotedString::from(name.clone()))?,
-            None => state.serialize_field("name", &None::<String>)?,
-        }
-
-        // Serialize address with quotes
-        state.serialize_field("address", &QuotedString::from(self.address.clone()))?;
-
-        // Serialize abi_file with quotes
-        match &self.abi_file {
-            Some(abi_file) => state.serialize_field("abi_file", &QuotedString::from(abi_file.clone()))?,
-            None => state.serialize_field("abi_file", &None::<String>)?,
-        }
-
-        state.serialize_field("is_verified", &self.is_verified)?;
-        state.serialize_field("is_fully_verified", &self.is_fully_verified)?;
-        state.serialize_field("verified_at", &self.verified_at)?;
-        state.serialize_field("implementations", &self.implementations)?;
-        state.end()
-    }
 }
 
 // Structure to track contract events for the contracts-events YAML
@@ -1087,6 +984,41 @@ fn load_config<P: AsRef<Path>>(config_path: P) -> Result<AppConfig> {
     Ok(config)
 }
 
+// Helper function to ensure strings are properly quoted in YAML
+fn ensure_quoted_yaml(yaml_content: String) -> String {
+    let lines: Vec<&str> = yaml_content.lines().collect();
+    let mut result = String::new();
+
+    for line in lines {
+        if line.trim_start().starts_with("name:") ||
+           line.trim_start().starts_with("- name:") ||
+           line.trim_start().starts_with("address:") ||
+           line.trim_start().starts_with("- address:") ||
+           line.trim_start().starts_with("abi_file:") ||
+           line.trim_start().starts_with("signature_file:") {
+
+            // Check if the line already has quotes or is null
+            if line.contains("null") || line.contains("~") {
+                result.push_str(line);
+            } else if let Some(colon_pos) = line.find(':') {
+                let key_part = &line[..=colon_pos];
+                let value_part = line[colon_pos + 1..].trim();
+
+                // Remove existing quotes if any
+                let clean_value = value_part.trim_matches(|c| c == '"' || c == '\'');
+
+                // Add properly quoted value
+                result.push_str(&format!("{} \"{}\"\n", key_part, clean_value));
+                continue;
+            }
+        }
+        result.push_str(line);
+        result.push('\n');
+    }
+
+    result
+}
+
 fn save_contracts_to_yaml<P: AsRef<Path>>(
     contracts_output: &ContractsOutput,
     output_path: P,
@@ -1094,7 +1026,10 @@ fn save_contracts_to_yaml<P: AsRef<Path>>(
     let yaml_content = serde_yaml::to_string(contracts_output)
         .context("Failed to serialize contracts to YAML")?;
 
-    fs::write(&output_path, yaml_content)
+    // Post-process to ensure proper quoting
+    let quoted_yaml = ensure_quoted_yaml(yaml_content);
+
+    fs::write(&output_path, quoted_yaml)
         .with_context(|| format!("Failed to write contracts to file: {:?}", output_path.as_ref()))?;
 
     info!("Contracts saved to: {:?}", output_path.as_ref());
@@ -1108,7 +1043,10 @@ fn save_events_to_yaml<P: AsRef<Path>>(
     let yaml_content = serde_yaml::to_string(events_output)
         .context("Failed to serialize events to YAML")?;
 
-    fs::write(&output_path, yaml_content)
+    // Post-process to ensure proper quoting for signature_file
+    let quoted_yaml = ensure_quoted_yaml(yaml_content);
+
+    fs::write(&output_path, quoted_yaml)
         .with_context(|| format!("Failed to write events to file: {:?}", output_path.as_ref()))?;
 
     info!("Events saved to: {:?}", output_path.as_ref());
