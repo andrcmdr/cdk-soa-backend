@@ -1,5 +1,5 @@
 metadata:
-  generated_at: 2025-10-30T03:09:44.504447Z
+  generated_at: 2025-10-30T04:53:06.303030Z
   blockscout_server: https://sentient-testnet-blockscout.eu-north-2.gateway.fm
   total_verified: 388
   total_unverified: 0
@@ -2956,9 +2956,9 @@ verified_contracts:
   is_fully_verified: true
   verified_at: 2025-09-12T04:16:29.169515Z
   implementations:
-  - name: null  - name: null
+  - name: null
     address: "0x30Dc050411Fa2c577b2952817B133FF26c97608d"
-    abi_file: null    abi_file: null
+    abi_file: null
     is_verified: false
     is_fully_verified: null
     verified_at: null
@@ -4104,9 +4104,9 @@ verified_contracts:
   is_fully_verified: true
   verified_at: 2025-08-22T11:37:41.313237Z
   implementations:
-  - name: null  - name: null
+  - name: null
     address: "0xFbedE1637242D41454A8a3B2B240e21d83B5e5F7"
-    abi_file: null    abi_file: null
+    abi_file: null
     is_verified: false
     is_fully_verified: null
     verified_at: null
@@ -4160,9 +4160,9 @@ verified_contracts:
   is_fully_verified: true
   verified_at: 2025-08-22T06:07:04.044443Z
   implementations:
-  - name: null  - name: null
+  - name: null
     address: "0xD3E2cab2D478ddeD36F7e753c4CA0453d3D36066"
-    abi_file: null    abi_file: null
+    abi_file: null
     is_verified: false
     is_fully_verified: null
     verified_at: null

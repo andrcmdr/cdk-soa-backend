@@ -1,5 +1,5 @@
 metadata:
-  generated_at: 2025-10-30T03:09:44.492708Z
+  generated_at: 2025-10-30T04:53:06.290908Z
   blockscout_server: https://sentient-testnet-blockscout.eu-north-2.gateway.fm
   total_events: 157
   total_unique_signatures: 157
@@ -1896,6 +1896,19 @@ events:
     contract_name: LoadTester
   signature_file: "./contracts_abi/events/ExternalCall_address_bool_uint256_bytes_.txt"
 - name: "FeeSet"
+  signature: FeeSet(uint256)
+  topic_hash: 0x20461e09b8e557b77e107939f9ce6544698123aad0fc964ac5cc59b7df2e608f
+  anonymous: false
+  inputs:
+  - name: "fee"
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: "0x81112D4A0389AFBE159F39a5b048602cEb221285"
+    verified_at: 2025-09-05T08:57:43.048427Z
+    contract_name: NativeDistributor
+  signature_file: "./contracts_abi/events/FeeSet_uint256_.txt"
+- name: "FeeSet"
   signature: FeeSet(bytes32,uint256)
   topic_hash: 0xdb12e4938bdc4407b4fe2690102950fb54b88ef08ca2e9f4f4ba4783367ed780
   anonymous: false
@@ -1917,19 +1930,6 @@ events:
     verified_at: 2025-09-19T05:01:01.901951Z
     contract_name: NativeDistributor
   signature_file: "./contracts_abi/events/FeeSet_bytes32_uint256_.txt"
-- name: "FeeSet"
-  signature: FeeSet(uint256)
-  topic_hash: 0x20461e09b8e557b77e107939f9ce6544698123aad0fc964ac5cc59b7df2e608f
-  anonymous: false
-  inputs:
-  - name: "fee"
-    input_type: uint256
-    indexed: false
-  contract_sources:
-  - address: "0x81112D4A0389AFBE159F39a5b048602cEb221285"
-    verified_at: 2025-09-05T08:57:43.048427Z
-    contract_name: NativeDistributor
-  signature_file: "./contracts_abi/events/FeeSet_uint256_.txt"
 - name: "FixedFeeSet"
   signature: FixedFeeSet(bytes32,uint256)
   topic_hash: 0x025df4885db3fa8c2f03e70fb1245c33dfc0519f7017a1d59b0a214fc96d9e2e
@@ -2114,6 +2114,19 @@ events:
     verified_at: 2025-10-15T08:11:11.864693Z
     contract_name: Distributor
   signature_file: "./contracts_abi/events/HookAdded_bytes32_.txt"
+- name: "Initialized"
+  signature: Initialized(uint8)
+  topic_hash: 0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
+  anonymous: false
+  inputs:
+  - name: "version"
+    input_type: uint8
+    indexed: false
+  contract_sources:
+  - address: "0x8BD36ca1A55e389335004872aA3C3Be0969D3aA7"
+    verified_at: 2025-09-05T11:03:47.278888Z
+    contract_name: PolygonZkEVMBridgeV2
+  signature_file: "./contracts_abi/events/Initialized_uint8_.txt"
 - name: "Initialized"
   signature: Initialized(uint64)
   topic_hash: 0xc7f505b2f371ae2175ee4913f4499e1f2633a7b5936321eed1cdaeb6115181d2
@@ -2502,19 +2515,6 @@ events:
     verified_at: 2025-08-22T05:06:08.496968Z
     contract_name: Artifact
   signature_file: "./contracts_abi/events/Initialized_uint64_.txt"
-- name: "Initialized"
-  signature: Initialized(uint8)
-  topic_hash: 0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
-  anonymous: false
-  inputs:
-  - name: "version"
-    input_type: uint8
-    indexed: false
-  contract_sources:
-  - address: "0x8BD36ca1A55e389335004872aA3C3Be0969D3aA7"
-    verified_at: 2025-09-05T11:03:47.278888Z
-    contract_name: PolygonZkEVMBridgeV2
-  signature_file: "./contracts_abi/events/Initialized_uint8_.txt"
 - name: "LockDurationsUpdated"
   signature: LockDurationsUpdated(uint256,uint256)
   topic_hash: 0xfb6643f1917d4ac31b0c062fdf49db2da21205d50d01ffd6c07ed5e73389f600
@@ -2912,6 +2912,28 @@ events:
     contract_name: Artifact
   signature_file: "./contracts_abi/events/MerkleRootUpdated_bytes32_.txt"
 - name: "ModelUsage"
+  signature: ModelUsage(address,uint256,uint256)
+  topic_hash: 0x13807030a34436b32919810fc44cbce6cd53ca63523a750b957bee98dc49a7a3
+  anonymous: false
+  inputs:
+  - name: "contributor"
+    input_type: address
+    indexed: true
+  - name: "usageAmount"
+    input_type: uint256
+    indexed: false
+  - name: "apiCreditUsed"
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: "0x2086Be28CE3B80FA7ec8405268A19BbA01F3b041"
+    verified_at: 2025-09-04T10:30:45.497157Z
+    contract_name: Artifact
+  - address: "0x2263e66D70aa362c6058c9e04b88de14a2C4418C"
+    verified_at: 2025-09-04T10:30:28.082738Z
+    contract_name: Artifact
+  signature_file: "./contracts_abi/events/ModelUsage_address_uint256_uint256_.txt"
+- name: "ModelUsage"
   signature: ModelUsage(uint256,uint256)
   topic_hash: 0x1fa5ad242f58a5bdd94f8d05d112d1bb12f47ba376ce7069f3857fabb1e32b05
   anonymous: false
@@ -2948,28 +2970,6 @@ events:
     verified_at: 2025-08-26T09:09:13.013588Z
     contract_name: EnhancedArtifact
   signature_file: "./contracts_abi/events/ModelUsage_uint256_uint256_.txt"
-- name: "ModelUsage"
-  signature: ModelUsage(address,uint256,uint256)
-  topic_hash: 0x13807030a34436b32919810fc44cbce6cd53ca63523a750b957bee98dc49a7a3
-  anonymous: false
-  inputs:
-  - name: "contributor"
-    input_type: address
-    indexed: true
-  - name: "usageAmount"
-    input_type: uint256
-    indexed: false
-  - name: "apiCreditUsed"
-    input_type: uint256
-    indexed: false
-  contract_sources:
-  - address: "0x2086Be28CE3B80FA7ec8405268A19BbA01F3b041"
-    verified_at: 2025-09-04T10:30:45.497157Z
-    contract_name: Artifact
-  - address: "0x2263e66D70aa362c6058c9e04b88de14a2C4418C"
-    verified_at: 2025-09-04T10:30:28.082738Z
-    contract_name: Artifact
-  signature_file: "./contracts_abi/events/ModelUsage_address_uint256_uint256_.txt"
 - name: "NewWrappedToken"
   signature: NewWrappedToken(uint32,address,address,bytes)
   topic_hash: 0x490e59a1701b938786ac72570a1efeac994a3dbe96e2e883e19e902ace6e6a39
@@ -4202,6 +4202,19 @@ events:
     contract_name: UpgradeableBeacon
   signature_file: "./contracts_abi/events/OwnershipTransferred_address_address_.txt"
 - name: "Paused"
+  signature: Paused()
+  topic_hash: 0x9e87fac88ff661f02d44f95383c817fece4bce600a3dab7a54406878b965e752
+  anonymous: false
+  inputs: []
+  contract_sources:
+  - address: "0x32641081cCc174F89447cC9B99e79C3724a03e3C"
+    verified_at: 2025-10-16T09:46:52.143044Z
+    contract_name: Distributor
+  - address: "0x673d18f64d71439d46d6fAFc9C1C8b0026F53247"
+    verified_at: 2025-10-15T08:11:11.864693Z
+    contract_name: Distributor
+  signature_file: "./contracts_abi/events/Paused__.txt"
+- name: "Paused"
   signature: Paused(address)
   topic_hash: 0x62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a258
   anonymous: false
@@ -4235,19 +4248,6 @@ events:
     verified_at: 2025-08-19T09:21:35.153826Z
     contract_name: Treasury
   signature_file: "./contracts_abi/events/Paused_address_.txt"
-- name: "Paused"
-  signature: Paused()
-  topic_hash: 0x9e87fac88ff661f02d44f95383c817fece4bce600a3dab7a54406878b965e752
-  anonymous: false
-  inputs: []
-  contract_sources:
-  - address: "0x32641081cCc174F89447cC9B99e79C3724a03e3C"
-    verified_at: 2025-10-16T09:46:52.143044Z
-    contract_name: Distributor
-  - address: "0x673d18f64d71439d46d6fAFc9C1C8b0026F53247"
-    verified_at: 2025-10-15T08:11:11.864693Z
-    contract_name: Distributor
-  signature_file: "./contracts_abi/events/Paused__.txt"
 - name: "PaymasterFunded"
   signature: PaymasterFunded(address,uint256)
   topic_hash: 0xb2097ab3550c8bc1e581acecec9827cfa285137c2311429263ab8e6cdb814a73
@@ -5188,40 +5188,6 @@ events:
     contract_name: ArtifactStaking
   signature_file: "./contracts_abi/events/StakeWeightUpdated_uint256_address_address_uint256_uint256_uint256_uint256_uint256_.txt"
 - name: "Staked"
-  signature: Staked(address,address,uint256,uint256,uint256,uint256)
-  topic_hash: 0x1a239cfcc9eee66af37729671dcbd82e1544f57835d53fa02eb9220a930a8f87
-  anonymous: false
-  inputs:
-  - name: "user"
-    input_type: address
-    indexed: true
-  - name: "artifact"
-    input_type: address
-    indexed: true
-  - name: "stakeId"
-    input_type: uint256
-    indexed: true
-  - name: "amount"
-    input_type: uint256
-    indexed: false
-  - name: "lockDuration"
-    input_type: uint256
-    indexed: false
-  - name: "stakeWeight"
-    input_type: uint256
-    indexed: false
-  contract_sources:
-  - address: "0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F"
-    verified_at: 2025-09-18T07:24:23.057792Z
-    contract_name: ArtifactStaking
-  - address: "0xC22a05711ef9f3e59baF8ae48F59896715D49fAF"
-    verified_at: 2025-09-04T13:37:15.481994Z
-    contract_name: ArtifactStaking
-  - address: "0xeB739B5b19281679BAFA2E8c8406B6C2D2b31394"
-    verified_at: 2025-08-28T14:06:35.407984Z
-    contract_name: ArtifactStaking
-  signature_file: "./contracts_abi/events/Staked_address_address_uint256_uint256_uint256_uint256_.txt"
-- name: "Staked"
   signature: Staked(address,address,uint256,uint256,uint256,uint256,uint256,uint256)
   topic_hash: 0xdb28ad832b2e8b0aa95810734d683d9e33982f24542db740566af451b4ec4141
   anonymous: false
@@ -5289,6 +5255,40 @@ events:
     verified_at: 2025-08-27T08:22:36.237638Z
     contract_name: ArtifactStaking
   signature_file: "./contracts_abi/events/Staked_address_uint256_uint256_uint256_uint256_.txt"
+- name: "Staked"
+  signature: Staked(address,address,uint256,uint256,uint256,uint256)
+  topic_hash: 0x1a239cfcc9eee66af37729671dcbd82e1544f57835d53fa02eb9220a930a8f87
+  anonymous: false
+  inputs:
+  - name: "user"
+    input_type: address
+    indexed: true
+  - name: "artifact"
+    input_type: address
+    indexed: true
+  - name: "stakeId"
+    input_type: uint256
+    indexed: true
+  - name: "amount"
+    input_type: uint256
+    indexed: false
+  - name: "lockDuration"
+    input_type: uint256
+    indexed: false
+  - name: "stakeWeight"
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: "0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F"
+    verified_at: 2025-09-18T07:24:23.057792Z
+    contract_name: ArtifactStaking
+  - address: "0xC22a05711ef9f3e59baF8ae48F59896715D49fAF"
+    verified_at: 2025-09-04T13:37:15.481994Z
+    contract_name: ArtifactStaking
+  - address: "0xeB739B5b19281679BAFA2E8c8406B6C2D2b31394"
+    verified_at: 2025-08-28T14:06:35.407984Z
+    contract_name: ArtifactStaking
+  signature_file: "./contracts_abi/events/Staked_address_address_uint256_uint256_uint256_uint256_.txt"
 - name: "StorageTouched"
   signature: StorageTouched(uint256,uint256)
   topic_hash: 0x226d633e9b82ae11b31552f2304b4fa6ac3e939ba027705820006a3bba9f1d92
@@ -5683,6 +5683,19 @@ events:
     contract_name: Registry
   signature_file: "./contracts_abi/events/TreasuryUpdated_address_address_.txt"
 - name: "Unpaused"
+  signature: Unpaused()
+  topic_hash: 0xa45f47fdea8a1efdd9029a5691c7f759c32b7c698632b563573e155625d16933
+  anonymous: false
+  inputs: []
+  contract_sources:
+  - address: "0x32641081cCc174F89447cC9B99e79C3724a03e3C"
+    verified_at: 2025-10-16T09:46:52.143044Z
+    contract_name: Distributor
+  - address: "0x673d18f64d71439d46d6fAFc9C1C8b0026F53247"
+    verified_at: 2025-10-15T08:11:11.864693Z
+    contract_name: Distributor
+  signature_file: "./contracts_abi/events/Unpaused__.txt"
+- name: "Unpaused"
   signature: Unpaused(address)
   topic_hash: 0x5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa
   anonymous: false
@@ -5716,19 +5729,34 @@ events:
     verified_at: 2025-08-19T09:21:35.153826Z
     contract_name: Treasury
   signature_file: "./contracts_abi/events/Unpaused_address_.txt"
-- name: "Unpaused"
-  signature: Unpaused()
-  topic_hash: 0xa45f47fdea8a1efdd9029a5691c7f759c32b7c698632b563573e155625d16933
+- name: "Unstaked"
+  signature: Unstaked(address,uint256,uint256)
+  topic_hash: 0x7fc4727e062e336010f2c282598ef5f14facb3de68cf8195c2f23e1454b2b74e
   anonymous: false
-  inputs: []
+  inputs:
+  - name: "user"
+    input_type: address
+    indexed: true
+  - name: "stakeId"
+    input_type: uint256
+    indexed: false
+  - name: "amount"
+    input_type: uint256
+    indexed: false
   contract_sources:
-  - address: "0x32641081cCc174F89447cC9B99e79C3724a03e3C"
-    verified_at: 2025-10-16T09:46:52.143044Z
-    contract_name: Distributor
-  - address: "0x673d18f64d71439d46d6fAFc9C1C8b0026F53247"
-    verified_at: 2025-10-15T08:11:11.864693Z
-    contract_name: Distributor
-  signature_file: "./contracts_abi/events/Unpaused__.txt"
+  - address: "0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F"
+    verified_at: 2025-09-18T07:24:23.057792Z
+    contract_name: ArtifactStaking
+  - address: "0xC22a05711ef9f3e59baF8ae48F59896715D49fAF"
+    verified_at: 2025-09-04T13:37:15.481994Z
+    contract_name: ArtifactStaking
+  - address: "0xeB739B5b19281679BAFA2E8c8406B6C2D2b31394"
+    verified_at: 2025-08-28T14:06:35.407984Z
+    contract_name: ArtifactStaking
+  - address: "0x9052DEAaF20D183c2D64006508Ed8f63f76FBF58"
+    verified_at: 2025-08-27T08:22:36.237638Z
+    contract_name: ArtifactStaking
+  signature_file: "./contracts_abi/events/Unstaked_address_uint256_uint256_.txt"
 - name: "Unstaked"
   signature: Unstaked(address,uint256,uint256,uint256,uint256)
   topic_hash: 0xdcfd2b4017d03f7e541021db793b2f9b31e4acdee005f789e52853c390e3e962
@@ -5763,34 +5791,6 @@ events:
     verified_at: 2025-10-04T04:13:09.085147Z
     contract_name: ArtifactStaking
   signature_file: "./contracts_abi/events/Unstaked_address_uint256_uint256_uint256_uint256_.txt"
-- name: "Unstaked"
-  signature: Unstaked(address,uint256,uint256)
-  topic_hash: 0x7fc4727e062e336010f2c282598ef5f14facb3de68cf8195c2f23e1454b2b74e
-  anonymous: false
-  inputs:
-  - name: "user"
-    input_type: address
-    indexed: true
-  - name: "stakeId"
-    input_type: uint256
-    indexed: false
-  - name: "amount"
-    input_type: uint256
-    indexed: false
-  contract_sources:
-  - address: "0x2D87d4a017Ef7907879a817C57b84BED25ef3e5F"
-    verified_at: 2025-09-18T07:24:23.057792Z
-    contract_name: ArtifactStaking
-  - address: "0xC22a05711ef9f3e59baF8ae48F59896715D49fAF"
-    verified_at: 2025-09-04T13:37:15.481994Z
-    contract_name: ArtifactStaking
-  - address: "0xeB739B5b19281679BAFA2E8c8406B6C2D2b31394"
-    verified_at: 2025-08-28T14:06:35.407984Z
-    contract_name: ArtifactStaking
-  - address: "0x9052DEAaF20D183c2D64006508Ed8f63f76FBF58"
-    verified_at: 2025-08-27T08:22:36.237638Z
-    contract_name: ArtifactStaking
-  signature_file: "./contracts_abi/events/Unstaked_address_uint256_uint256_.txt"
 - name: "Upgraded"
   signature: Upgraded(address)
   topic_hash: 0xbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b

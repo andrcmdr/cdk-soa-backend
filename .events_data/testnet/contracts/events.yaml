@@ -1,5 +1,5 @@
 metadata:
-  generated_at: 2025-10-30T03:08:10.198199Z
+  generated_at: 2025-10-30T04:54:46.052218Z
   blockscout_server: https://sentient-testnet-blockscout.eu-north-2.gateway.fm
   total_events: 157
   total_unique_signatures: 157
@@ -434,30 +434,6 @@ events:
     contract_name: ArtifactFactory
   signature_file: ArtifactCreated_bytes32_address_.txt
 - name: ArtifactCreated
-  signature: ArtifactCreated(bytes32,string,uint8,address,tuple[])
-  topic_hash: 0x0c37ce1cf2c26ae420f94121125644faa814137c44a77ffb446af4b614de8c27
-  anonymous: false
-  inputs:
-  - name: artifactID
-    input_type: bytes32
-    indexed: true
-  - name: artifactName
-    input_type: string
-    indexed: false
-  - name: artifactType
-    input_type: uint8
-    indexed: true
-  - name: artifactAddress
-    input_type: address
-    indexed: true
-  - name: artifactOwners
-    input_type: tuple[]
-    indexed: false
-  contract_sources:
-  - address: 0xcfb541d62148defd2d0c7f4f3984603d8d0a357d
-    contract_name: ArtifactFactory
-  signature_file: ArtifactCreated_bytes32_string_uint8_address_tuple___.txt
-- name: ArtifactCreated
   signature: ArtifactCreated(bytes32,string,string,address,address)
   topic_hash: 0x61f6226016fbc1388bd2cf935f481665a0181f423f71c10b537f6604aa7bbe6c
   anonymous: false
@@ -485,6 +461,30 @@ events:
   - address: 0xb2f36b70115837f92ff9beed5eb03da5e364cc01
     contract_name: ArtifactFactory
   signature_file: ArtifactCreated_bytes32_string_string_address_address_.txt
+- name: ArtifactCreated
+  signature: ArtifactCreated(bytes32,string,uint8,address,tuple[])
+  topic_hash: 0x0c37ce1cf2c26ae420f94121125644faa814137c44a77ffb446af4b614de8c27
+  anonymous: false
+  inputs:
+  - name: artifactID
+    input_type: bytes32
+    indexed: true
+  - name: artifactName
+    input_type: string
+    indexed: false
+  - name: artifactType
+    input_type: uint8
+    indexed: true
+  - name: artifactAddress
+    input_type: address
+    indexed: true
+  - name: artifactOwners
+    input_type: tuple[]
+    indexed: false
+  contract_sources:
+  - address: 0xcfb541d62148defd2d0c7f4f3984603d8d0a357d
+    contract_name: ArtifactFactory
+  signature_file: ArtifactCreated_bytes32_string_uint8_address_tuple___.txt
 - name: ArtifactFactoryChanged
   signature: ArtifactFactoryChanged(address,address)
   topic_hash: 0xfd3c30401caba6e86edd3ad95d896de1028d5787fee934dee51a134bd7cff8f6
@@ -1559,6 +1559,18 @@ events:
     contract_name: LoadTester
   signature_file: ExternalCall_address_bool_uint256_bytes_.txt
 - name: FeeSet
+  signature: FeeSet(uint256)
+  topic_hash: 0x20461e09b8e557b77e107939f9ce6544698123aad0fc964ac5cc59b7df2e608f
+  anonymous: false
+  inputs:
+  - name: fee
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x81112d4a0389afbe159f39a5b048602ceb221285
+    contract_name: NativeDistributor
+  signature_file: FeeSet_uint256_.txt
+- name: FeeSet
   signature: FeeSet(bytes32,uint256)
   topic_hash: 0xdb12e4938bdc4407b4fe2690102950fb54b88ef08ca2e9f4f4ba4783367ed780
   anonymous: false
@@ -1577,18 +1589,6 @@ events:
   - address: 0xeaa4d9918cea4b8d1a70a1a783dad417f66994b9
     contract_name: NativeDistributor
   signature_file: FeeSet_bytes32_uint256_.txt
-- name: FeeSet
-  signature: FeeSet(uint256)
-  topic_hash: 0x20461e09b8e557b77e107939f9ce6544698123aad0fc964ac5cc59b7df2e608f
-  anonymous: false
-  inputs:
-  - name: fee
-    input_type: uint256
-    indexed: false
-  contract_sources:
-  - address: 0x81112d4a0389afbe159f39a5b048602ceb221285
-    contract_name: NativeDistributor
-  signature_file: FeeSet_uint256_.txt
 - name: FixedFeeSet
   signature: FixedFeeSet(bytes32,uint256)
   topic_hash: 0x025df4885db3fa8c2f03e70fb1245c33dfc0519f7017a1d59b0a214fc96d9e2e
@@ -1743,6 +1743,18 @@ events:
   - address: 0x32641081ccc174f89447cc9b99e79c3724a03e3c
     contract_name: Distributor
   signature_file: HookAdded_bytes32_.txt
+- name: Initialized
+  signature: Initialized(uint8)
+  topic_hash: 0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
+  anonymous: false
+  inputs:
+  - name: version
+    input_type: uint8
+    indexed: false
+  contract_sources:
+  - address: 0x8bd36ca1a55e389335004872aa3c3be0969d3aa7
+    contract_name: PolygonZkEVMBridgeV2
+  signature_file: Initialized_uint8_.txt
 - name: Initialized
   signature: Initialized(uint64)
   topic_hash: 0xc7f505b2f371ae2175ee4913f4499e1f2633a7b5936321eed1cdaeb6115181d2
@@ -2005,18 +2017,6 @@ events:
   - address: 0xd558c2931f4856bdc78e1ac2708abf8bde197d1b
     contract_name: Rewards
   signature_file: Initialized_uint64_.txt
-- name: Initialized
-  signature: Initialized(uint8)
-  topic_hash: 0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
-  anonymous: false
-  inputs:
-  - name: version
-    input_type: uint8
-    indexed: false
-  contract_sources:
-  - address: 0x8bd36ca1a55e389335004872aa3c3be0969d3aa7
-    contract_name: PolygonZkEVMBridgeV2
-  signature_file: Initialized_uint8_.txt
 - name: LockDurationsUpdated
   signature: LockDurationsUpdated(uint256,uint256)
   topic_hash: 0xfb6643f1917d4ac31b0c062fdf49db2da21205d50d01ffd6c07ed5e73389f600
@@ -3559,6 +3559,30 @@ events:
     contract_name: ArtifactStaking
   signature_file: RewardsClaimAndStaked_uint256_address_uint256_.txt
 - name: RewardsClaimed
+  signature: RewardsClaimed(address,uint256,uint256)
+  topic_hash: 0xdacbdde355ba930696a362ea6738feb9f8bd52dfb3d81947558fd3217e23e325
+  anonymous: false
+  inputs:
+  - name: artifact
+    input_type: address
+    indexed: true
+  - name: amount
+    input_type: uint256
+    indexed: false
+  - name: blockNumber
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0xdac1fe96fc3fa5bb9bd4a3ada9fa44d4a44be9e2
+    contract_name: Rewards
+  - address: 0x16d846093cac3d92f124a181fbb44cd17b85cc95
+    contract_name: Rewards
+  - address: 0x64ec59f979fcd0f97ef0618dfe751e15cb631612
+    contract_name: Rewards
+  - address: 0xc110649a70ebee2efffce0ab49aea700ddc9c089
+    contract_name: Rewards
+  signature_file: RewardsClaimed_address_uint256_uint256_.txt
+- name: RewardsClaimed
   signature: RewardsClaimed(address,uint256)
   topic_hash: 0xfc30cddea38e2bf4d6ea7d3f9ed3b6ad7f176419f4963bd81318067a4aee73fe
   anonymous: false
@@ -3630,30 +3654,6 @@ events:
   - address: 0xd558c2931f4856bdc78e1ac2708abf8bde197d1b
     contract_name: Rewards
   signature_file: RewardsClaimed_uint256_address_uint256_uint256_.txt
-- name: RewardsClaimed
-  signature: RewardsClaimed(address,uint256,uint256)
-  topic_hash: 0xdacbdde355ba930696a362ea6738feb9f8bd52dfb3d81947558fd3217e23e325
-  anonymous: false
-  inputs:
-  - name: artifact
-    input_type: address
-    indexed: true
-  - name: amount
-    input_type: uint256
-    indexed: false
-  - name: blockNumber
-    input_type: uint256
-    indexed: false
-  contract_sources:
-  - address: 0xdac1fe96fc3fa5bb9bd4a3ada9fa44d4a44be9e2
-    contract_name: Rewards
-  - address: 0x16d846093cac3d92f124a181fbb44cd17b85cc95
-    contract_name: Rewards
-  - address: 0x64ec59f979fcd0f97ef0618dfe751e15cb631612
-    contract_name: Rewards
-  - address: 0xc110649a70ebee2efffce0ab49aea700ddc9c089
-    contract_name: Rewards
-  signature_file: RewardsClaimed_address_uint256_uint256_.txt
 - name: RewardsUpdated
   signature: RewardsUpdated(address,address)
   topic_hash: 0x52cb9bd420e692b24367bfe6cc4e8640928dc4a9011c4bb0f1c36fac91b9a6da
@@ -4074,37 +4074,6 @@ events:
     contract_name: ArtifactStaking
   signature_file: StakeWeightUpdated_uint256_address_address_uint256_uint256_uint256_uint256_uint256_.txt
 - name: Staked
-  signature: Staked(address,address,uint256,uint256,uint256,uint256)
-  topic_hash: 0x1a239cfcc9eee66af37729671dcbd82e1544f57835d53fa02eb9220a930a8f87
-  anonymous: false
-  inputs:
-  - name: user
-    input_type: address
-    indexed: true
-  - name: artifact
-    input_type: address
-    indexed: true
-  - name: stakeId
-    input_type: uint256
-    indexed: true
-  - name: amount
-    input_type: uint256
-    indexed: false
-  - name: lockDuration
-    input_type: uint256
-    indexed: false
-  - name: stakeWeight
-    input_type: uint256
-    indexed: false
-  contract_sources:
-  - address: 0xeb739b5b19281679bafa2e8c8406b6c2d2b31394
-    contract_name: ArtifactStaking
-  - address: 0xc22a05711ef9f3e59baf8ae48f59896715d49faf
-    contract_name: ArtifactStaking
-  - address: 0x2d87d4a017ef7907879a817c57b84bed25ef3e5f
-    contract_name: ArtifactStaking
-  signature_file: Staked_address_address_uint256_uint256_uint256_uint256_.txt
-- name: Staked
   signature: Staked(address,uint256,uint256,uint256,uint256)
   topic_hash: 0x9cfd25589d1eb8ad71e342a86a8524e83522e3936c0803048c08f6d9ad974f40
   anonymous: false
@@ -4167,6 +4136,37 @@ events:
   - address: 0xfcff70858314932f71285e477f71424bbe0b2746
     contract_name: ArtifactStaking
   signature_file: Staked_address_address_uint256_uint256_uint256_uint256_uint256_uint256_.txt
+- name: Staked
+  signature: Staked(address,address,uint256,uint256,uint256,uint256)
+  topic_hash: 0x1a239cfcc9eee66af37729671dcbd82e1544f57835d53fa02eb9220a930a8f87
+  anonymous: false
+  inputs:
+  - name: user
+    input_type: address
+    indexed: true
+  - name: artifact
+    input_type: address
+    indexed: true
+  - name: stakeId
+    input_type: uint256
+    indexed: true
+  - name: amount
+    input_type: uint256
+    indexed: false
+  - name: lockDuration
+    input_type: uint256
+    indexed: false
+  - name: stakeWeight
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0xeb739b5b19281679bafa2e8c8406b6c2d2b31394
+    contract_name: ArtifactStaking
+  - address: 0xc22a05711ef9f3e59baf8ae48f59896715d49faf
+    contract_name: ArtifactStaking
+  - address: 0x2d87d4a017ef7907879a817c57b84bed25ef3e5f
+    contract_name: ArtifactStaking
+  signature_file: Staked_address_address_uint256_uint256_uint256_uint256_.txt
 - name: StorageTouched
   signature: StorageTouched(uint256,uint256)
   topic_hash: 0x226d633e9b82ae11b31552f2304b4fa6ac3e939ba027705820006a3bba9f1d92

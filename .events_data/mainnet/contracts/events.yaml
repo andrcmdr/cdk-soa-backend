@@ -1,5 +1,5 @@
 metadata:
-  generated_at: 2025-10-30T03:17:27.561375Z
+  generated_at: 2025-10-30T04:55:47.724945Z
   blockscout_server: https://sentient-blockscout.eu-north-2.gateway.fm
   total_events: 88
   total_unique_signatures: 88
@@ -661,20 +661,6 @@ events:
     contract_name: AgglayerBridgeL2
   signature_file: ForwardLET_uint256_bytes32_uint256_bytes32_bytes_.txt
 - name: Initialized
-  signature: Initialized(uint8)
-  topic_hash: 0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
-  anonymous: false
-  inputs:
-  - name: version
-    input_type: uint8
-    indexed: false
-  contract_sources:
-  - address: 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c
-    contract_name: AgglayerBridgeL2
-  - address: 0x0200143fa295ee4dffef22ee2616c2e008d81688
-    contract_name: AgglayerGERL2
-  signature_file: Initialized_uint8_.txt
-- name: Initialized
   signature: Initialized(uint64)
   topic_hash: 0xc7f505b2f371ae2175ee4913f4499e1f2633a7b5936321eed1cdaeb6115181d2
   anonymous: false
@@ -690,6 +676,20 @@ events:
   - address: 0x39511be4ef7b194cece5af31dec2d0101d46e008
     contract_name: TokenWrappedBridgeUpgradeable
   signature_file: Initialized_uint64_.txt
+- name: Initialized
+  signature: Initialized(uint8)
+  topic_hash: 0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
+  anonymous: false
+  inputs:
+  - name: version
+    input_type: uint8
+    indexed: false
+  contract_sources:
+  - address: 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c
+    contract_name: AgglayerBridgeL2
+  - address: 0x0200143fa295ee4dffef22ee2616c2e008d81688
+    contract_name: AgglayerGERL2
+  signature_file: Initialized_uint8_.txt
 - name: LogApproveMerkleRoot
   signature: LogApproveMerkleRoot(address,uint256)
   topic_hash: 0x339cbb7bd5d094ad8908e8442c328069709dbdedea4514be20261aca79006e67
