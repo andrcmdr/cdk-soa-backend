@@ -1000,9 +1000,18 @@ fn ensure_quoted_yaml(yaml_content: String) -> String {
             // Check if the line already has quotes or is null
             if line.contains("null") || line.contains("~") {
                 result.push_str(line);
+                result.push('\n');
+                continue;
             } else if let Some(colon_pos) = line.find(':') {
                 let key_part = &line[..=colon_pos];
                 let value_part = line[colon_pos + 1..].trim();
+
+                // Skip if empty value
+                if value_part.is_empty() {
+                    result.push_str(line);
+                    result.push('\n');
+                    continue;
+                }
 
                 // Remove existing quotes if any
                 let clean_value = value_part.trim_matches(|c| c == '"' || c == '\'');
