@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use alloy_json_abi::JsonAbi;
 use alloy_primitives::Address;
+use tracing::error;
 use crate::event_decoder::EventDecoder;
 use crate::config::ContractWithImplementation;
 
@@ -22,7 +23,13 @@ impl ContractAbi {
         let address = Address::from_str(address_hex)?;
 
         let path = PathBuf::from(abi_path);
-        let json_abi_vec = fs::read(path)?;
+        let json_abi_vec = fs::read(path.clone()).unwrap_or_else(
+            |e| {
+                error!("Contract name: {:?}; Contract address: {:?}; ABI file: {:?}; Read error: {:?}", name, address, path, e);
+                eprintln!("Contract information: {:?}; Contract address: {:?}; ABI file: {:?}; Read error: {:?}", name, address, path, e);
+                vec![]
+            }
+        );
 
         // Preprocess the JSON to add missing anonymous fields
         let preprocessed_json = EventDecoder::preprocess_abi_json_from_vec(&json_abi_vec)?;
@@ -48,7 +55,13 @@ impl ContractAbi {
             .transpose()?;
 
         let path = PathBuf::from(&contract_info.abi_path);
-        let json_abi_vec = fs::read(path)?;
+        let json_abi_vec = fs::read(path.clone()).unwrap_or_else(
+            |e| {
+                error!("Contract information: {:?}; ABI file: {:?}; Read error: {:?}", contract_info, path, e);
+                eprintln!("Contract information: {:?}; ABI file: {:?}; Read error: {:?}", contract_info, path, e);
+                vec![]
+            }
+        );
 
         // Preprocess the JSON to add missing anonymous fields
         let preprocessed_json = EventDecoder::preprocess_abi_json_from_vec(&json_abi_vec)?;

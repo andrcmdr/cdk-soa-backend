@@ -139,7 +139,8 @@ pub async fn insert_event(
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18::jsonb)
     "#;
 
-    let event_data_jsonb = serde_json::to_string_pretty(&payload.event_data)?;
+    // let event_data_jsonb = serde_json::to_string_pretty(&payload.event_data)?;
+    let event_data_jsonb = serde_json::to_value(&payload.event_data)?;
 
     client
         .execute(

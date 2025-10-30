@@ -8,9 +8,10 @@ exclude = [
     "legacy",
     "merkle-trie-generator",
     "merkle-trie-cli",
-    "airdrop-backend",
     "user-id-fetcher",
+    "airdrop-backend",
     "tx-producer",
+    "load-tester-cli",
 ]
 
 # edition = "2021"
