@@ -8,7 +8,8 @@ chain:
 indexing:
   from_block: 0
   to_block:
-  all_logs_processing: 1
+  historical_logs_processing: 1
+  log_sync_protocol: ws # http or ws
   filter_senders: []
 #  filter_senders:
 #    - "0x742d35Cc6634C0532925a3b8BC342A5b6437AFCD"

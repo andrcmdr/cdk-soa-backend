@@ -4,6 +4,7 @@ use tracing::{info, error, debug};
 
 use alloy::{
     providers::{Provider, ProviderBuilder, WsConnect},
+    transports::ws::WebSocketConfig,
     rpc::types::{Filter, FilterBlockOption, BlockNumberOrTag, Log as RpcLog},
     primitives::Address,
     json_abi::JsonAbi,
@@ -77,7 +78,13 @@ impl EventProcessor {
             }
         }
 
-        let ws = WsConnect::new(&config.chain.ws_rpc_url);
+        let ws_config = WebSocketConfig::default()
+            .read_buffer_size(256 * 1024)
+            .write_buffer_size(256 * 1024)
+            .max_message_size(Some(1024 * 1024 * 1024))
+            .max_frame_size(Some(256 * 1024 * 1024))
+            .accept_unmasked_frames(false);
+        let ws = WsConnect::new(&config.chain.ws_rpc_url).with_config(ws_config);
         let http_rpc = reqwest::Url::from_str(&config.chain.http_rpc_url)?;
         let (ws_rpc_provider, http_rpc_provider) = build_providers(ws, http_rpc).await?;
 
@@ -158,7 +165,7 @@ impl EventProcessor {
         let mut handles: Vec<JoinHandle<anyhow::Result<()>>> = Vec::new();
 
         // Task 1: Process historical logs if enabled
-        let process_all_logs = self_arc.config.indexing.all_logs_processing.is_some_and(|process_logs| process_logs > 0);
+        let process_all_logs = self_arc.config.indexing.historical_logs_processing.is_some_and(|process_logs| process_logs > 0);
         if process_all_logs {
             let processor_for_history = Arc::clone(&self_arc);
             let filter_for_history = filter.clone();
@@ -167,7 +174,20 @@ impl EventProcessor {
             let historical_task = tokio::spawn(async move {
                 info!("Starting historical logs processing task");
 
-                let logs = processor_for_history.ws_rpc_provider.get_logs(&filter_for_history).await?;
+                let log_sync_protocol = processor_for_history.config.indexing.log_sync_protocol.clone();
+                let logs = match log_sync_protocol {
+                    Some(protocol) if protocol.to_lowercase() == "http" => {
+                        processor_for_history.http_rpc_provider.get_logs(&filter_for_history).await?
+                    },
+                    Some(protocol) if protocol.to_lowercase() == "ws" => {
+                        processor_for_history.ws_rpc_provider.get_logs(&filter_for_history).await?
+                    },
+                    _ => {
+                        error!("Invalid log sync protocol (must be 'http' or 'ws'): {:?}", log_sync_protocol);
+                        info!("Fallback to 'http' RPC protocol for logs sync");
+                        processor_for_history.http_rpc_provider.get_logs(&filter_for_history).await?
+                    }
+                };
                 debug!("Received {} logs from {} contracts", logs.len(), addresses_for_history.len());
 
                 for log in logs.iter() {
