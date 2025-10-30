@@ -1,5 +1,6 @@
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize, Serializer};
+use serde::ser::SerializeStruct;
 use serde_json::Value;
 use serde_yaml;
 use std::collections::{HashMap, HashSet};
@@ -44,49 +45,16 @@ struct OutputConfig {
 fn default_request_timeout() -> u64 { 30 }
 fn default_max_retries() -> u32 { 3 }
 
-// Custom serializer for quoted strings
-fn serialize_quoted_string<S>(value: &str, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    serializer.serialize_str(&format!("\"{}\"", value))
-}
-
-fn serialize_quoted_option_string<S>(value: &Option<String>, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    match value {
-        Some(v) => serializer.serialize_str(&format!("\"{}\"", v)),
-        None => serializer.serialize_none(),
-    }
-}
-
-// Wrapper types for explicit quoting
+// Helper struct to wrap strings with explicit quotes
 #[derive(Debug, Clone)]
 struct QuotedString(String);
 
 impl Serialize for QuotedString {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
         serializer.serialize_str(&format!("\"{}\"", self.0))
-    }
-}
-
-#[derive(Debug, Clone)]
-struct QuotedOptionString(Option<String>);
-
-impl Serialize for QuotedOptionString {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        match &self.0 {
-            Some(v) => serializer.serialize_str(&format!("\"{}\"", v)),
-            None => serializer.serialize_none(),
-        }
     }
 }
 
@@ -137,7 +105,7 @@ struct EventsMetadata {
     events_directory: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 struct EventDefinition {
     name: String,
     signature: String,
@@ -146,6 +114,23 @@ struct EventDefinition {
     inputs: Vec<EventInput>,
     contract_sources: Vec<ContractSource>,
     signature_file: String,
+}
+
+impl Serialize for EventDefinition {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut state = serializer.serialize_struct("EventDefinition", 7)?;
+        state.serialize_field("name", &self.name)?;
+        state.serialize_field("signature", &self.signature)?;
+        state.serialize_field("topic_hash", &self.topic_hash)?;
+        state.serialize_field("anonymous", &self.anonymous)?;
+        state.serialize_field("inputs", &self.inputs)?;
+        state.serialize_field("contract_sources", &self.contract_sources)?;
+        state.serialize_field("signature_file", &QuotedString::from(self.signature_file.clone()))?;
+        state.end()
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -260,26 +245,86 @@ struct ContractsMetadata {
     abi_directory: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 struct ContractInfo {
-    name: QuotedOptionString,
-    address: QuotedString,
-    abi_file: QuotedOptionString,
+    name: Option<String>,
+    address: String,
+    abi_file: Option<String>,
     is_verified: bool,
     is_fully_verified: Option<bool>,
     verified_at: Option<String>,
     implementations: Option<Vec<ImplementationInfo>>,
 }
 
-#[derive(Debug, Serialize)]
+impl Serialize for ContractInfo {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut state = serializer.serialize_struct("ContractInfo", 7)?;
+
+        // Serialize name with quotes
+        match &self.name {
+            Some(name) => state.serialize_field("name", &QuotedString::from(name.clone()))?,
+            None => state.serialize_field("name", &None::<String>)?,
+        }
+
+        // Serialize address with quotes
+        state.serialize_field("address", &QuotedString::from(self.address.clone()))?;
+
+        // Serialize abi_file with quotes
+        match &self.abi_file {
+            Some(abi_file) => state.serialize_field("abi_file", &QuotedString::from(abi_file.clone()))?,
+            None => state.serialize_field("abi_file", &None::<String>)?,
+        }
+
+        state.serialize_field("is_verified", &self.is_verified)?;
+        state.serialize_field("is_fully_verified", &self.is_fully_verified)?;
+        state.serialize_field("verified_at", &self.verified_at)?;
+        state.serialize_field("implementations", &self.implementations)?;
+        state.end()
+    }
+}
+
+#[derive(Debug)]
 struct ImplementationInfo {
-    name: QuotedOptionString,
-    address: QuotedString,
-    abi_file: QuotedOptionString,
+    name: Option<String>,
+    address: String,
+    abi_file: Option<String>,
     is_verified: bool,
     is_fully_verified: Option<bool>,
     verified_at: Option<String>,
     implementations: Option<Vec<ImplementationInfo>>,
+}
+
+impl Serialize for ImplementationInfo {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut state = serializer.serialize_struct("ImplementationInfo", 7)?;
+
+        // Serialize name with quotes
+        match &self.name {
+            Some(name) => state.serialize_field("name", &QuotedString::from(name.clone()))?,
+            None => state.serialize_field("name", &None::<String>)?,
+        }
+
+        // Serialize address with quotes
+        state.serialize_field("address", &QuotedString::from(self.address.clone()))?;
+
+        // Serialize abi_file with quotes
+        match &self.abi_file {
+            Some(abi_file) => state.serialize_field("abi_file", &QuotedString::from(abi_file.clone()))?,
+            None => state.serialize_field("abi_file", &None::<String>)?,
+        }
+
+        state.serialize_field("is_verified", &self.is_verified)?;
+        state.serialize_field("is_fully_verified", &self.is_fully_verified)?;
+        state.serialize_field("verified_at", &self.verified_at)?;
+        state.serialize_field("implementations", &self.implementations)?;
+        state.end()
+    }
 }
 
 // Structure to track contract events for the contracts-events YAML
@@ -872,9 +917,9 @@ async fn process_implementations_recursively(
                 };
 
                 impl_infos.push(ImplementationInfo {
-                    name: QuotedOptionString(impl_details.name.or(implementation.name.clone())),
-                    address: QuotedString(impl_address.clone()),
-                    abi_file: QuotedOptionString(impl_abi_file),
+                    name: impl_details.name.or(implementation.name.clone()),
+                    address: impl_address.clone(),
+                    abi_file: impl_abi_file,
                     is_verified,
                     is_fully_verified: impl_details.is_fully_verified,
                     verified_at: impl_details.verified_at,
@@ -975,9 +1020,9 @@ async fn process_contract_with_implementations(
     };
 
     Ok(ContractInfo {
-        name: QuotedOptionString(contract_details.name.or(contract_item.address.name.clone())),
-        address: QuotedString(address.clone()),
-        abi_file: QuotedOptionString(abi_file),
+        name: contract_details.name.or(contract_item.address.name.clone()),
+        address: address.clone(),
+        abi_file,
         is_verified,
         is_fully_verified: contract_details.is_fully_verified,
         verified_at: contract_details.verified_at.or(contract_item.verified_at.clone()),
@@ -992,7 +1037,7 @@ fn sort_contracts_by_verified_at(contracts: &mut Vec<ContractInfo>) {
             (Some(a_ts), Some(b_ts)) => b_ts.cmp(&a_ts), // Descending order (most recent first)
             (Some(_), None) => std::cmp::Ordering::Less, // Verified contracts first
             (None, Some(_)) => std::cmp::Ordering::Greater,
-            (None, None) => a.address.0.cmp(&b.address.0), // Fallback to address comparison
+            (None, None) => a.address.cmp(&b.address), // Fallback to address comparison
         }
     });
 
@@ -1010,7 +1055,7 @@ fn sort_implementations_by_verified_at(implementations: &mut Vec<ImplementationI
             (Some(a_ts), Some(b_ts)) => b_ts.cmp(&a_ts), // Descending order (most recent first)
             (Some(_), None) => std::cmp::Ordering::Less,
             (None, Some(_)) => std::cmp::Ordering::Greater,
-            (None, None) => a.address.0.cmp(&b.address.0),
+            (None, None) => a.address.cmp(&b.address),
         }
     });
 
