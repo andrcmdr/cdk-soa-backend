@@ -1,0 +1,12 @@
+Event Name: ArtifactUsageReported
+Signature: ArtifactUsageReported(address,uint256,uint256)
+Topic Hash: 0xce93c856d9c654eb5dd7944fe1321c5b909393589cf60d705a75e20c85a60e49
+Anonymous: false
+
+Inputs:
+  0: artifact address (indexed)
+  1: usage uint256 (not indexed)
+  2: timestamp uint256 (not indexed)
+
+Contract Sources:
+  - 0x60a8cddd7630054169a7a7470078842d32ba09a4 (contract_name: ArtifactManager)

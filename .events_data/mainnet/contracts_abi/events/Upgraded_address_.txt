@@ -7,5 +7,10 @@ Inputs:
   0: implementation address (indexed)
 
 Contract Sources (sorted by verification time, most recent first):
+  - 0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8 (contract_name: ArtifactFactory, verified_at: 2025-10-23T05:44:36.182000Z)
+  - 0xE4CDBd2Df584bFB96a4dcDe7a384510922981409 (contract_name: ERC1967Proxy, verified_at: 2025-10-22T11:17:57.273197Z)
+  - 0x60a8cDdd7630054169A7a7470078842d32Ba09a4 (contract_name: ArtifactManager, verified_at: 2025-10-22T10:46:22.354266Z)
+  - 0xFf075D0E712e771B43861659F3d128bA958f2950 (contract_name: ERC1967Proxy, verified_at: 2025-10-22T10:45:53.130492Z)
+  - 0x7a7f337d883EE98DF40c4654b3ad4E3aacF304E8 (contract_name: TokenWrappedTransparentProxy, verified_at: 2025-10-17T05:23:50.460159Z)
   - 0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe (contract_name: TransparentUpgradeableProxy, verified_at: 2025-10-14T19:44:34.321852Z)
   - 0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA (contract_name: TransparentUpgradeableProxy, verified_at: 2025-10-14T19:23:10.136777Z)

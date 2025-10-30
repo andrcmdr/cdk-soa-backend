@@ -38,6 +38,141 @@ contracts:
   - event: TransferGlobalExitRootUpdater(address currentGlobalExitRootUpdater, address pendingGlobalExitRootUpdater)
   - event: UpdateHashChainValue(bytes32 indexed newGlobalExitRoot, bytes32 indexed newHashChainValue)
   - event: UpdateRemovalHashChainValue(bytes32 indexed removedGlobalExitRoot, bytes32 indexed newRemovalHashChainValue)
+- name: ArtifactFactory
+  address:
+  - address: 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8
+  events:
+  - event: ArtifactBeaconChanged(address indexed _artifactBeacon)
+  - event: ArtifactCreated(bytes32 indexed artifactId, string artifactName, string artifactType, address indexed artifactAddress, address indexed owner)
+  - event: ArtifactTypeAdded(string indexed artifactType)
+  - event: ArtifactTypeRemoved(string indexed artifactType)
+  - event: Initialized(uint64 version)
+  - event: RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+  - event: RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: Upgraded(address indexed implementation)
+- name: ArtifactManager
+  address:
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+  events:
+  - event: ArtifactAdded(address indexed artifact, string metadataUri)
+  - event: ArtifactBatchRevenueReported(address[] artifacts, uint256[] revenues, uint256[] timestamps)
+  - event: ArtifactBatchUsageReported(address[] artifacts, uint256[] usages, uint256[] timestamps)
+  - event: ArtifactFactoryChanged(address indexed previousArtifactFactory, address indexed newArtifactFactory)
+  - event: ArtifactMetadataUpdated(address indexed artifact, string newMetadataUri)
+  - event: ArtifactRemoved(address indexed artifact)
+  - event: ArtifactRevenueReported(address indexed artifact, uint256 revenue, uint256 timestamp)
+  - event: ArtifactUsageReported(address indexed artifact, uint256 usage, uint256 timestamp)
+  - event: Initialized(uint64 version)
+  - event: RoleAdminChanged(bytes32 indexed role, bytes32 indexed previousAdminRole, bytes32 indexed newAdminRole)
+  - event: RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
+  - event: Upgraded(address indexed implementation)
+- name: ERC1967Proxy
+  address:
+  - address: 0xe4cdbd2df584bfb96a4dcde7a384510922981409
+  - address: 0xff075d0e712e771b43861659f3d128ba958f2950
+  events:
+  - event: Upgraded(address indexed implementation)
+- name: GnosisSafe
+  address:
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+  events:
+  - event: AddedOwner(address owner)
+  - event: ApproveHash(bytes32 indexed approvedHash, address indexed owner)
+  - event: ChangedFallbackHandler(address handler)
+  - event: ChangedGuard(address guard)
+  - event: ChangedThreshold(uint256 threshold)
+  - event: DisabledModule(address module)
+  - event: EnabledModule(address module)
+  - event: ExecutionFailure(bytes32 txHash, uint256 payment)
+  - event: ExecutionFromModuleFailure(address indexed module)
+  - event: ExecutionFromModuleSuccess(address indexed module)
+  - event: ExecutionSuccess(bytes32 txHash, uint256 payment)
+  - event: RemovedOwner(address owner)
+  - event: SafeReceived(address indexed sender, uint256 value)
+  - event: SafeSetup(address indexed initiator, address[] owners, uint256 threshold, address initializer, address fallbackHandler)
+  - event: SignMsg(bytes32 indexed msgHash)
+- name: GnosisSafeL2
+  address:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+  events:
+  - event: AddedOwner(address owner)
+  - event: ApproveHash(bytes32 indexed approvedHash, address indexed owner)
+  - event: ChangedFallbackHandler(address handler)
+  - event: ChangedGuard(address guard)
+  - event: ChangedThreshold(uint256 threshold)
+  - event: DisabledModule(address module)
+  - event: EnabledModule(address module)
+  - event: ExecutionFailure(bytes32 txHash, uint256 payment)
+  - event: ExecutionFromModuleFailure(address indexed module)
+  - event: ExecutionFromModuleSuccess(address indexed module)
+  - event: ExecutionSuccess(bytes32 txHash, uint256 payment)
+  - event: RemovedOwner(address owner)
+  - event: SafeModuleTransaction(address module, address to, uint256 value, bytes data, uint8 operation)
+  - event: SafeMultiSigTransaction(address to, uint256 value, bytes data, uint8 operation, uint256 safeTxGas, uint256 baseGas, uint256 gasPrice, address gasToken, address refundReceiver, bytes signatures, bytes additionalInfo)
+  - event: SafeReceived(address indexed sender, uint256 value)
+  - event: SafeSetup(address indexed initiator, address[] owners, uint256 threshold, address initializer, address fallbackHandler)
+  - event: SignMsg(bytes32 indexed msgHash)
+- name: GnosisSafeProxyFactory
+  address:
+  - address: 0xa6b71e26c5e0845f74c812102ca7114b6a896ab2
+  events:
+  - event: ProxyCreation(address proxy, address singleton)
+- name: LAMBO
+  address:
+  - address: 0x680fbbd2851b5d54c2b872317806571a692fd520
+  events:
+  - event: Approval(address indexed owner, address indexed spender, uint256 value)
+  - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+  - event: Transfer(address indexed from, address indexed to, uint256 value)
+- name: SentientRewardDistributor
+  address:
+  - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+  events:
+  - event: LogApproveMerkleRoot(address indexed token, uint256 indexed epoch)
+  - event: LogClaimRewards(address indexed token, address indexed user, uint256 amount, uint256 indexed epoch)
+  - event: LogDenyMerkleRoot(address indexed token, bytes32 indexed merkleRoot)
+  - event: LogEmergencyWithdraw(address indexed token, uint256 amount, bool indexed isNative)
+  - event: LogSetAuthorizedApprover(address indexed approver, bool indexed isAuthorized)
+  - event: LogSetMerkleProofPendingPeriod(uint256 indexed newPeriod)
+  - event: LogSetMerkleRoot(address indexed token, bytes32 indexed merkleRoot)
+  - event: LogSetPaused(bool indexed isPaused)
+  - event: OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner)
+  - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+  - event: Paused(address account)
+  - event: Unpaused(address account)
+- name: SentientStakingDepositManager
+  address:
+  - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+  events:
+  - event: LogDeposit(address indexed user, address indexed artifact, address indexed token, uint256 lockedUntil, uint256 amount, uint256 tokenId)
+  - event: LogEmergencyWithdraw(address indexed token, uint256 amount, bool indexed isNative)
+  - event: LogSetApprovedTtl(uint256 indexed ttl, bool indexed approvedTtl)
+  - event: LogSetArtifactManager(address indexed artifactManager)
+  - event: LogSetDepositEnabled(bool indexed depositEnabled)
+  - event: LogSetPaused(bool indexed paused)
+  - event: LogSetWithdrawEnabled(bool indexed withdrawEnabled)
+  - event: LogWithdraw(address indexed user, address indexed artifact, address indexed token, uint256 lockedUntil, uint256 amount, uint256 tokenId)
+  - event: OwnershipTransferStarted(address indexed previousOwner, address indexed newOwner)
+  - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+  - event: Paused(address account)
+  - event: Unpaused(address account)
+- name: TokenWrappedBridgeUpgradeable
+  address:
+  - address: 0x39511be4ef7b194cece5af31dec2d0101d46e008
+  events:
+  - event: Approval(address indexed owner, address indexed spender, uint256 value)
+  - event: EIP712DomainChanged()
+  - event: Initialized(uint64 version)
+  - event: Transfer(address indexed from, address indexed to, uint256 value)
+- name: TokenWrappedTransparentProxy
+  address:
+  - address: 0x7a7f337d883ee98df40c4654b3ad4e3aacf304e8
+  events:
+  - event: AdminChanged(address previousAdmin, address newAdmin)
+  - event: BeaconUpgraded(address indexed beacon)
+  - event: Upgraded(address indexed implementation)
 - name: TransparentUpgradeableProxy
   address:
   - address: 0x2a3dd3eb832af982ec71669e178424b10dca2ede
@@ -46,3 +181,9 @@ contracts:
   - event: AdminChanged(address previousAdmin, address newAdmin)
   - event: BeaconUpgraded(address indexed beacon)
   - event: Upgraded(address indexed implementation)
+- name: WSENT
+  address:
+  - address: 0x9a5220a853ede5ab1cfcb6517135f59e8894bdd8
+  events:
+  - event: Approval(address indexed owner, address indexed spender, uint256 value)
+  - event: Transfer(address indexed from, address indexed to, uint256 value)

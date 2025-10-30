@@ -1,0 +1,20 @@
+Event Name: SafeMultiSigTransaction
+Signature: SafeMultiSigTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes,bytes)
+Topic Hash: 0x66753cd2356569ee081232e3be8909b950e0a76c1f8460c3a5e3c2be32b11bed
+Anonymous: false
+
+Inputs:
+  0: to address (not indexed)
+  1: value uint256 (not indexed)
+  2: data bytes (not indexed)
+  3: operation uint8 (not indexed)
+  4: safeTxGas uint256 (not indexed)
+  5: baseGas uint256 (not indexed)
+  6: gasPrice uint256 (not indexed)
+  7: gasToken address (not indexed)
+  8: refundReceiver address (not indexed)
+  9: signatures bytes (not indexed)
+  10: additionalInfo bytes (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x3E5c63644E683549055b9Be8653de26E0B4CD36E (contract_name: GnosisSafeL2, verified_at: 2025-10-20T11:55:27.065869Z)

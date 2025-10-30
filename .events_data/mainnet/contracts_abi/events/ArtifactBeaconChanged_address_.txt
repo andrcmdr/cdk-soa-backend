@@ -1,0 +1,10 @@
+Event Name: ArtifactBeaconChanged
+Signature: ArtifactBeaconChanged(address)
+Topic Hash: 0x8fe7f3863fac118b2d240f1e398c5c0e348092e09afecbc3a3f8595924fb14ca
+Anonymous: false
+
+Inputs:
+  0: _artifactBeacon address (indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8 (contract_name: ArtifactFactory, verified_at: 2025-10-23T05:44:36.182000Z)

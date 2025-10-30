@@ -1,0 +1,14 @@
+Event Name: Approval
+Signature: Approval(address,address,uint256)
+Topic Hash: 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925
+Anonymous: false
+
+Inputs:
+  0: owner address (indexed)
+  1: spender address (indexed)
+  2: value uint256 (not indexed)
+
+Contract Sources:
+  - 0x9a5220a853ede5ab1cfcb6517135f59e8894bdd8 (contract_name: WSENT)
+  - 0x680fbbd2851b5d54c2b872317806571a692fd520 (contract_name: LAMBO)
+  - 0x39511be4ef7b194cece5af31dec2d0101d46e008 (contract_name: TokenWrappedBridgeUpgradeable)

@@ -1,0 +1,11 @@
+Event Name: DisabledModule
+Signature: DisabledModule(address)
+Topic Hash: 0xaab4fa2b463f581b2b32cb3b7e3b704b9ce37cc209b5fb4d77e593ace4054276
+Anonymous: false
+
+Inputs:
+  0: module address (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552 (contract_name: GnosisSafe, verified_at: 2025-10-20T11:55:35.262186Z)
+  - 0x3E5c63644E683549055b9Be8653de26E0B4CD36E (contract_name: GnosisSafeL2, verified_at: 2025-10-20T11:55:27.065869Z)

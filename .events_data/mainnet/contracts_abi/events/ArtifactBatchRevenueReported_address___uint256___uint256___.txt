@@ -1,0 +1,12 @@
+Event Name: ArtifactBatchRevenueReported
+Signature: ArtifactBatchRevenueReported(address[],uint256[],uint256[])
+Topic Hash: 0x6a63da1b8d30e3097c7c7200cde5450953fbf8b541c9f3596236d9ea4ead840e
+Anonymous: false
+
+Inputs:
+  0: artifacts address[] (not indexed)
+  1: revenues uint256[] (not indexed)
+  2: timestamps uint256[] (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x60a8cDdd7630054169A7a7470078842d32Ba09a4 (contract_name: ArtifactManager, verified_at: 2025-10-22T10:46:22.354266Z)

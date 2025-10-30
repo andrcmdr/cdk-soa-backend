@@ -1,44 +1,194 @@
 metadata:
-  generated_at: 2025-10-16T20:44:47.723142Z
+  generated_at: 2025-10-30T03:17:48.049885Z
   blockscout_server: https://sentient-blockscout.eu-north-2.gateway.fm
-  total_verified: 4
+  total_verified: 21
   total_unverified: 0
-  total_with_abi: 4
+  total_verified_with_abi: 21
+  total_unverified_with_abi: 0
+  total_verified_implementations_with_abi: 5
+  total_unverified_implementations_with_abi: 0
   abi_directory: ./contracts_abi/abi
 verified_contracts:
-- name: TransparentUpgradeableProxy
-  address: 0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe
-  abi_file: TransparentUpgradeableProxy_0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe.json
+- name: "TokenWrappedBridgeUpgradeable"
+  address: "0x39511be4eF7b194Cece5af31dEc2D0101d46E008"
+  abi_file: "./contracts_abi/abi/TokenWrappedBridgeUpgradeable_0x39511be4eF7b194Cece5af31dEc2D0101d46E008.json"
+  is_verified: true
+  is_fully_verified: false
+  verified_at: 2025-10-30T03:16:38.889314Z
+  implementations: null
+- name: "ArtifactFactory"
+  address: "0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8"
+  abi_file: "./contracts_abi/abi/ArtifactFactory_0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-23T05:44:36.182000Z
+  implementations: null
+- name: "LAMBO"
+  address: "0x680FbBd2851B5d54C2b872317806571a692fD520"
+  abi_file: "./contracts_abi/abi/LAMBO_0x680FbBd2851B5d54C2b872317806571a692fD520.json"
+  is_verified: true
+  is_fully_verified: false
+  verified_at: 2025-10-22T21:06:45.031914Z
+  implementations: null
+- name: "SentientStakingDepositManager"
+  address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
+  abi_file: "./contracts_abi/abi/SentientStakingDepositManager_0x5354BCD502A06d73C51d2EE7a2052524A1650610.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-22T12:34:23.489422Z
+  implementations: null
+- name: "SentientRewardDistributor"
+  address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
+  abi_file: "./contracts_abi/abi/SentientRewardDistributor_0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-22T12:34:06.898232Z
+  implementations: null
+- name: "WSENT"
+  address: "0x9A5220A853EDE5ab1cfCB6517135F59E8894BDd8"
+  abi_file: "./contracts_abi/abi/WSENT_0x9A5220A853EDE5ab1cfCB6517135F59E8894BDd8.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-22T12:33:49.326975Z
+  implementations: null
+- name: "ERC1967Proxy"
+  address: "0xE4CDBd2Df584bFB96a4dcDe7a384510922981409"
+  abi_file: "./contracts_abi/abi/ERC1967Proxy_0xE4CDBd2Df584bFB96a4dcDe7a384510922981409.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-22T11:17:57.273197Z
+  implementations:
+  - name: "ArtifactFactory"
+    address: "0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8"
+    abi_file: "./contracts_abi/abi/ArtifactFactory_0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8_parent_0xE4CDBd2Df584bFB96a4dcDe7a384510922981409.json"
+    is_verified: true
+    is_fully_verified: true
+    verified_at: 2025-10-23T05:44:36.182000Z
+    implementations: null
+- name: "ArtifactManager"
+  address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
+  abi_file: "./contracts_abi/abi/ArtifactManager_0x60a8cDdd7630054169A7a7470078842d32Ba09a4.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-22T10:46:22.354266Z
+  implementations: null
+- name: "ERC1967Proxy"
+  address: "0xFf075D0E712e771B43861659F3d128bA958f2950"
+  abi_file: "./contracts_abi/abi/ERC1967Proxy_0xFf075D0E712e771B43861659F3d128bA958f2950.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-22T10:45:53.130492Z
+  implementations:
+  - name: "ArtifactManager"
+    address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
+    abi_file: "./contracts_abi/abi/ArtifactManager_0x60a8cDdd7630054169A7a7470078842d32Ba09a4_parent_0xFf075D0E712e771B43861659F3d128bA958f2950.json"
+    is_verified: true
+    is_fully_verified: true
+    verified_at: 2025-10-22T10:46:22.354266Z
+    implementations: null
+- name: "MultiSendCallOnly"
+  address: "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D"
+  abi_file: "./contracts_abi/abi/MultiSendCallOnly_0x40A2aCCbd92BCA938b02010E17A5b8929b49130D.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-20T11:56:14.101289Z
+  implementations: null
+- name: "MultiSend"
+  address: "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761"
+  abi_file: "./contracts_abi/abi/MultiSend_0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-20T11:56:02.943097Z
+  implementations: null
+- name: "CompatibilityFallbackHandler"
+  address: "0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4"
+  abi_file: "./contracts_abi/abi/CompatibilityFallbackHandler_0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-20T11:55:54.126593Z
+  implementations: null
+- name: "SimulateTxAccessor"
+  address: "0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da"
+  abi_file: "./contracts_abi/abi/SimulateTxAccessor_0x59AD6735bCd8152B84860Cb256dD9e96b85F69Da.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-20T11:55:44.868690Z
+  implementations: null
+- name: "GnosisSafe"
+  address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
+  abi_file: "./contracts_abi/abi/GnosisSafe_0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-20T11:55:35.262186Z
+  implementations: null
+- name: "GnosisSafeL2"
+  address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
+  abi_file: "./contracts_abi/abi/GnosisSafeL2_0x3E5c63644E683549055b9Be8653de26E0B4CD36E.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-20T11:55:27.065869Z
+  implementations: null
+- name: "GnosisSafeProxyFactory"
+  address: "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2"
+  abi_file: "./contracts_abi/abi/GnosisSafeProxyFactory_0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-20T11:55:13.816536Z
+  implementations: null
+- name: "TokenWrappedTransparentProxy"
+  address: "0x7a7f337d883EE98DF40c4654b3ad4E3aacF304E8"
+  abi_file: "./contracts_abi/abi/TokenWrappedTransparentProxy_0x7a7f337d883EE98DF40c4654b3ad4E3aacF304E8.json"
+  is_verified: true
+  is_fully_verified: false
+  verified_at: 2025-10-17T05:23:50.460159Z
+  implementations:
+  - name: "TokenWrappedBridgeUpgradeable"
+    address: "0x39511be4eF7b194Cece5af31dEc2D0101d46E008"
+    abi_file: "./contracts_abi/abi/TokenWrappedBridgeUpgradeable_0x39511be4eF7b194Cece5af31dEc2D0101d46E008_parent_0x7a7f337d883EE98DF40c4654b3ad4E3aacF304E8.json"
+    is_verified: true
+    is_fully_verified: false
+    verified_at: 2025-10-30T03:16:38.889314Z
+    implementations: null
+- name: "TransparentUpgradeableProxy"
+  address: "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe"
+  abi_file: "./contracts_abi/abi/TransparentUpgradeableProxy_0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe.json"
   is_verified: true
   is_fully_verified: true
   verified_at: 2025-10-14T19:44:34.321852Z
   implementations:
-  - name: AgglayerBridgeL2
-    address: 0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C
-    abi_file: AgglayerBridgeL2_0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C.json
+  - name: "AgglayerBridgeL2"
+    address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
+    abi_file: "./contracts_abi/abi/AgglayerBridgeL2_0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C_parent_0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe.json"
     is_verified: true
     is_fully_verified: true
     verified_at: 2025-10-14T19:40:39.317370Z
     implementations: null
-- name: AgglayerGERL2
-  address: 0x0200143Fa295EE4dffEF22eE2616c2E008D81688
-  abi_file: AgglayerGERL2_0x0200143Fa295EE4dffEF22eE2616c2E008D81688.json
+- name: "AgglayerGERL2"
+  address: "0x0200143Fa295EE4dffEF22eE2616c2E008D81688"
+  abi_file: "./contracts_abi/abi/AgglayerGERL2_0x0200143Fa295EE4dffEF22eE2616c2E008D81688.json"
   is_verified: true
   is_fully_verified: true
   verified_at: 2025-10-14T19:41:27.937222Z
   implementations: null
-- name: TransparentUpgradeableProxy
-  address: 0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA
-  abi_file: TransparentUpgradeableProxy_0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA.json
+- name: "AgglayerBridgeL2"
+  address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
+  abi_file: "./contracts_abi/abi/AgglayerBridgeL2_0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-14T19:40:39.317370Z
+  implementations: null
+- name: "TransparentUpgradeableProxy"
+  address: "0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA"
+  abi_file: "./contracts_abi/abi/TransparentUpgradeableProxy_0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA.json"
   is_verified: true
   is_fully_verified: true
   verified_at: 2025-10-14T19:23:10.136777Z
-  implementations: null
-- name: AgglayerBridgeL2
-  address: 0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C
-  abi_file: null
-  is_verified: true
-  is_fully_verified: null
-  verified_at: null
-  implementations: null
+  implementations:
+  - name: "AgglayerGERL2"
+    address: "0x0200143Fa295EE4dffEF22eE2616c2E008D81688"
+    abi_file: "./contracts_abi/abi/AgglayerGERL2_0x0200143Fa295EE4dffEF22eE2616c2E008D81688_parent_0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA.json"
+    is_verified: true
+    is_fully_verified: true
+    verified_at: 2025-10-14T19:41:27.937222Z
+    implementations: null
 unverified_contracts: []

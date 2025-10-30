@@ -1,0 +1,11 @@
+Event Name: Unpaused
+Signature: Unpaused(address)
+Topic Hash: 0x5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa
+Anonymous: false
+
+Inputs:
+  0: account address (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x5354BCD502A06d73C51d2EE7a2052524A1650610 (contract_name: SentientStakingDepositManager, verified_at: 2025-10-22T12:34:23.489422Z)
+  - 0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c (contract_name: SentientRewardDistributor, verified_at: 2025-10-22T12:34:06.898232Z)

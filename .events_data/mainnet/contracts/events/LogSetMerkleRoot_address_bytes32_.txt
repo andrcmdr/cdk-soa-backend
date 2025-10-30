@@ -1,0 +1,11 @@
+Event Name: LogSetMerkleRoot
+Signature: LogSetMerkleRoot(address,bytes32)
+Topic Hash: 0xa15c455c8dd3fb166935e9f04cf5cd265ec6ef3cd76ab3c2a2e76027b2399ab9
+Anonymous: false
+
+Inputs:
+  0: token address (indexed)
+  1: merkleRoot bytes32 (indexed)
+
+Contract Sources:
+  - 0x77100ba0182042aea9ec29f9257bcb2efec94d0c (contract_name: SentientRewardDistributor)

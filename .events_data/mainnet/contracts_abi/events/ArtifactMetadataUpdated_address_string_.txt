@@ -1,0 +1,11 @@
+Event Name: ArtifactMetadataUpdated
+Signature: ArtifactMetadataUpdated(address,string)
+Topic Hash: 0xbbaf003bc8305441a7e7277dcfd1523531e259334a02653fd2efa5b3b1cc7a26
+Anonymous: false
+
+Inputs:
+  0: artifact address (indexed)
+  1: newMetadataUri string (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x60a8cDdd7630054169A7a7470078842d32Ba09a4 (contract_name: ArtifactManager, verified_at: 2025-10-22T10:46:22.354266Z)

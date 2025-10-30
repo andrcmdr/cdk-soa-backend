@@ -1,0 +1,13 @@
+Event Name: LogEmergencyWithdraw
+Signature: LogEmergencyWithdraw(address,uint256,bool)
+Topic Hash: 0x05d60ee336bf8f532951632c1d9927806c2d5f2af36955b28c1918610d7082e5
+Anonymous: false
+
+Inputs:
+  0: token address (indexed)
+  1: amount uint256 (not indexed)
+  2: isNative bool (indexed)
+
+Contract Sources:
+  - 0x77100ba0182042aea9ec29f9257bcb2efec94d0c (contract_name: SentientRewardDistributor)
+  - 0x5354bcd502a06d73c51d2ee7a2052524a1650610 (contract_name: SentientStakingDepositManager)

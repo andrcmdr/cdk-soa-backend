@@ -1,8 +1,8 @@
 metadata:
-  generated_at: 2025-10-16T20:45:53.874964Z
+  generated_at: 2025-10-30T03:17:27.561375Z
   blockscout_server: https://sentient-blockscout.eu-north-2.gateway.fm
-  total_events: 33
-  total_unique_signatures: 33
+  total_events: 88
+  total_unique_signatures: 88
   events_directory: ./contracts/events
 events:
 - name: AcceptEmergencyBridgePauserRole
@@ -80,6 +80,20 @@ events:
   - address: 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c
     contract_name: AgglayerBridgeL2
   signature_file: AcceptProxiedTokensManagerRole_address_address_.txt
+- name: AddedOwner
+  signature: AddedOwner(address)
+  topic_hash: 0x9465fa0c962cc76958e6373a993326400c1c94f8be2fe3a952adfa7f60b2ea26
+  anonymous: false
+  inputs:
+  - name: owner
+    input_type: address
+    indexed: false
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: AddedOwner_address_.txt
 - name: AdminChanged
   signature: AdminChanged(address,address)
   topic_hash: 0x7e644d79422f17c01e4894b5f4f588d331ebfa28653d42ae832dc59e38c9798f
@@ -96,7 +110,237 @@ events:
     contract_name: TransparentUpgradeableProxy
   - address: 0x2a3dd3eb832af982ec71669e178424b10dca2ede
     contract_name: TransparentUpgradeableProxy
+  - address: 0x7a7f337d883ee98df40c4654b3ad4e3aacf304e8
+    contract_name: TokenWrappedTransparentProxy
   signature_file: AdminChanged_address_address_.txt
+- name: Approval
+  signature: Approval(address,address,uint256)
+  topic_hash: 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925
+  anonymous: false
+  inputs:
+  - name: owner
+    input_type: address
+    indexed: true
+  - name: spender
+    input_type: address
+    indexed: true
+  - name: value
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x9a5220a853ede5ab1cfcb6517135f59e8894bdd8
+    contract_name: WSENT
+  - address: 0x680fbbd2851b5d54c2b872317806571a692fd520
+    contract_name: LAMBO
+  - address: 0x39511be4ef7b194cece5af31dec2d0101d46e008
+    contract_name: TokenWrappedBridgeUpgradeable
+  signature_file: Approval_address_address_uint256_.txt
+- name: ApproveHash
+  signature: ApproveHash(bytes32,address)
+  topic_hash: 0xf2a0eb156472d1440255b0d7c1e19cc07115d1051fe605b0dce69acfec884d9c
+  anonymous: false
+  inputs:
+  - name: approvedHash
+    input_type: bytes32
+    indexed: true
+  - name: owner
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: ApproveHash_bytes32_address_.txt
+- name: ArtifactAdded
+  signature: ArtifactAdded(address,string)
+  topic_hash: 0x5803fa912b3854a02e417cd9afca86a072831b098728d79ccf8484f34ba02843
+  anonymous: false
+  inputs:
+  - name: artifact
+    input_type: address
+    indexed: true
+  - name: metadataUri
+    input_type: string
+    indexed: false
+  contract_sources:
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+    contract_name: ArtifactManager
+  signature_file: ArtifactAdded_address_string_.txt
+- name: ArtifactBatchRevenueReported
+  signature: ArtifactBatchRevenueReported(address[],uint256[],uint256[])
+  topic_hash: 0x6a63da1b8d30e3097c7c7200cde5450953fbf8b541c9f3596236d9ea4ead840e
+  anonymous: false
+  inputs:
+  - name: artifacts
+    input_type: address[]
+    indexed: false
+  - name: revenues
+    input_type: uint256[]
+    indexed: false
+  - name: timestamps
+    input_type: uint256[]
+    indexed: false
+  contract_sources:
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+    contract_name: ArtifactManager
+  signature_file: ArtifactBatchRevenueReported_address___uint256___uint256___.txt
+- name: ArtifactBatchUsageReported
+  signature: ArtifactBatchUsageReported(address[],uint256[],uint256[])
+  topic_hash: 0xacc287b6f75030c0c5fe232c76f0d52ba00835066dfbe099c34230ecfe2be5e0
+  anonymous: false
+  inputs:
+  - name: artifacts
+    input_type: address[]
+    indexed: false
+  - name: usages
+    input_type: uint256[]
+    indexed: false
+  - name: timestamps
+    input_type: uint256[]
+    indexed: false
+  contract_sources:
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+    contract_name: ArtifactManager
+  signature_file: ArtifactBatchUsageReported_address___uint256___uint256___.txt
+- name: ArtifactBeaconChanged
+  signature: ArtifactBeaconChanged(address)
+  topic_hash: 0x8fe7f3863fac118b2d240f1e398c5c0e348092e09afecbc3a3f8595924fb14ca
+  anonymous: false
+  inputs:
+  - name: _artifactBeacon
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8
+    contract_name: ArtifactFactory
+  signature_file: ArtifactBeaconChanged_address_.txt
+- name: ArtifactCreated
+  signature: ArtifactCreated(bytes32,string,string,address,address)
+  topic_hash: 0x61f6226016fbc1388bd2cf935f481665a0181f423f71c10b537f6604aa7bbe6c
+  anonymous: false
+  inputs:
+  - name: artifactId
+    input_type: bytes32
+    indexed: true
+  - name: artifactName
+    input_type: string
+    indexed: false
+  - name: artifactType
+    input_type: string
+    indexed: false
+  - name: artifactAddress
+    input_type: address
+    indexed: true
+  - name: owner
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8
+    contract_name: ArtifactFactory
+  signature_file: ArtifactCreated_bytes32_string_string_address_address_.txt
+- name: ArtifactFactoryChanged
+  signature: ArtifactFactoryChanged(address,address)
+  topic_hash: 0xfd3c30401caba6e86edd3ad95d896de1028d5787fee934dee51a134bd7cff8f6
+  anonymous: false
+  inputs:
+  - name: previousArtifactFactory
+    input_type: address
+    indexed: true
+  - name: newArtifactFactory
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+    contract_name: ArtifactManager
+  signature_file: ArtifactFactoryChanged_address_address_.txt
+- name: ArtifactMetadataUpdated
+  signature: ArtifactMetadataUpdated(address,string)
+  topic_hash: 0xbbaf003bc8305441a7e7277dcfd1523531e259334a02653fd2efa5b3b1cc7a26
+  anonymous: false
+  inputs:
+  - name: artifact
+    input_type: address
+    indexed: true
+  - name: newMetadataUri
+    input_type: string
+    indexed: false
+  contract_sources:
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+    contract_name: ArtifactManager
+  signature_file: ArtifactMetadataUpdated_address_string_.txt
+- name: ArtifactRemoved
+  signature: ArtifactRemoved(address)
+  topic_hash: 0xaf64ce7f14469a94f6eab9281274dc6f4460925a0302a5ebaf050e8035007e06
+  anonymous: false
+  inputs:
+  - name: artifact
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+    contract_name: ArtifactManager
+  signature_file: ArtifactRemoved_address_.txt
+- name: ArtifactRevenueReported
+  signature: ArtifactRevenueReported(address,uint256,uint256)
+  topic_hash: 0xd301369ea02b84949217d6cf20336ece6b183fa7c7c86bb8c3e1f7b7fce78b49
+  anonymous: false
+  inputs:
+  - name: artifact
+    input_type: address
+    indexed: true
+  - name: revenue
+    input_type: uint256
+    indexed: false
+  - name: timestamp
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+    contract_name: ArtifactManager
+  signature_file: ArtifactRevenueReported_address_uint256_uint256_.txt
+- name: ArtifactTypeAdded
+  signature: ArtifactTypeAdded(string)
+  topic_hash: 0xb9d05259896245d1d8d2f2b927d1298e53b3e9413a8c5ba319791cd2f5221e4b
+  anonymous: false
+  inputs:
+  - name: artifactType
+    input_type: string
+    indexed: true
+  contract_sources:
+  - address: 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8
+    contract_name: ArtifactFactory
+  signature_file: ArtifactTypeAdded_string_.txt
+- name: ArtifactTypeRemoved
+  signature: ArtifactTypeRemoved(string)
+  topic_hash: 0x0a6f5c358224b63ffe287bf5f0e5ec1b8a8c3b63cdfcc81e2987780ccbeb83f0
+  anonymous: false
+  inputs:
+  - name: artifactType
+    input_type: string
+    indexed: true
+  contract_sources:
+  - address: 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8
+    contract_name: ArtifactFactory
+  signature_file: ArtifactTypeRemoved_string_.txt
+- name: ArtifactUsageReported
+  signature: ArtifactUsageReported(address,uint256,uint256)
+  topic_hash: 0xce93c856d9c654eb5dd7944fe1321c5b909393589cf60d705a75e20c85a60e49
+  anonymous: false
+  inputs:
+  - name: artifact
+    input_type: address
+    indexed: true
+  - name: usage
+    input_type: uint256
+    indexed: false
+  - name: timestamp
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+    contract_name: ArtifactManager
+  signature_file: ArtifactUsageReported_address_uint256_uint256_.txt
 - name: BackwardLET
   signature: BackwardLET(uint256,bytes32,uint256,bytes32)
   topic_hash: 0x2f8b2f36ca0d63af2efffe9d5e728a61c2bc273a3fc0574d12b558a41f149555
@@ -131,6 +375,8 @@ events:
     contract_name: TransparentUpgradeableProxy
   - address: 0x2a3dd3eb832af982ec71669e178424b10dca2ede
     contract_name: TransparentUpgradeableProxy
+  - address: 0x7a7f337d883ee98df40c4654b3ad4e3aacf304e8
+    contract_name: TokenWrappedTransparentProxy
   signature_file: BeaconUpgraded_address_.txt
 - name: BridgeEvent
   signature: BridgeEvent(uint8,uint32,address,uint32,address,uint256,bytes,uint32)
@@ -165,6 +411,48 @@ events:
   - address: 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c
     contract_name: AgglayerBridgeL2
   signature_file: BridgeEvent_uint8_uint32_address_uint32_address_uint256_bytes_uint32_.txt
+- name: ChangedFallbackHandler
+  signature: ChangedFallbackHandler(address)
+  topic_hash: 0x5ac6c46c93c8d0e53714ba3b53db3e7c046da994313d7ed0d192028bc7c228b0
+  anonymous: false
+  inputs:
+  - name: handler
+    input_type: address
+    indexed: false
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: ChangedFallbackHandler_address_.txt
+- name: ChangedGuard
+  signature: ChangedGuard(address)
+  topic_hash: 0x1151116914515bc0891ff9047a6cb32cf902546f83066499bcf8ba33d2353fa2
+  anonymous: false
+  inputs:
+  - name: guard
+    input_type: address
+    indexed: false
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: ChangedGuard_address_.txt
+- name: ChangedThreshold
+  signature: ChangedThreshold(uint256)
+  topic_hash: 0x610f7ff2b304ae8903c3de74c60c6ab1f7d6226b3f52c5161905bb5ad4039c93
+  anonymous: false
+  inputs:
+  - name: threshold
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: ChangedThreshold_uint256_.txt
 - name: ClaimEvent
   signature: ClaimEvent(uint256,uint32,address,address,uint256)
   topic_hash: 0x1df3f2a973a00d6635911755c260704e95e8a5876997546798770f76396fda4d
@@ -231,6 +519,29 @@ events:
   - address: 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c
     contract_name: AgglayerBridgeL2
   signature_file: DetailedClaimEvent_bytes32_32__bytes32_32__uint256_bytes32_bytes32_uint32_address_uint32_address_uint256_bytes_.txt
+- name: DisabledModule
+  signature: DisabledModule(address)
+  topic_hash: 0xaab4fa2b463f581b2b32cb3b7e3b704b9ce37cc209b5fb4d77e593ace4054276
+  anonymous: false
+  inputs:
+  - name: module
+    input_type: address
+    indexed: false
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: DisabledModule_address_.txt
+- name: EIP712DomainChanged
+  signature: EIP712DomainChanged()
+  topic_hash: 0x0a6387c9ea3628b88a633bb4f3b151770f70085117a15f9bf3787cda53f13d31
+  anonymous: false
+  inputs: []
+  contract_sources:
+  - address: 0x39511be4ef7b194cece5af31dec2d0101d46e008
+    contract_name: TokenWrappedBridgeUpgradeable
+  signature_file: EIP712DomainChanged__.txt
 - name: EmergencyStateActivated
   signature: EmergencyStateActivated()
   topic_hash: 0x2261efe5aef6fedc1fd1550b25facc9181745623049c7901287030b9ad1a5497
@@ -249,6 +560,82 @@ events:
   - address: 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c
     contract_name: AgglayerBridgeL2
   signature_file: EmergencyStateDeactivated__.txt
+- name: EnabledModule
+  signature: EnabledModule(address)
+  topic_hash: 0xecdf3a3effea5783a3c4c2140e677577666428d44ed9d474a0b3a4c9943f8440
+  anonymous: false
+  inputs:
+  - name: module
+    input_type: address
+    indexed: false
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: EnabledModule_address_.txt
+- name: ExecutionFailure
+  signature: ExecutionFailure(bytes32,uint256)
+  topic_hash: 0x23428b18acfb3ea64b08dc0c1d296ea9c09702c09083ca5272e64d115b687d23
+  anonymous: false
+  inputs:
+  - name: txHash
+    input_type: bytes32
+    indexed: false
+  - name: payment
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: ExecutionFailure_bytes32_uint256_.txt
+- name: ExecutionFromModuleFailure
+  signature: ExecutionFromModuleFailure(address)
+  topic_hash: 0xacd2c8702804128fdb0db2bb49f6d127dd0181c13fd45dbfe16de0930e2bd375
+  anonymous: false
+  inputs:
+  - name: module
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: ExecutionFromModuleFailure_address_.txt
+- name: ExecutionFromModuleSuccess
+  signature: ExecutionFromModuleSuccess(address)
+  topic_hash: 0x6895c13664aa4f67288b25d7a21d7aaa34916e355fb9b6fae0a139a9085becb8
+  anonymous: false
+  inputs:
+  - name: module
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: ExecutionFromModuleSuccess_address_.txt
+- name: ExecutionSuccess
+  signature: ExecutionSuccess(bytes32,uint256)
+  topic_hash: 0x442e715f626346e8c54381002da614f62bee8d27386535b2521ec8540898556e
+  anonymous: false
+  inputs:
+  - name: txHash
+    input_type: bytes32
+    indexed: false
+  - name: payment
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: ExecutionSuccess_bytes32_uint256_.txt
 - name: ForwardLET
   signature: ForwardLET(uint256,bytes32,uint256,bytes32,bytes)
   topic_hash: 0xe90f3fcbcd86a778012608da0cd7622521c8dac9919dddf25a3fb634adb3d2c8
@@ -287,6 +674,254 @@ events:
   - address: 0x0200143fa295ee4dffef22ee2616c2e008d81688
     contract_name: AgglayerGERL2
   signature_file: Initialized_uint8_.txt
+- name: Initialized
+  signature: Initialized(uint64)
+  topic_hash: 0xc7f505b2f371ae2175ee4913f4499e1f2633a7b5936321eed1cdaeb6115181d2
+  anonymous: false
+  inputs:
+  - name: version
+    input_type: uint64
+    indexed: false
+  contract_sources:
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+    contract_name: ArtifactManager
+  - address: 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8
+    contract_name: ArtifactFactory
+  - address: 0x39511be4ef7b194cece5af31dec2d0101d46e008
+    contract_name: TokenWrappedBridgeUpgradeable
+  signature_file: Initialized_uint64_.txt
+- name: LogApproveMerkleRoot
+  signature: LogApproveMerkleRoot(address,uint256)
+  topic_hash: 0x339cbb7bd5d094ad8908e8442c328069709dbdedea4514be20261aca79006e67
+  anonymous: false
+  inputs:
+  - name: token
+    input_type: address
+    indexed: true
+  - name: epoch
+    input_type: uint256
+    indexed: true
+  contract_sources:
+  - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+    contract_name: SentientRewardDistributor
+  signature_file: LogApproveMerkleRoot_address_uint256_.txt
+- name: LogClaimRewards
+  signature: LogClaimRewards(address,address,uint256,uint256)
+  topic_hash: 0x929e62ade048a21deb7124b46424be646cd7e07e557114412571f40bf02cfba9
+  anonymous: false
+  inputs:
+  - name: token
+    input_type: address
+    indexed: true
+  - name: user
+    input_type: address
+    indexed: true
+  - name: amount
+    input_type: uint256
+    indexed: false
+  - name: epoch
+    input_type: uint256
+    indexed: true
+  contract_sources:
+  - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+    contract_name: SentientRewardDistributor
+  signature_file: LogClaimRewards_address_address_uint256_uint256_.txt
+- name: LogDenyMerkleRoot
+  signature: LogDenyMerkleRoot(address,bytes32)
+  topic_hash: 0x8064ae7fe6257f02e4c0bc16b506f550b878c8d925f31bb401e98cf1091461ae
+  anonymous: false
+  inputs:
+  - name: token
+    input_type: address
+    indexed: true
+  - name: merkleRoot
+    input_type: bytes32
+    indexed: true
+  contract_sources:
+  - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+    contract_name: SentientRewardDistributor
+  signature_file: LogDenyMerkleRoot_address_bytes32_.txt
+- name: LogDeposit
+  signature: LogDeposit(address,address,address,uint256,uint256,uint256)
+  topic_hash: 0x7832d48c33e09f122d3f5d3b299819c849dd61d04e4c59294072c898fc9cad3d
+  anonymous: false
+  inputs:
+  - name: user
+    input_type: address
+    indexed: true
+  - name: artifact
+    input_type: address
+    indexed: true
+  - name: token
+    input_type: address
+    indexed: true
+  - name: lockedUntil
+    input_type: uint256
+    indexed: false
+  - name: amount
+    input_type: uint256
+    indexed: false
+  - name: tokenId
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+    contract_name: SentientStakingDepositManager
+  signature_file: LogDeposit_address_address_address_uint256_uint256_uint256_.txt
+- name: LogEmergencyWithdraw
+  signature: LogEmergencyWithdraw(address,uint256,bool)
+  topic_hash: 0x05d60ee336bf8f532951632c1d9927806c2d5f2af36955b28c1918610d7082e5
+  anonymous: false
+  inputs:
+  - name: token
+    input_type: address
+    indexed: true
+  - name: amount
+    input_type: uint256
+    indexed: false
+  - name: isNative
+    input_type: bool
+    indexed: true
+  contract_sources:
+  - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+    contract_name: SentientRewardDistributor
+  - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+    contract_name: SentientStakingDepositManager
+  signature_file: LogEmergencyWithdraw_address_uint256_bool_.txt
+- name: LogSetApprovedTtl
+  signature: LogSetApprovedTtl(uint256,bool)
+  topic_hash: 0xc1d9ed2f5b81a0b16c48e097468d09fff78d58fd1a396c1eaa3b61ded014186c
+  anonymous: false
+  inputs:
+  - name: ttl
+    input_type: uint256
+    indexed: true
+  - name: approvedTtl
+    input_type: bool
+    indexed: true
+  contract_sources:
+  - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+    contract_name: SentientStakingDepositManager
+  signature_file: LogSetApprovedTtl_uint256_bool_.txt
+- name: LogSetArtifactManager
+  signature: LogSetArtifactManager(address)
+  topic_hash: 0xc96a61f03a86afcb2f1e0b9ad5bb665f8eca058adb17cb01079092d02e12f31c
+  anonymous: false
+  inputs:
+  - name: artifactManager
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+    contract_name: SentientStakingDepositManager
+  signature_file: LogSetArtifactManager_address_.txt
+- name: LogSetAuthorizedApprover
+  signature: LogSetAuthorizedApprover(address,bool)
+  topic_hash: 0x26c5b4ba69fd845aa2a98f6e8c45e1be455ace9364aad82f401744b81a603f62
+  anonymous: false
+  inputs:
+  - name: approver
+    input_type: address
+    indexed: true
+  - name: isAuthorized
+    input_type: bool
+    indexed: true
+  contract_sources:
+  - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+    contract_name: SentientRewardDistributor
+  signature_file: LogSetAuthorizedApprover_address_bool_.txt
+- name: LogSetDepositEnabled
+  signature: LogSetDepositEnabled(bool)
+  topic_hash: 0xfdccf38b3d4a3b6a792871099dbf7d2ac415b96e67be84ef4bd040f94d7c3d9c
+  anonymous: false
+  inputs:
+  - name: depositEnabled
+    input_type: bool
+    indexed: true
+  contract_sources:
+  - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+    contract_name: SentientStakingDepositManager
+  signature_file: LogSetDepositEnabled_bool_.txt
+- name: LogSetMerkleProofPendingPeriod
+  signature: LogSetMerkleProofPendingPeriod(uint256)
+  topic_hash: 0x9887b63f643a5583dd3c5019e29d6613c26ff2657af484fc0355f8c62cb100b8
+  anonymous: false
+  inputs:
+  - name: newPeriod
+    input_type: uint256
+    indexed: true
+  contract_sources:
+  - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+    contract_name: SentientRewardDistributor
+  signature_file: LogSetMerkleProofPendingPeriod_uint256_.txt
+- name: LogSetMerkleRoot
+  signature: LogSetMerkleRoot(address,bytes32)
+  topic_hash: 0xa15c455c8dd3fb166935e9f04cf5cd265ec6ef3cd76ab3c2a2e76027b2399ab9
+  anonymous: false
+  inputs:
+  - name: token
+    input_type: address
+    indexed: true
+  - name: merkleRoot
+    input_type: bytes32
+    indexed: true
+  contract_sources:
+  - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+    contract_name: SentientRewardDistributor
+  signature_file: LogSetMerkleRoot_address_bytes32_.txt
+- name: LogSetPaused
+  signature: LogSetPaused(bool)
+  topic_hash: 0x762127fb40e16638e9c1464ad60242d434d3bb7ec1079b26af34ebf7c9e372d2
+  anonymous: false
+  inputs:
+  - name: isPaused
+    input_type: bool
+    indexed: true
+  contract_sources:
+  - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+    contract_name: SentientRewardDistributor
+  - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+    contract_name: SentientStakingDepositManager
+  signature_file: LogSetPaused_bool_.txt
+- name: LogSetWithdrawEnabled
+  signature: LogSetWithdrawEnabled(bool)
+  topic_hash: 0xe18944e95b0f5e89d8ed526c7b215a44c6fc9bd14cf757e1cf18f30e7da75a4f
+  anonymous: false
+  inputs:
+  - name: withdrawEnabled
+    input_type: bool
+    indexed: true
+  contract_sources:
+  - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+    contract_name: SentientStakingDepositManager
+  signature_file: LogSetWithdrawEnabled_bool_.txt
+- name: LogWithdraw
+  signature: LogWithdraw(address,address,address,uint256,uint256,uint256)
+  topic_hash: 0x8b1d91f2e5384d194512bc56ec8419df129a0b4e327a1ac46710a14e8fc6c46f
+  anonymous: false
+  inputs:
+  - name: user
+    input_type: address
+    indexed: true
+  - name: artifact
+    input_type: address
+    indexed: true
+  - name: token
+    input_type: address
+    indexed: true
+  - name: lockedUntil
+    input_type: uint256
+    indexed: false
+  - name: amount
+    input_type: uint256
+    indexed: false
+  - name: tokenId
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+    contract_name: SentientStakingDepositManager
+  signature_file: LogWithdraw_address_address_address_uint256_uint256_uint256_.txt
 - name: MigrateLegacyToken
   signature: MigrateLegacyToken(address,address,address,uint256)
   topic_hash: 0xb7f8fd4d1faf9b2929dc269f59c53e3a2bccc44e9950f33a568fcbcb37eb69a9
@@ -329,6 +964,71 @@ events:
   - address: 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c
     contract_name: AgglayerBridgeL2
   signature_file: NewWrappedToken_uint32_address_address_bytes_.txt
+- name: OwnershipTransferStarted
+  signature: OwnershipTransferStarted(address,address)
+  topic_hash: 0x38d16b8cac22d99fc7c124b9cd0de2d3fa1faef420bfe791d8c362d765e22700
+  anonymous: false
+  inputs:
+  - name: previousOwner
+    input_type: address
+    indexed: true
+  - name: newOwner
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+    contract_name: SentientRewardDistributor
+  - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+    contract_name: SentientStakingDepositManager
+  signature_file: OwnershipTransferStarted_address_address_.txt
+- name: OwnershipTransferred
+  signature: OwnershipTransferred(address,address)
+  topic_hash: 0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0
+  anonymous: false
+  inputs:
+  - name: previousOwner
+    input_type: address
+    indexed: true
+  - name: newOwner
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+    contract_name: SentientRewardDistributor
+  - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+    contract_name: SentientStakingDepositManager
+  - address: 0x680fbbd2851b5d54c2b872317806571a692fd520
+    contract_name: LAMBO
+  signature_file: OwnershipTransferred_address_address_.txt
+- name: Paused
+  signature: Paused(address)
+  topic_hash: 0x62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a258
+  anonymous: false
+  inputs:
+  - name: account
+    input_type: address
+    indexed: false
+  contract_sources:
+  - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+    contract_name: SentientRewardDistributor
+  - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+    contract_name: SentientStakingDepositManager
+  signature_file: Paused_address_.txt
+- name: ProxyCreation
+  signature: ProxyCreation(address,address)
+  topic_hash: 0x4f51faf6c4561ff95f067657e43439f0f856d97c04d9ec9070a6199ad418e235
+  anonymous: false
+  inputs:
+  - name: proxy
+    input_type: address
+    indexed: false
+  - name: singleton
+    input_type: address
+    indexed: false
+  contract_sources:
+  - address: 0xa6b71e26c5e0845f74c812102ca7114b6a896ab2
+    contract_name: GnosisSafeProxyFactory
+  signature_file: ProxyCreation_address_address_.txt
 - name: RemoveLegacySovereignTokenAddress
   signature: RemoveLegacySovereignTokenAddress(address)
   topic_hash: 0xc2ae0bd0ec0fd0352bfe5bacac49637af342c1e40f1b80a7f74440dc7fe3f063
@@ -341,6 +1041,189 @@ events:
   - address: 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c
     contract_name: AgglayerBridgeL2
   signature_file: RemoveLegacySovereignTokenAddress_address_.txt
+- name: RemovedOwner
+  signature: RemovedOwner(address)
+  topic_hash: 0xf8d49fc529812e9a7c5c50e69c20f0dccc0db8fa95c98bc58cc9a4f1c1299eaf
+  anonymous: false
+  inputs:
+  - name: owner
+    input_type: address
+    indexed: false
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: RemovedOwner_address_.txt
+- name: RoleAdminChanged
+  signature: RoleAdminChanged(bytes32,bytes32,bytes32)
+  topic_hash: 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff
+  anonymous: false
+  inputs:
+  - name: role
+    input_type: bytes32
+    indexed: true
+  - name: previousAdminRole
+    input_type: bytes32
+    indexed: true
+  - name: newAdminRole
+    input_type: bytes32
+    indexed: true
+  contract_sources:
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+    contract_name: ArtifactManager
+  - address: 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8
+    contract_name: ArtifactFactory
+  signature_file: RoleAdminChanged_bytes32_bytes32_bytes32_.txt
+- name: RoleGranted
+  signature: RoleGranted(bytes32,address,address)
+  topic_hash: 0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d
+  anonymous: false
+  inputs:
+  - name: role
+    input_type: bytes32
+    indexed: true
+  - name: account
+    input_type: address
+    indexed: true
+  - name: sender
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+    contract_name: ArtifactManager
+  - address: 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8
+    contract_name: ArtifactFactory
+  signature_file: RoleGranted_bytes32_address_address_.txt
+- name: RoleRevoked
+  signature: RoleRevoked(bytes32,address,address)
+  topic_hash: 0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b
+  anonymous: false
+  inputs:
+  - name: role
+    input_type: bytes32
+    indexed: true
+  - name: account
+    input_type: address
+    indexed: true
+  - name: sender
+    input_type: address
+    indexed: true
+  contract_sources:
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+    contract_name: ArtifactManager
+  - address: 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8
+    contract_name: ArtifactFactory
+  signature_file: RoleRevoked_bytes32_address_address_.txt
+- name: SafeModuleTransaction
+  signature: SafeModuleTransaction(address,address,uint256,bytes,uint8)
+  topic_hash: 0xb648d3644f584ed1c2232d53c46d87e693586486ad0d1175f8656013110b714e
+  anonymous: false
+  inputs:
+  - name: module
+    input_type: address
+    indexed: false
+  - name: to
+    input_type: address
+    indexed: false
+  - name: value
+    input_type: uint256
+    indexed: false
+  - name: data
+    input_type: bytes
+    indexed: false
+  - name: operation
+    input_type: uint8
+    indexed: false
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  signature_file: SafeModuleTransaction_address_address_uint256_bytes_uint8_.txt
+- name: SafeMultiSigTransaction
+  signature: SafeMultiSigTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes,bytes)
+  topic_hash: 0x66753cd2356569ee081232e3be8909b950e0a76c1f8460c3a5e3c2be32b11bed
+  anonymous: false
+  inputs:
+  - name: to
+    input_type: address
+    indexed: false
+  - name: value
+    input_type: uint256
+    indexed: false
+  - name: data
+    input_type: bytes
+    indexed: false
+  - name: operation
+    input_type: uint8
+    indexed: false
+  - name: safeTxGas
+    input_type: uint256
+    indexed: false
+  - name: baseGas
+    input_type: uint256
+    indexed: false
+  - name: gasPrice
+    input_type: uint256
+    indexed: false
+  - name: gasToken
+    input_type: address
+    indexed: false
+  - name: refundReceiver
+    input_type: address
+    indexed: false
+  - name: signatures
+    input_type: bytes
+    indexed: false
+  - name: additionalInfo
+    input_type: bytes
+    indexed: false
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  signature_file: SafeMultiSigTransaction_address_uint256_bytes_uint8_uint256_uint256_uint256_address_address_bytes_bytes_.txt
+- name: SafeReceived
+  signature: SafeReceived(address,uint256)
+  topic_hash: 0x3d0ce9bfc3ed7d6862dbb28b2dea94561fe714a1b4d019aa8af39730d1ad7c3d
+  anonymous: false
+  inputs:
+  - name: sender
+    input_type: address
+    indexed: true
+  - name: value
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: SafeReceived_address_uint256_.txt
+- name: SafeSetup
+  signature: SafeSetup(address,address[],uint256,address,address)
+  topic_hash: 0x141df868a6331af528e38c83b7aa03edc19be66e37ae67f9285bf4f8e3c6a1a8
+  anonymous: false
+  inputs:
+  - name: initiator
+    input_type: address
+    indexed: true
+  - name: owners
+    input_type: address[]
+    indexed: false
+  - name: threshold
+    input_type: uint256
+    indexed: false
+  - name: initializer
+    input_type: address
+    indexed: false
+  - name: fallbackHandler
+    input_type: address
+    indexed: false
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: SafeSetup_address_address___uint256_address_address_.txt
 - name: SetBridgeManager
   signature: SetBridgeManager(address)
   topic_hash: 0x32cf74f8a6d5f88593984d2cd52be5592bfa6884f5896175801a5069ef09cd67
@@ -422,6 +1305,42 @@ events:
   - address: 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c
     contract_name: AgglayerBridgeL2
   signature_file: SetSovereignWETHAddress_address_bool_.txt
+- name: SignMsg
+  signature: SignMsg(bytes32)
+  topic_hash: 0xe7f4675038f4f6034dfcbbb24c4dc08e4ebf10eb9d257d3d02c0f38d122ac6e4
+  anonymous: false
+  inputs:
+  - name: msgHash
+    input_type: bytes32
+    indexed: true
+  contract_sources:
+  - address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+    contract_name: GnosisSafeL2
+  - address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+    contract_name: GnosisSafe
+  signature_file: SignMsg_bytes32_.txt
+- name: Transfer
+  signature: Transfer(address,address,uint256)
+  topic_hash: 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
+  anonymous: false
+  inputs:
+  - name: from
+    input_type: address
+    indexed: true
+  - name: to
+    input_type: address
+    indexed: true
+  - name: value
+    input_type: uint256
+    indexed: false
+  contract_sources:
+  - address: 0x9a5220a853ede5ab1cfcb6517135f59e8894bdd8
+    contract_name: WSENT
+  - address: 0x680fbbd2851b5d54c2b872317806571a692fd520
+    contract_name: LAMBO
+  - address: 0x39511be4ef7b194cece5af31dec2d0101d46e008
+    contract_name: TokenWrappedBridgeUpgradeable
+  signature_file: Transfer_address_address_uint256_.txt
 - name: TransferEmergencyBridgePauserRole
   signature: TransferEmergencyBridgePauserRole(address,address)
   topic_hash: 0xb27de219766f47b82684842855ba6130b6dbf288ac66d1c3509e7bf17f4e925a
@@ -497,6 +1416,20 @@ events:
   - address: 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c
     contract_name: AgglayerBridgeL2
   signature_file: TransferProxiedTokensManagerRole_address_address_.txt
+- name: Unpaused
+  signature: Unpaused(address)
+  topic_hash: 0x5db9ee0a495bf2e6ff9c91a7834c1ba4fdd244a5e8aa4e537bd38aeae4b073aa
+  anonymous: false
+  inputs:
+  - name: account
+    input_type: address
+    indexed: false
+  contract_sources:
+  - address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+    contract_name: SentientRewardDistributor
+  - address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+    contract_name: SentientStakingDepositManager
+  signature_file: Unpaused_address_.txt
 - name: UpdateHashChainValue
   signature: UpdateHashChainValue(bytes32,bytes32)
   topic_hash: 0x65d3bf36615f1f02a134d12dfa9ea6b1d4a52386e825973cd27ddb70895c2319
@@ -570,4 +1503,14 @@ events:
     contract_name: TransparentUpgradeableProxy
   - address: 0x2a3dd3eb832af982ec71669e178424b10dca2ede
     contract_name: TransparentUpgradeableProxy
+  - address: 0x7a7f337d883ee98df40c4654b3ad4e3aacf304e8
+    contract_name: TokenWrappedTransparentProxy
+  - address: 0xff075d0e712e771b43861659f3d128ba958f2950
+    contract_name: ERC1967Proxy
+  - address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+    contract_name: ArtifactManager
+  - address: 0xe4cdbd2df584bfb96a4dcde7a384510922981409
+    contract_name: ERC1967Proxy
+  - address: 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8
+    contract_name: ArtifactFactory
   signature_file: Upgraded_address_.txt

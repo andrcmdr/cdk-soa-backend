@@ -1,0 +1,15 @@
+Event Name: LogWithdraw
+Signature: LogWithdraw(address,address,address,uint256,uint256,uint256)
+Topic Hash: 0x8b1d91f2e5384d194512bc56ec8419df129a0b4e327a1ac46710a14e8fc6c46f
+Anonymous: false
+
+Inputs:
+  0: user address (indexed)
+  1: artifact address (indexed)
+  2: token address (indexed)
+  3: lockedUntil uint256 (not indexed)
+  4: amount uint256 (not indexed)
+  5: tokenId uint256 (not indexed)
+
+Contract Sources:
+  - 0x5354bcd502a06d73c51d2ee7a2052524a1650610 (contract_name: SentientStakingDepositManager)

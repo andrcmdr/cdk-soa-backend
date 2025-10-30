@@ -1,0 +1,12 @@
+Event Name: Initialized
+Signature: Initialized(uint64)
+Topic Hash: 0xc7f505b2f371ae2175ee4913f4499e1f2633a7b5936321eed1cdaeb6115181d2
+Anonymous: false
+
+Inputs:
+  0: version uint64 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x39511be4eF7b194Cece5af31dEc2D0101d46E008 (contract_name: TokenWrappedBridgeUpgradeable, verified_at: 2025-10-30T03:16:38.889314Z)
+  - 0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8 (contract_name: ArtifactFactory, verified_at: 2025-10-23T05:44:36.182000Z)
+  - 0x60a8cDdd7630054169A7a7470078842d32Ba09a4 (contract_name: ArtifactManager, verified_at: 2025-10-22T10:46:22.354266Z)

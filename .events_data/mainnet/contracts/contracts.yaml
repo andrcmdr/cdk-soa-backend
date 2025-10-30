@@ -1,25 +1,157 @@
 metadata:
-  generated_at: 2025-10-16T20:45:53.875016Z
+  generated_at: 2025-10-30T03:17:27.561444Z
   blockscout_server: https://sentient-blockscout.eu-north-2.gateway.fm
-  total_verified: 4
-  total_unverified: 0
-  total_with_abi: 4
+  total_verified: 21
+  total_unverified: 16
+  total_with_abi: 21
   abi_directory: ./contracts/abi
 verified_contracts:
 - name: AgglayerGERL2
   address: 0x0200143fa295ee4dffef22ee2616c2e008d81688
   abi_file: AgglayerGERL2_0x0200143fa295ee4dffef22ee2616c2e008d81688.json
   is_verified: true
+- name: ArtifactFactory
+  address: 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8
+  abi_file: ArtifactFactory_0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8.json
+  is_verified: true
 - name: TransparentUpgradeableProxy
   address: 0x2a3dd3eb832af982ec71669e178424b10dca2ede
   abi_file: TransparentUpgradeableProxy_0x2a3dd3eb832af982ec71669e178424b10dca2ede.json
+  is_verified: true
+- name: TokenWrappedBridgeUpgradeable
+  address: 0x39511be4ef7b194cece5af31dec2d0101d46e008
+  abi_file: TokenWrappedBridgeUpgradeable_0x39511be4ef7b194cece5af31dec2d0101d46e008.json
+  is_verified: true
+- name: GnosisSafeL2
+  address: 0x3e5c63644e683549055b9be8653de26e0b4cd36e
+  abi_file: GnosisSafeL2_0x3e5c63644e683549055b9be8653de26e0b4cd36e.json
+  is_verified: true
+- name: MultiSendCallOnly
+  address: 0x40a2accbd92bca938b02010e17a5b8929b49130d
+  abi_file: MultiSendCallOnly_0x40a2accbd92bca938b02010e17a5b8929b49130d.json
+  is_verified: true
+- name: SentientStakingDepositManager
+  address: 0x5354bcd502a06d73c51d2ee7a2052524a1650610
+  abi_file: SentientStakingDepositManager_0x5354bcd502a06d73c51d2ee7a2052524a1650610.json
+  is_verified: true
+- name: SimulateTxAccessor
+  address: 0x59ad6735bcd8152b84860cb256dd9e96b85f69da
+  abi_file: SimulateTxAccessor_0x59ad6735bcd8152b84860cb256dd9e96b85f69da.json
   is_verified: true
 - name: AgglayerBridgeL2
   address: 0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c
   abi_file: AgglayerBridgeL2_0x5ac4182a1dd41aeef465e40b82fd326bf66ab82c.json
   is_verified: true
+- name: ArtifactManager
+  address: 0x60a8cddd7630054169a7a7470078842d32ba09a4
+  abi_file: ArtifactManager_0x60a8cddd7630054169a7a7470078842d32ba09a4.json
+  is_verified: true
+- name: LAMBO
+  address: 0x680fbbd2851b5d54c2b872317806571a692fd520
+  abi_file: LAMBO_0x680fbbd2851b5d54c2b872317806571a692fd520.json
+  is_verified: true
+- name: SentientRewardDistributor
+  address: 0x77100ba0182042aea9ec29f9257bcb2efec94d0c
+  abi_file: SentientRewardDistributor_0x77100ba0182042aea9ec29f9257bcb2efec94d0c.json
+  is_verified: true
+- name: TokenWrappedTransparentProxy
+  address: 0x7a7f337d883ee98df40c4654b3ad4e3aacf304e8
+  abi_file: TokenWrappedTransparentProxy_0x7a7f337d883ee98df40c4654b3ad4e3aacf304e8.json
+  is_verified: true
+- name: WSENT
+  address: 0x9a5220a853ede5ab1cfcb6517135f59e8894bdd8
+  abi_file: WSENT_0x9a5220a853ede5ab1cfcb6517135f59e8894bdd8.json
+  is_verified: true
+- name: MultiSend
+  address: 0xa238cbeb142c10ef7ad8442c6d1f9e89e07e7761
+  abi_file: MultiSend_0xa238cbeb142c10ef7ad8442c6d1f9e89e07e7761.json
+  is_verified: true
 - name: TransparentUpgradeableProxy
   address: 0xa40d5f56745a118d0906a34e69aec8c0db1cb8fa
   abi_file: TransparentUpgradeableProxy_0xa40d5f56745a118d0906a34e69aec8c0db1cb8fa.json
   is_verified: true
-unverified_contracts: []
+- name: GnosisSafeProxyFactory
+  address: 0xa6b71e26c5e0845f74c812102ca7114b6a896ab2
+  abi_file: GnosisSafeProxyFactory_0xa6b71e26c5e0845f74c812102ca7114b6a896ab2.json
+  is_verified: true
+- name: GnosisSafe
+  address: 0xd9db270c1b5e3bd161e8c8503c55ceabee709552
+  abi_file: GnosisSafe_0xd9db270c1b5e3bd161e8c8503c55ceabee709552.json
+  is_verified: true
+- name: ERC1967Proxy
+  address: 0xe4cdbd2df584bfb96a4dcde7a384510922981409
+  abi_file: ERC1967Proxy_0xe4cdbd2df584bfb96a4dcde7a384510922981409.json
+  is_verified: true
+- name: CompatibilityFallbackHandler
+  address: 0xf48f2b2d2a534e402487b3ee7c18c33aec0fe5e4
+  abi_file: CompatibilityFallbackHandler_0xf48f2b2d2a534e402487b3ee7c18c33aec0fe5e4.json
+  is_verified: true
+- name: ERC1967Proxy
+  address: 0xff075d0e712e771b43861659f3d128ba958f2950
+  abi_file: ERC1967Proxy_0xff075d0e712e771b43861659f3d128ba958f2950.json
+  is_verified: true
+unverified_contracts:
+- name: null
+  address: 0x1a3329e7813a35c7e5b4189bb3b21bd112ec6536
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0x1ac114c2099afaf5261731655dc6c306bfcd4dbd
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0x34c99cd2b338332b89eee7c0c162beda8339b543
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0x4e59b44847b379578588920ca78fbf26c0b4956c
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0x630ceb800d3535ad5477d7eb0711c2a905de7f3e
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0x7cbb62eaa69f79e6873cd1ecb2392971036cfaa4
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0x80e6f0937fe177415a868e78e00e2e1d768b8533
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0x88f42d470eae89b40c0ee57cfb5f57aafa94b939
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0x9e144385f65b6243cdd1732e6695108cc9fe26f9
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0xa65387f16b013cf2af4605ad8aa5ec25a2cba3a2
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0xc290fddda0706c21b5fd062b850f81368d2a0d6b
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0xc88d8b9f5dc2cdba117e81116bea7ef59eec1c36
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0xdbbc353ba29f75f22456affef61a7e4102de4c96
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0xe448247686a049165de7eb74b56bcb502b2288c2
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0xf35c75d475908ed613a40502d75fc37f12b3efb5
+  abi_file: null
+  is_verified: false
+- name: null
+  address: 0xff03ad710eef5407a5c5ebb9ae7c76490f8e2c9a
+  abi_file: null
+  is_verified: false

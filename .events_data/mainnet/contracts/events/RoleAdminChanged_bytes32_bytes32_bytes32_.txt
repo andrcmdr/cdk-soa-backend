@@ -1,0 +1,13 @@
+Event Name: RoleAdminChanged
+Signature: RoleAdminChanged(bytes32,bytes32,bytes32)
+Topic Hash: 0xbd79b86ffe0ab8e8776151514217cd7cacd52c909f66475c3af44e129f0b00ff
+Anonymous: false
+
+Inputs:
+  0: role bytes32 (indexed)
+  1: previousAdminRole bytes32 (indexed)
+  2: newAdminRole bytes32 (indexed)
+
+Contract Sources:
+  - 0x60a8cddd7630054169a7a7470078842d32ba09a4 (contract_name: ArtifactManager)
+  - 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8 (contract_name: ArtifactFactory)

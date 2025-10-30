@@ -1,0 +1,13 @@
+Event Name: RoleRevoked
+Signature: RoleRevoked(bytes32,address,address)
+Topic Hash: 0xf6391f5c32d9c69d2a47ea670b442974b53935d1edc7fd64eb21e047a839171b
+Anonymous: false
+
+Inputs:
+  0: role bytes32 (indexed)
+  1: account address (indexed)
+  2: sender address (indexed)
+
+Contract Sources:
+  - 0x60a8cddd7630054169a7a7470078842d32ba09a4 (contract_name: ArtifactManager)
+  - 0x2371b2ef9ccec1e7952d59c2bb946675bb7044e8 (contract_name: ArtifactFactory)

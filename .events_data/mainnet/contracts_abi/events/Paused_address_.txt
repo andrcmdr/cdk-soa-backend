@@ -1,0 +1,11 @@
+Event Name: Paused
+Signature: Paused(address)
+Topic Hash: 0x62e78cea01bee320cd4e420270b5ea74000d11b0c9f74754ebdbfc544b05a258
+Anonymous: false
+
+Inputs:
+  0: account address (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x5354BCD502A06d73C51d2EE7a2052524A1650610 (contract_name: SentientStakingDepositManager, verified_at: 2025-10-22T12:34:23.489422Z)
+  - 0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c (contract_name: SentientRewardDistributor, verified_at: 2025-10-22T12:34:06.898232Z)

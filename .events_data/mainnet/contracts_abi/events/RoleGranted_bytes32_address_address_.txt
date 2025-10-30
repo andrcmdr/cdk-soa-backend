@@ -1,0 +1,13 @@
+Event Name: RoleGranted
+Signature: RoleGranted(bytes32,address,address)
+Topic Hash: 0x2f8788117e7eff1d82e926ec794901d17c78024a50270940304540a733656f0d
+Anonymous: false
+
+Inputs:
+  0: role bytes32 (indexed)
+  1: account address (indexed)
+  2: sender address (indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8 (contract_name: ArtifactFactory, verified_at: 2025-10-23T05:44:36.182000Z)
+  - 0x60a8cDdd7630054169A7a7470078842d32Ba09a4 (contract_name: ArtifactManager, verified_at: 2025-10-22T10:46:22.354266Z)

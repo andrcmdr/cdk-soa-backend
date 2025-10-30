@@ -1,0 +1,11 @@
+Event Name: LogSetAuthorizedApprover
+Signature: LogSetAuthorizedApprover(address,bool)
+Topic Hash: 0x26c5b4ba69fd845aa2a98f6e8c45e1be455ace9364aad82f401744b81a603f62
+Anonymous: false
+
+Inputs:
+  0: approver address (indexed)
+  1: isAuthorized bool (indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c (contract_name: SentientRewardDistributor, verified_at: 2025-10-22T12:34:06.898232Z)

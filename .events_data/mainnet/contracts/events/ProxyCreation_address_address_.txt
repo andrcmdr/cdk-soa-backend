@@ -1,0 +1,11 @@
+Event Name: ProxyCreation
+Signature: ProxyCreation(address,address)
+Topic Hash: 0x4f51faf6c4561ff95f067657e43439f0f856d97c04d9ec9070a6199ad418e235
+Anonymous: false
+
+Inputs:
+  0: proxy address (not indexed)
+  1: singleton address (not indexed)
+
+Contract Sources:
+  - 0xa6b71e26c5e0845f74c812102ca7114b6a896ab2 (contract_name: GnosisSafeProxyFactory)

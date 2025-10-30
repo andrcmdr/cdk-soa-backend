@@ -1,0 +1,11 @@
+Event Name: LogSetPaused
+Signature: LogSetPaused(bool)
+Topic Hash: 0x762127fb40e16638e9c1464ad60242d434d3bb7ec1079b26af34ebf7c9e372d2
+Anonymous: false
+
+Inputs:
+  0: isPaused bool (indexed)
+
+Contract Sources:
+  - 0x77100ba0182042aea9ec29f9257bcb2efec94d0c (contract_name: SentientRewardDistributor)
+  - 0x5354bcd502a06d73c51d2ee7a2052524a1650610 (contract_name: SentientStakingDepositManager)

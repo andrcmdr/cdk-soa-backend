@@ -1,0 +1,14 @@
+Event Name: Transfer
+Signature: Transfer(address,address,uint256)
+Topic Hash: 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
+Anonymous: false
+
+Inputs:
+  0: from address (indexed)
+  1: to address (indexed)
+  2: value uint256 (not indexed)
+
+Contract Sources:
+  - 0x9a5220a853ede5ab1cfcb6517135f59e8894bdd8 (contract_name: WSENT)
+  - 0x680fbbd2851b5d54c2b872317806571a692fd520 (contract_name: LAMBO)
+  - 0x39511be4ef7b194cece5af31dec2d0101d46e008 (contract_name: TokenWrappedBridgeUpgradeable)

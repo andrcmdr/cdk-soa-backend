@@ -1,0 +1,11 @@
+Event Name: SignMsg
+Signature: SignMsg(bytes32)
+Topic Hash: 0xe7f4675038f4f6034dfcbbb24c4dc08e4ebf10eb9d257d3d02c0f38d122ac6e4
+Anonymous: false
+
+Inputs:
+  0: msgHash bytes32 (indexed)
+
+Contract Sources:
+  - 0x3e5c63644e683549055b9be8653de26e0b4cd36e (contract_name: GnosisSafeL2)
+  - 0xd9db270c1b5e3bd161e8c8503c55ceabee709552 (contract_name: GnosisSafe)

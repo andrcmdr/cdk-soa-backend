@@ -1,0 +1,9 @@
+Event Name: EIP712DomainChanged
+Signature: EIP712DomainChanged()
+Topic Hash: 0x0a6387c9ea3628b88a633bb4f3b151770f70085117a15f9bf3787cda53f13d31
+Anonymous: false
+
+Inputs:
+
+Contract Sources:
+  - 0x39511be4ef7b194cece5af31dec2d0101d46e008 (contract_name: TokenWrappedBridgeUpgradeable)

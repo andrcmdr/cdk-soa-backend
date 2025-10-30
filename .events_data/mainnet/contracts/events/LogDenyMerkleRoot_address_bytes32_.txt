@@ -1,0 +1,11 @@
+Event Name: LogDenyMerkleRoot
+Signature: LogDenyMerkleRoot(address,bytes32)
+Topic Hash: 0x8064ae7fe6257f02e4c0bc16b506f550b878c8d925f31bb401e98cf1091461ae
+Anonymous: false
+
+Inputs:
+  0: token address (indexed)
+  1: merkleRoot bytes32 (indexed)
+
+Contract Sources:
+  - 0x77100ba0182042aea9ec29f9257bcb2efec94d0c (contract_name: SentientRewardDistributor)

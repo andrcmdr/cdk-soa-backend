@@ -1,0 +1,10 @@
+Event Name: ArtifactTypeAdded
+Signature: ArtifactTypeAdded(string)
+Topic Hash: 0xb9d05259896245d1d8d2f2b927d1298e53b3e9413a8c5ba319791cd2f5221e4b
+Anonymous: false
+
+Inputs:
+  0: artifactType string (indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8 (contract_name: ArtifactFactory, verified_at: 2025-10-23T05:44:36.182000Z)
