@@ -164,9 +164,9 @@ impl EventProcessor {
 
         let mut handles: Vec<JoinHandle<anyhow::Result<()>>> = Vec::new();
 
-        // Task 1: Process historical logs if enabled
-        let process_all_logs = self_arc.config.indexing.historical_logs_processing.is_some_and(|process_logs| process_logs > 0);
-        if process_all_logs {
+        // Task 1: Process historical logs, if enabled
+        let process_historical_logs = self_arc.config.indexing.historical_logs_processing.is_some_and(|process_logs| process_logs > 0);
+        if process_historical_logs {
             let processor_for_history = Arc::clone(&self_arc);
             let filter_for_history = filter.clone();
             let addresses_for_history = addresses.clone();
@@ -174,8 +174,8 @@ impl EventProcessor {
             let historical_task = tokio::spawn(async move {
                 info!("Starting historical logs processing task");
 
-                let log_sync_protocol = processor_for_history.config.indexing.log_sync_protocol.clone();
-                let logs = match log_sync_protocol {
+                let logs_sync_protocol = processor_for_history.config.indexing.logs_sync_protocol.clone();
+                let logs = match logs_sync_protocol {
                     Some(protocol) if protocol.to_lowercase() == "http" => {
                         processor_for_history.http_rpc_provider.get_logs(&filter_for_history).await?
                     },
@@ -183,7 +183,7 @@ impl EventProcessor {
                         processor_for_history.ws_rpc_provider.get_logs(&filter_for_history).await?
                     },
                     _ => {
-                        error!("Invalid log sync protocol (must be 'http' or 'ws'): {:?}", log_sync_protocol);
+                        error!("Invalid log sync protocol (must be 'http' or 'ws'): {:?}", logs_sync_protocol);
                         info!("Fallback to 'http' RPC protocol for logs sync");
                         processor_for_history.http_rpc_provider.get_logs(&filter_for_history).await?
                     }
@@ -205,30 +205,33 @@ impl EventProcessor {
             handles.push(historical_task);
         }
 
-        // Task 2: Subscribe to new logs
-        let processor_for_subscription = Arc::clone(&self_arc);
-        let addresses_for_subscription = addresses.clone();
+        // Task 2: Subscribe to new logs, if enabled
+        let subscribe_new_logs = self_arc.config.indexing.new_logs_subscription.is_some_and(|subscribe_logs| subscribe_logs > 0);
+        if subscribe_new_logs {
+            let processor_for_subscription = Arc::clone(&self_arc);
+            let addresses_for_subscription = addresses.clone();
 
-        let subscription_task = tokio::spawn(async move {
-            info!("Starting subscription task");
+            let subscription_task = tokio::spawn(async move {
+                info!("Starting subscription task");
 
-            let provider = processor_for_subscription.ws_rpc_provider.clone();
-            let sub = provider.subscribe_logs(&filter).await?;
-            info!("Subscribed to logs for {} contracts", addresses_for_subscription.len());
+                let provider = processor_for_subscription.ws_rpc_provider.clone();
+                let sub = provider.subscribe_logs(&filter).await?;
+                info!("Subscribed to logs for {} contracts", addresses_for_subscription.len());
 
-            let mut sub_stream = sub.into_stream();
-            while let Some(log) = sub_stream.next().await {
-                debug!("Received subscription log from contract: {}", log.address());
-                if let Err(e) = processor_for_subscription.handle_log(log).await {
-                    error!("Failed to handle subscription log: {:?}", e);
-                    eprintln!("Subscription log error: {:?}", e);
+                let mut sub_stream = sub.into_stream();
+                while let Some(log) = sub_stream.next().await {
+                    debug!("Received subscription log from contract: {}", log.address());
+                    if let Err(e) = processor_for_subscription.handle_log(log).await {
+                        error!("Failed to handle subscription log: {:?}", e);
+                        eprintln!("Subscription log error: {:?}", e);
+                    }
                 }
-            }
 
-            info!("Subscription task completed");
-            Ok(())
-        });
-        handles.push(subscription_task);
+                info!("Subscription task completed");
+                Ok(())
+            });
+            handles.push(subscription_task);
+        }
 
         // Wait for all tasks to complete
         for handle in handles {

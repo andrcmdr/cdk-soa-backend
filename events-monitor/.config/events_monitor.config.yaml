@@ -9,7 +9,8 @@ indexing:
   from_block: 0
   to_block:
   historical_logs_processing: 1
-  log_sync_protocol: ws # http or ws
+  logs_sync_protocol: http # http or ws
+  new_logs_subscription: 1
   filter_senders: []
 #  filter_senders:
 #    - "0x742d35Cc6634C0532925a3b8BC342A5b6437AFCD"
@@ -26,7 +27,7 @@ postgres:
 
 # AWS RDS configuration (optional additional data layer)
 aws_rds:
-  enabled: 1  # Set to 0 to disable AWS RDS support
+  enabled: 0  # Set to 0 to disable or set to 1 to enable AWS RDS support
   endpoint: "your-rds-instance.abcd1234.us-west-2.rds.amazonaws.com"
   port: 5432
   database_name: "events_monitor_rds"

@@ -12,7 +12,8 @@ pub struct IndexingCfg {
     pub from_block: Option<u64>,
     pub to_block: Option<u64>,
     pub historical_logs_processing: Option<u8>,
-    pub log_sync_protocol: Option<String>,
+    pub logs_sync_protocol: Option<String>,
+    pub new_logs_subscription: Option<u8>,
     pub filter_senders: Option<Vec<String>>,
     pub filter_receivers: Option<Vec<String>>,
 }
