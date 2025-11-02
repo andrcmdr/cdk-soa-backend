@@ -1,14 +1,28 @@
 metadata:
-  generated_at: 2025-10-30T04:53:06.303030Z
+  generated_at: 2025-11-02T10:09:42.894193Z
   blockscout_server: https://sentient-testnet-blockscout.eu-north-2.gateway.fm
-  total_verified: 388
+  total_verified: 389
   total_unverified: 0
-  total_verified_with_abi: 388
+  total_verified_with_abi: 389
   total_unverified_with_abi: 0
-  total_verified_implementations_with_abi: 224
+  total_verified_implementations_with_abi: 225
   total_unverified_implementations_with_abi: 0
   abi_directory: ./contracts_abi/abi
 verified_contracts:
+- name: "GnosisSafeProxy"
+  address: "0xB38138C4D7E34dC3502cC9510193ceA0764C5a5a"
+  abi_file: "./contracts_abi/abi/GnosisSafeProxy_0xB38138C4D7E34dC3502cC9510193ceA0764C5a5a.json"
+  is_verified: true
+  is_fully_verified: true
+  verified_at: 2025-10-30T07:29:50.419659Z
+  implementations:
+  - name: "GnosisSafeL2"
+    address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
+    abi_file: "./contracts_abi/abi/GnosisSafeL2_0x3E5c63644E683549055b9Be8653de26E0B4CD36E_parent_0xB38138C4D7E34dC3502cC9510193ceA0764C5a5a.json"
+    is_verified: true
+    is_fully_verified: true
+    verified_at: 2025-09-11T02:31:51.954226Z
+    implementations: null
 - name: "LoadTester"
   address: "0x1B3e98760Ce8EC5a481124A76b45fD373CE14BD5"
   abi_file: "./contracts_abi/abi/LoadTester_0x1B3e98760Ce8EC5a481124A76b45fD373CE14BD5.json"

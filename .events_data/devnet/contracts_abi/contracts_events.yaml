@@ -1,7 +1,7 @@
 contracts:
-- name: Treasury
+- name: "Treasury"
   address:
-  - address: 0x665553357099AA76b7E63F36365404F1F559CF9b
+  - address: "0x665553357099AA76b7E63F36365404F1F559CF9b"
     verified_at: 2025-07-15T15:41:26.978522Z
   events:
   - event: Paused(address account)

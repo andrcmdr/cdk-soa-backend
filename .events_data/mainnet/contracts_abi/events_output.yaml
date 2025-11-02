@@ -1,5 +1,5 @@
 metadata:
-  generated_at: 2025-10-30T04:56:05.857393Z
+  generated_at: 2025-11-02T10:11:45.996402Z
   blockscout_server: https://sentient-blockscout.eu-north-2.gateway.fm
   total_events: 88
   total_unique_signatures: 88
@@ -19,7 +19,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/AcceptEmergencyBridgePauserRole_address_address_.txt"
 - name: "AcceptEmergencyBridgeUnpauserRole"
   signature: AcceptEmergencyBridgeUnpauserRole(address,address)
@@ -35,7 +35,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/AcceptEmergencyBridgeUnpauserRole_address_address_.txt"
 - name: "AcceptGlobalExitRootRemover"
   signature: AcceptGlobalExitRootRemover(address,address)
@@ -51,7 +51,7 @@ events:
   contract_sources:
   - address: "0x0200143Fa295EE4dffEF22eE2616c2E008D81688"
     verified_at: 2025-10-14T19:41:27.937222Z
-    contract_name: AgglayerGERL2
+    contract_name: "AgglayerGERL2"
   signature_file: "./contracts_abi/events/AcceptGlobalExitRootRemover_address_address_.txt"
 - name: "AcceptGlobalExitRootUpdater"
   signature: AcceptGlobalExitRootUpdater(address,address)
@@ -67,7 +67,7 @@ events:
   contract_sources:
   - address: "0x0200143Fa295EE4dffEF22eE2616c2E008D81688"
     verified_at: 2025-10-14T19:41:27.937222Z
-    contract_name: AgglayerGERL2
+    contract_name: "AgglayerGERL2"
   signature_file: "./contracts_abi/events/AcceptGlobalExitRootUpdater_address_address_.txt"
 - name: "AcceptProxiedTokensManagerRole"
   signature: AcceptProxiedTokensManagerRole(address,address)
@@ -83,7 +83,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/AcceptProxiedTokensManagerRole_address_address_.txt"
 - name: "AddedOwner"
   signature: AddedOwner(address)
@@ -96,10 +96,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/AddedOwner_address_.txt"
 - name: "AdminChanged"
   signature: AdminChanged(address,address)
@@ -115,13 +115,13 @@ events:
   contract_sources:
   - address: "0x7a7f337d883EE98DF40c4654b3ad4E3aacF304E8"
     verified_at: 2025-10-17T05:23:50.460159Z
-    contract_name: TokenWrappedTransparentProxy
+    contract_name: "TokenWrappedTransparentProxy"
   - address: "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe"
     verified_at: 2025-10-14T19:44:34.321852Z
-    contract_name: TransparentUpgradeableProxy
+    contract_name: "TransparentUpgradeableProxy"
   - address: "0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA"
     verified_at: 2025-10-14T19:23:10.136777Z
-    contract_name: TransparentUpgradeableProxy
+    contract_name: "TransparentUpgradeableProxy"
   signature_file: "./contracts_abi/events/AdminChanged_address_address_.txt"
 - name: "Approval"
   signature: Approval(address,address,uint256)
@@ -140,13 +140,13 @@ events:
   contract_sources:
   - address: "0x39511be4eF7b194Cece5af31dEc2D0101d46E008"
     verified_at: 2025-10-30T03:16:38.889314Z
-    contract_name: TokenWrappedBridgeUpgradeable
+    contract_name: "TokenWrappedBridgeUpgradeable"
   - address: "0x680FbBd2851B5d54C2b872317806571a692fD520"
     verified_at: 2025-10-22T21:06:45.031914Z
-    contract_name: LAMBO
+    contract_name: "LAMBO"
   - address: "0x9A5220A853EDE5ab1cfCB6517135F59E8894BDd8"
     verified_at: 2025-10-22T12:33:49.326975Z
-    contract_name: WSENT
+    contract_name: "WSENT"
   signature_file: "./contracts_abi/events/Approval_address_address_uint256_.txt"
 - name: "ApproveHash"
   signature: ApproveHash(bytes32,address)
@@ -162,10 +162,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/ApproveHash_bytes32_address_.txt"
 - name: "ArtifactAdded"
   signature: ArtifactAdded(address,string)
@@ -181,7 +181,7 @@ events:
   contract_sources:
   - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
     verified_at: 2025-10-22T10:46:22.354266Z
-    contract_name: ArtifactManager
+    contract_name: "ArtifactManager"
   signature_file: "./contracts_abi/events/ArtifactAdded_address_string_.txt"
 - name: "ArtifactBatchRevenueReported"
   signature: ArtifactBatchRevenueReported(address[],uint256[],uint256[])
@@ -200,7 +200,7 @@ events:
   contract_sources:
   - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
     verified_at: 2025-10-22T10:46:22.354266Z
-    contract_name: ArtifactManager
+    contract_name: "ArtifactManager"
   signature_file: "./contracts_abi/events/ArtifactBatchRevenueReported_address___uint256___uint256___.txt"
 - name: "ArtifactBatchUsageReported"
   signature: ArtifactBatchUsageReported(address[],uint256[],uint256[])
@@ -219,7 +219,7 @@ events:
   contract_sources:
   - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
     verified_at: 2025-10-22T10:46:22.354266Z
-    contract_name: ArtifactManager
+    contract_name: "ArtifactManager"
   signature_file: "./contracts_abi/events/ArtifactBatchUsageReported_address___uint256___uint256___.txt"
 - name: "ArtifactBeaconChanged"
   signature: ArtifactBeaconChanged(address)
@@ -232,7 +232,7 @@ events:
   contract_sources:
   - address: "0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8"
     verified_at: 2025-10-23T05:44:36.182000Z
-    contract_name: ArtifactFactory
+    contract_name: "ArtifactFactory"
   signature_file: "./contracts_abi/events/ArtifactBeaconChanged_address_.txt"
 - name: "ArtifactCreated"
   signature: ArtifactCreated(bytes32,string,string,address,address)
@@ -257,7 +257,7 @@ events:
   contract_sources:
   - address: "0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8"
     verified_at: 2025-10-23T05:44:36.182000Z
-    contract_name: ArtifactFactory
+    contract_name: "ArtifactFactory"
   signature_file: "./contracts_abi/events/ArtifactCreated_bytes32_string_string_address_address_.txt"
 - name: "ArtifactFactoryChanged"
   signature: ArtifactFactoryChanged(address,address)
@@ -273,7 +273,7 @@ events:
   contract_sources:
   - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
     verified_at: 2025-10-22T10:46:22.354266Z
-    contract_name: ArtifactManager
+    contract_name: "ArtifactManager"
   signature_file: "./contracts_abi/events/ArtifactFactoryChanged_address_address_.txt"
 - name: "ArtifactMetadataUpdated"
   signature: ArtifactMetadataUpdated(address,string)
@@ -289,7 +289,7 @@ events:
   contract_sources:
   - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
     verified_at: 2025-10-22T10:46:22.354266Z
-    contract_name: ArtifactManager
+    contract_name: "ArtifactManager"
   signature_file: "./contracts_abi/events/ArtifactMetadataUpdated_address_string_.txt"
 - name: "ArtifactRemoved"
   signature: ArtifactRemoved(address)
@@ -302,7 +302,7 @@ events:
   contract_sources:
   - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
     verified_at: 2025-10-22T10:46:22.354266Z
-    contract_name: ArtifactManager
+    contract_name: "ArtifactManager"
   signature_file: "./contracts_abi/events/ArtifactRemoved_address_.txt"
 - name: "ArtifactRevenueReported"
   signature: ArtifactRevenueReported(address,uint256,uint256)
@@ -321,7 +321,7 @@ events:
   contract_sources:
   - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
     verified_at: 2025-10-22T10:46:22.354266Z
-    contract_name: ArtifactManager
+    contract_name: "ArtifactManager"
   signature_file: "./contracts_abi/events/ArtifactRevenueReported_address_uint256_uint256_.txt"
 - name: "ArtifactTypeAdded"
   signature: ArtifactTypeAdded(string)
@@ -334,7 +334,7 @@ events:
   contract_sources:
   - address: "0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8"
     verified_at: 2025-10-23T05:44:36.182000Z
-    contract_name: ArtifactFactory
+    contract_name: "ArtifactFactory"
   signature_file: "./contracts_abi/events/ArtifactTypeAdded_string_.txt"
 - name: "ArtifactTypeRemoved"
   signature: ArtifactTypeRemoved(string)
@@ -347,7 +347,7 @@ events:
   contract_sources:
   - address: "0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8"
     verified_at: 2025-10-23T05:44:36.182000Z
-    contract_name: ArtifactFactory
+    contract_name: "ArtifactFactory"
   signature_file: "./contracts_abi/events/ArtifactTypeRemoved_string_.txt"
 - name: "ArtifactUsageReported"
   signature: ArtifactUsageReported(address,uint256,uint256)
@@ -366,7 +366,7 @@ events:
   contract_sources:
   - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
     verified_at: 2025-10-22T10:46:22.354266Z
-    contract_name: ArtifactManager
+    contract_name: "ArtifactManager"
   signature_file: "./contracts_abi/events/ArtifactUsageReported_address_uint256_uint256_.txt"
 - name: "BackwardLET"
   signature: BackwardLET(uint256,bytes32,uint256,bytes32)
@@ -388,7 +388,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/BackwardLET_uint256_bytes32_uint256_bytes32_.txt"
 - name: "BeaconUpgraded"
   signature: BeaconUpgraded(address)
@@ -401,13 +401,13 @@ events:
   contract_sources:
   - address: "0x7a7f337d883EE98DF40c4654b3ad4E3aacF304E8"
     verified_at: 2025-10-17T05:23:50.460159Z
-    contract_name: TokenWrappedTransparentProxy
+    contract_name: "TokenWrappedTransparentProxy"
   - address: "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe"
     verified_at: 2025-10-14T19:44:34.321852Z
-    contract_name: TransparentUpgradeableProxy
+    contract_name: "TransparentUpgradeableProxy"
   - address: "0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA"
     verified_at: 2025-10-14T19:23:10.136777Z
-    contract_name: TransparentUpgradeableProxy
+    contract_name: "TransparentUpgradeableProxy"
   signature_file: "./contracts_abi/events/BeaconUpgraded_address_.txt"
 - name: "BridgeEvent"
   signature: BridgeEvent(uint8,uint32,address,uint32,address,uint256,bytes,uint32)
@@ -441,7 +441,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/BridgeEvent_uint8_uint32_address_uint32_address_uint256_bytes_uint32_.txt"
 - name: "ChangedFallbackHandler"
   signature: ChangedFallbackHandler(address)
@@ -454,10 +454,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/ChangedFallbackHandler_address_.txt"
 - name: "ChangedGuard"
   signature: ChangedGuard(address)
@@ -470,10 +470,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/ChangedGuard_address_.txt"
 - name: "ChangedThreshold"
   signature: ChangedThreshold(uint256)
@@ -486,10 +486,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/ChangedThreshold_uint256_.txt"
 - name: "ClaimEvent"
   signature: ClaimEvent(uint256,uint32,address,address,uint256)
@@ -514,7 +514,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/ClaimEvent_uint256_uint32_address_address_uint256_.txt"
 - name: "DetailedClaimEvent"
   signature: DetailedClaimEvent(bytes32[32],bytes32[32],uint256,bytes32,bytes32,uint32,address,uint32,address,uint256,bytes)
@@ -557,7 +557,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/DetailedClaimEvent_bytes32_32__bytes32_32__uint256_bytes32_bytes32_uint32_address_uint32_address_uint256_bytes_.txt"
 - name: "DisabledModule"
   signature: DisabledModule(address)
@@ -570,10 +570,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/DisabledModule_address_.txt"
 - name: "EIP712DomainChanged"
   signature: EIP712DomainChanged()
@@ -583,7 +583,7 @@ events:
   contract_sources:
   - address: "0x39511be4eF7b194Cece5af31dEc2D0101d46E008"
     verified_at: 2025-10-30T03:16:38.889314Z
-    contract_name: TokenWrappedBridgeUpgradeable
+    contract_name: "TokenWrappedBridgeUpgradeable"
   signature_file: "./contracts_abi/events/EIP712DomainChanged__.txt"
 - name: "EmergencyStateActivated"
   signature: EmergencyStateActivated()
@@ -593,7 +593,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/EmergencyStateActivated__.txt"
 - name: "EmergencyStateDeactivated"
   signature: EmergencyStateDeactivated()
@@ -603,7 +603,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/EmergencyStateDeactivated__.txt"
 - name: "EnabledModule"
   signature: EnabledModule(address)
@@ -616,10 +616,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/EnabledModule_address_.txt"
 - name: "ExecutionFailure"
   signature: ExecutionFailure(bytes32,uint256)
@@ -635,10 +635,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/ExecutionFailure_bytes32_uint256_.txt"
 - name: "ExecutionFromModuleFailure"
   signature: ExecutionFromModuleFailure(address)
@@ -651,10 +651,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/ExecutionFromModuleFailure_address_.txt"
 - name: "ExecutionFromModuleSuccess"
   signature: ExecutionFromModuleSuccess(address)
@@ -667,10 +667,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/ExecutionFromModuleSuccess_address_.txt"
 - name: "ExecutionSuccess"
   signature: ExecutionSuccess(bytes32,uint256)
@@ -686,10 +686,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/ExecutionSuccess_bytes32_uint256_.txt"
 - name: "ForwardLET"
   signature: ForwardLET(uint256,bytes32,uint256,bytes32,bytes)
@@ -714,27 +714,8 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/ForwardLET_uint256_bytes32_uint256_bytes32_bytes_.txt"
-- name: "Initialized"
-  signature: Initialized(uint64)
-  topic_hash: 0xc7f505b2f371ae2175ee4913f4499e1f2633a7b5936321eed1cdaeb6115181d2
-  anonymous: false
-  inputs:
-  - name: "version"
-    input_type: uint64
-    indexed: false
-  contract_sources:
-  - address: "0x39511be4eF7b194Cece5af31dEc2D0101d46E008"
-    verified_at: 2025-10-30T03:16:38.889314Z
-    contract_name: TokenWrappedBridgeUpgradeable
-  - address: "0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8"
-    verified_at: 2025-10-23T05:44:36.182000Z
-    contract_name: ArtifactFactory
-  - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
-    verified_at: 2025-10-22T10:46:22.354266Z
-    contract_name: ArtifactManager
-  signature_file: "./contracts_abi/events/Initialized_uint64_.txt"
 - name: "Initialized"
   signature: Initialized(uint8)
   topic_hash: 0x7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb3847402498
@@ -746,11 +727,30 @@ events:
   contract_sources:
   - address: "0x0200143Fa295EE4dffEF22eE2616c2E008D81688"
     verified_at: 2025-10-14T19:41:27.937222Z
-    contract_name: AgglayerGERL2
+    contract_name: "AgglayerGERL2"
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/Initialized_uint8_.txt"
+- name: "Initialized"
+  signature: Initialized(uint64)
+  topic_hash: 0xc7f505b2f371ae2175ee4913f4499e1f2633a7b5936321eed1cdaeb6115181d2
+  anonymous: false
+  inputs:
+  - name: "version"
+    input_type: uint64
+    indexed: false
+  contract_sources:
+  - address: "0x39511be4eF7b194Cece5af31dEc2D0101d46E008"
+    verified_at: 2025-10-30T03:16:38.889314Z
+    contract_name: "TokenWrappedBridgeUpgradeable"
+  - address: "0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8"
+    verified_at: 2025-10-23T05:44:36.182000Z
+    contract_name: "ArtifactFactory"
+  - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
+    verified_at: 2025-10-22T10:46:22.354266Z
+    contract_name: "ArtifactManager"
+  signature_file: "./contracts_abi/events/Initialized_uint64_.txt"
 - name: "LogApproveMerkleRoot"
   signature: LogApproveMerkleRoot(address,uint256)
   topic_hash: 0x339cbb7bd5d094ad8908e8442c328069709dbdedea4514be20261aca79006e67
@@ -765,7 +765,7 @@ events:
   contract_sources:
   - address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
     verified_at: 2025-10-22T12:34:06.898232Z
-    contract_name: SentientRewardDistributor
+    contract_name: "SentientRewardDistributor"
   signature_file: "./contracts_abi/events/LogApproveMerkleRoot_address_uint256_.txt"
 - name: "LogClaimRewards"
   signature: LogClaimRewards(address,address,uint256,uint256)
@@ -787,7 +787,7 @@ events:
   contract_sources:
   - address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
     verified_at: 2025-10-22T12:34:06.898232Z
-    contract_name: SentientRewardDistributor
+    contract_name: "SentientRewardDistributor"
   signature_file: "./contracts_abi/events/LogClaimRewards_address_address_uint256_uint256_.txt"
 - name: "LogDenyMerkleRoot"
   signature: LogDenyMerkleRoot(address,bytes32)
@@ -803,7 +803,7 @@ events:
   contract_sources:
   - address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
     verified_at: 2025-10-22T12:34:06.898232Z
-    contract_name: SentientRewardDistributor
+    contract_name: "SentientRewardDistributor"
   signature_file: "./contracts_abi/events/LogDenyMerkleRoot_address_bytes32_.txt"
 - name: "LogDeposit"
   signature: LogDeposit(address,address,address,uint256,uint256,uint256)
@@ -831,7 +831,7 @@ events:
   contract_sources:
   - address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
     verified_at: 2025-10-22T12:34:23.489422Z
-    contract_name: SentientStakingDepositManager
+    contract_name: "SentientStakingDepositManager"
   signature_file: "./contracts_abi/events/LogDeposit_address_address_address_uint256_uint256_uint256_.txt"
 - name: "LogEmergencyWithdraw"
   signature: LogEmergencyWithdraw(address,uint256,bool)
@@ -850,10 +850,10 @@ events:
   contract_sources:
   - address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
     verified_at: 2025-10-22T12:34:23.489422Z
-    contract_name: SentientStakingDepositManager
+    contract_name: "SentientStakingDepositManager"
   - address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
     verified_at: 2025-10-22T12:34:06.898232Z
-    contract_name: SentientRewardDistributor
+    contract_name: "SentientRewardDistributor"
   signature_file: "./contracts_abi/events/LogEmergencyWithdraw_address_uint256_bool_.txt"
 - name: "LogSetApprovedTtl"
   signature: LogSetApprovedTtl(uint256,bool)
@@ -869,7 +869,7 @@ events:
   contract_sources:
   - address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
     verified_at: 2025-10-22T12:34:23.489422Z
-    contract_name: SentientStakingDepositManager
+    contract_name: "SentientStakingDepositManager"
   signature_file: "./contracts_abi/events/LogSetApprovedTtl_uint256_bool_.txt"
 - name: "LogSetArtifactManager"
   signature: LogSetArtifactManager(address)
@@ -882,7 +882,7 @@ events:
   contract_sources:
   - address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
     verified_at: 2025-10-22T12:34:23.489422Z
-    contract_name: SentientStakingDepositManager
+    contract_name: "SentientStakingDepositManager"
   signature_file: "./contracts_abi/events/LogSetArtifactManager_address_.txt"
 - name: "LogSetAuthorizedApprover"
   signature: LogSetAuthorizedApprover(address,bool)
@@ -898,7 +898,7 @@ events:
   contract_sources:
   - address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
     verified_at: 2025-10-22T12:34:06.898232Z
-    contract_name: SentientRewardDistributor
+    contract_name: "SentientRewardDistributor"
   signature_file: "./contracts_abi/events/LogSetAuthorizedApprover_address_bool_.txt"
 - name: "LogSetDepositEnabled"
   signature: LogSetDepositEnabled(bool)
@@ -911,7 +911,7 @@ events:
   contract_sources:
   - address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
     verified_at: 2025-10-22T12:34:23.489422Z
-    contract_name: SentientStakingDepositManager
+    contract_name: "SentientStakingDepositManager"
   signature_file: "./contracts_abi/events/LogSetDepositEnabled_bool_.txt"
 - name: "LogSetMerkleProofPendingPeriod"
   signature: LogSetMerkleProofPendingPeriod(uint256)
@@ -924,7 +924,7 @@ events:
   contract_sources:
   - address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
     verified_at: 2025-10-22T12:34:06.898232Z
-    contract_name: SentientRewardDistributor
+    contract_name: "SentientRewardDistributor"
   signature_file: "./contracts_abi/events/LogSetMerkleProofPendingPeriod_uint256_.txt"
 - name: "LogSetMerkleRoot"
   signature: LogSetMerkleRoot(address,bytes32)
@@ -940,7 +940,7 @@ events:
   contract_sources:
   - address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
     verified_at: 2025-10-22T12:34:06.898232Z
-    contract_name: SentientRewardDistributor
+    contract_name: "SentientRewardDistributor"
   signature_file: "./contracts_abi/events/LogSetMerkleRoot_address_bytes32_.txt"
 - name: "LogSetPaused"
   signature: LogSetPaused(bool)
@@ -953,10 +953,10 @@ events:
   contract_sources:
   - address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
     verified_at: 2025-10-22T12:34:23.489422Z
-    contract_name: SentientStakingDepositManager
+    contract_name: "SentientStakingDepositManager"
   - address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
     verified_at: 2025-10-22T12:34:06.898232Z
-    contract_name: SentientRewardDistributor
+    contract_name: "SentientRewardDistributor"
   signature_file: "./contracts_abi/events/LogSetPaused_bool_.txt"
 - name: "LogSetWithdrawEnabled"
   signature: LogSetWithdrawEnabled(bool)
@@ -969,7 +969,7 @@ events:
   contract_sources:
   - address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
     verified_at: 2025-10-22T12:34:23.489422Z
-    contract_name: SentientStakingDepositManager
+    contract_name: "SentientStakingDepositManager"
   signature_file: "./contracts_abi/events/LogSetWithdrawEnabled_bool_.txt"
 - name: "LogWithdraw"
   signature: LogWithdraw(address,address,address,uint256,uint256,uint256)
@@ -997,7 +997,7 @@ events:
   contract_sources:
   - address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
     verified_at: 2025-10-22T12:34:23.489422Z
-    contract_name: SentientStakingDepositManager
+    contract_name: "SentientStakingDepositManager"
   signature_file: "./contracts_abi/events/LogWithdraw_address_address_address_uint256_uint256_uint256_.txt"
 - name: "MigrateLegacyToken"
   signature: MigrateLegacyToken(address,address,address,uint256)
@@ -1019,7 +1019,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/MigrateLegacyToken_address_address_address_uint256_.txt"
 - name: "NewWrappedToken"
   signature: NewWrappedToken(uint32,address,address,bytes)
@@ -1041,7 +1041,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/NewWrappedToken_uint32_address_address_bytes_.txt"
 - name: "OwnershipTransferStarted"
   signature: OwnershipTransferStarted(address,address)
@@ -1057,10 +1057,10 @@ events:
   contract_sources:
   - address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
     verified_at: 2025-10-22T12:34:23.489422Z
-    contract_name: SentientStakingDepositManager
+    contract_name: "SentientStakingDepositManager"
   - address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
     verified_at: 2025-10-22T12:34:06.898232Z
-    contract_name: SentientRewardDistributor
+    contract_name: "SentientRewardDistributor"
   signature_file: "./contracts_abi/events/OwnershipTransferStarted_address_address_.txt"
 - name: "OwnershipTransferred"
   signature: OwnershipTransferred(address,address)
@@ -1076,13 +1076,13 @@ events:
   contract_sources:
   - address: "0x680FbBd2851B5d54C2b872317806571a692fD520"
     verified_at: 2025-10-22T21:06:45.031914Z
-    contract_name: LAMBO
+    contract_name: "LAMBO"
   - address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
     verified_at: 2025-10-22T12:34:23.489422Z
-    contract_name: SentientStakingDepositManager
+    contract_name: "SentientStakingDepositManager"
   - address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
     verified_at: 2025-10-22T12:34:06.898232Z
-    contract_name: SentientRewardDistributor
+    contract_name: "SentientRewardDistributor"
   signature_file: "./contracts_abi/events/OwnershipTransferred_address_address_.txt"
 - name: "Paused"
   signature: Paused(address)
@@ -1095,10 +1095,10 @@ events:
   contract_sources:
   - address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
     verified_at: 2025-10-22T12:34:23.489422Z
-    contract_name: SentientStakingDepositManager
+    contract_name: "SentientStakingDepositManager"
   - address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
     verified_at: 2025-10-22T12:34:06.898232Z
-    contract_name: SentientRewardDistributor
+    contract_name: "SentientRewardDistributor"
   signature_file: "./contracts_abi/events/Paused_address_.txt"
 - name: "ProxyCreation"
   signature: ProxyCreation(address,address)
@@ -1114,7 +1114,7 @@ events:
   contract_sources:
   - address: "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2"
     verified_at: 2025-10-20T11:55:13.816536Z
-    contract_name: GnosisSafeProxyFactory
+    contract_name: "GnosisSafeProxyFactory"
   signature_file: "./contracts_abi/events/ProxyCreation_address_address_.txt"
 - name: "RemoveLegacySovereignTokenAddress"
   signature: RemoveLegacySovereignTokenAddress(address)
@@ -1127,7 +1127,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/RemoveLegacySovereignTokenAddress_address_.txt"
 - name: "RemovedOwner"
   signature: RemovedOwner(address)
@@ -1140,10 +1140,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/RemovedOwner_address_.txt"
 - name: "RoleAdminChanged"
   signature: RoleAdminChanged(bytes32,bytes32,bytes32)
@@ -1162,10 +1162,10 @@ events:
   contract_sources:
   - address: "0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8"
     verified_at: 2025-10-23T05:44:36.182000Z
-    contract_name: ArtifactFactory
+    contract_name: "ArtifactFactory"
   - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
     verified_at: 2025-10-22T10:46:22.354266Z
-    contract_name: ArtifactManager
+    contract_name: "ArtifactManager"
   signature_file: "./contracts_abi/events/RoleAdminChanged_bytes32_bytes32_bytes32_.txt"
 - name: "RoleGranted"
   signature: RoleGranted(bytes32,address,address)
@@ -1184,10 +1184,10 @@ events:
   contract_sources:
   - address: "0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8"
     verified_at: 2025-10-23T05:44:36.182000Z
-    contract_name: ArtifactFactory
+    contract_name: "ArtifactFactory"
   - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
     verified_at: 2025-10-22T10:46:22.354266Z
-    contract_name: ArtifactManager
+    contract_name: "ArtifactManager"
   signature_file: "./contracts_abi/events/RoleGranted_bytes32_address_address_.txt"
 - name: "RoleRevoked"
   signature: RoleRevoked(bytes32,address,address)
@@ -1206,10 +1206,10 @@ events:
   contract_sources:
   - address: "0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8"
     verified_at: 2025-10-23T05:44:36.182000Z
-    contract_name: ArtifactFactory
+    contract_name: "ArtifactFactory"
   - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
     verified_at: 2025-10-22T10:46:22.354266Z
-    contract_name: ArtifactManager
+    contract_name: "ArtifactManager"
   signature_file: "./contracts_abi/events/RoleRevoked_bytes32_address_address_.txt"
 - name: "SafeModuleTransaction"
   signature: SafeModuleTransaction(address,address,uint256,bytes,uint8)
@@ -1234,7 +1234,7 @@ events:
   contract_sources:
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/SafeModuleTransaction_address_address_uint256_bytes_uint8_.txt"
 - name: "SafeMultiSigTransaction"
   signature: SafeMultiSigTransaction(address,uint256,bytes,uint8,uint256,uint256,uint256,address,address,bytes,bytes)
@@ -1277,7 +1277,7 @@ events:
   contract_sources:
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/SafeMultiSigTransaction_address_uint256_bytes_uint8_uint256_uint256_uint256_address_address_bytes_bytes_.txt"
 - name: "SafeReceived"
   signature: SafeReceived(address,uint256)
@@ -1293,10 +1293,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/SafeReceived_address_uint256_.txt"
 - name: "SafeSetup"
   signature: SafeSetup(address,address[],uint256,address,address)
@@ -1321,10 +1321,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/SafeSetup_address_address___uint256_address_address_.txt"
 - name: "SetBridgeManager"
   signature: SetBridgeManager(address)
@@ -1337,7 +1337,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/SetBridgeManager_address_.txt"
 - name: "SetClaim"
   signature: SetClaim(uint32,uint32)
@@ -1353,7 +1353,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/SetClaim_uint32_uint32_.txt"
 - name: "SetLocalBalanceTree"
   signature: SetLocalBalanceTree(uint32,address,uint256)
@@ -1372,7 +1372,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/SetLocalBalanceTree_uint32_address_uint256_.txt"
 - name: "SetSovereignTokenAddress"
   signature: SetSovereignTokenAddress(uint32,address,address,bool)
@@ -1394,7 +1394,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/SetSovereignTokenAddress_uint32_address_address_bool_.txt"
 - name: "SetSovereignWETHAddress"
   signature: SetSovereignWETHAddress(address,bool)
@@ -1410,7 +1410,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/SetSovereignWETHAddress_address_bool_.txt"
 - name: "SignMsg"
   signature: SignMsg(bytes32)
@@ -1423,10 +1423,10 @@ events:
   contract_sources:
   - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
-    contract_name: GnosisSafe
+    contract_name: "GnosisSafe"
   - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
-    contract_name: GnosisSafeL2
+    contract_name: "GnosisSafeL2"
   signature_file: "./contracts_abi/events/SignMsg_bytes32_.txt"
 - name: "Transfer"
   signature: Transfer(address,address,uint256)
@@ -1445,13 +1445,13 @@ events:
   contract_sources:
   - address: "0x39511be4eF7b194Cece5af31dEc2D0101d46E008"
     verified_at: 2025-10-30T03:16:38.889314Z
-    contract_name: TokenWrappedBridgeUpgradeable
+    contract_name: "TokenWrappedBridgeUpgradeable"
   - address: "0x680FbBd2851B5d54C2b872317806571a692fD520"
     verified_at: 2025-10-22T21:06:45.031914Z
-    contract_name: LAMBO
+    contract_name: "LAMBO"
   - address: "0x9A5220A853EDE5ab1cfCB6517135F59E8894BDd8"
     verified_at: 2025-10-22T12:33:49.326975Z
-    contract_name: WSENT
+    contract_name: "WSENT"
   signature_file: "./contracts_abi/events/Transfer_address_address_uint256_.txt"
 - name: "TransferEmergencyBridgePauserRole"
   signature: TransferEmergencyBridgePauserRole(address,address)
@@ -1467,7 +1467,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/TransferEmergencyBridgePauserRole_address_address_.txt"
 - name: "TransferEmergencyBridgeUnpauserRole"
   signature: TransferEmergencyBridgeUnpauserRole(address,address)
@@ -1483,7 +1483,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/TransferEmergencyBridgeUnpauserRole_address_address_.txt"
 - name: "TransferGlobalExitRootRemover"
   signature: TransferGlobalExitRootRemover(address,address)
@@ -1499,7 +1499,7 @@ events:
   contract_sources:
   - address: "0x0200143Fa295EE4dffEF22eE2616c2E008D81688"
     verified_at: 2025-10-14T19:41:27.937222Z
-    contract_name: AgglayerGERL2
+    contract_name: "AgglayerGERL2"
   signature_file: "./contracts_abi/events/TransferGlobalExitRootRemover_address_address_.txt"
 - name: "TransferGlobalExitRootUpdater"
   signature: TransferGlobalExitRootUpdater(address,address)
@@ -1515,7 +1515,7 @@ events:
   contract_sources:
   - address: "0x0200143Fa295EE4dffEF22eE2616c2E008D81688"
     verified_at: 2025-10-14T19:41:27.937222Z
-    contract_name: AgglayerGERL2
+    contract_name: "AgglayerGERL2"
   signature_file: "./contracts_abi/events/TransferGlobalExitRootUpdater_address_address_.txt"
 - name: "TransferProxiedTokensManagerRole"
   signature: TransferProxiedTokensManagerRole(address,address)
@@ -1531,7 +1531,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/TransferProxiedTokensManagerRole_address_address_.txt"
 - name: "Unpaused"
   signature: Unpaused(address)
@@ -1544,10 +1544,10 @@ events:
   contract_sources:
   - address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
     verified_at: 2025-10-22T12:34:23.489422Z
-    contract_name: SentientStakingDepositManager
+    contract_name: "SentientStakingDepositManager"
   - address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
     verified_at: 2025-10-22T12:34:06.898232Z
-    contract_name: SentientRewardDistributor
+    contract_name: "SentientRewardDistributor"
   signature_file: "./contracts_abi/events/Unpaused_address_.txt"
 - name: "UpdateHashChainValue"
   signature: UpdateHashChainValue(bytes32,bytes32)
@@ -1563,7 +1563,7 @@ events:
   contract_sources:
   - address: "0x0200143Fa295EE4dffEF22eE2616c2E008D81688"
     verified_at: 2025-10-14T19:41:27.937222Z
-    contract_name: AgglayerGERL2
+    contract_name: "AgglayerGERL2"
   signature_file: "./contracts_abi/events/UpdateHashChainValue_bytes32_bytes32_.txt"
 - name: "UpdateRemovalHashChainValue"
   signature: UpdateRemovalHashChainValue(bytes32,bytes32)
@@ -1579,7 +1579,7 @@ events:
   contract_sources:
   - address: "0x0200143Fa295EE4dffEF22eE2616c2E008D81688"
     verified_at: 2025-10-14T19:41:27.937222Z
-    contract_name: AgglayerGERL2
+    contract_name: "AgglayerGERL2"
   signature_file: "./contracts_abi/events/UpdateRemovalHashChainValue_bytes32_bytes32_.txt"
 - name: "UpdatedClaimedGlobalIndexHashChain"
   signature: UpdatedClaimedGlobalIndexHashChain(bytes32,bytes32)
@@ -1595,7 +1595,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/UpdatedClaimedGlobalIndexHashChain_bytes32_bytes32_.txt"
 - name: "UpdatedUnsetGlobalIndexHashChain"
   signature: UpdatedUnsetGlobalIndexHashChain(bytes32,bytes32)
@@ -1611,7 +1611,7 @@ events:
   contract_sources:
   - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
-    contract_name: AgglayerBridgeL2
+    contract_name: "AgglayerBridgeL2"
   signature_file: "./contracts_abi/events/UpdatedUnsetGlobalIndexHashChain_bytes32_bytes32_.txt"
 - name: "Upgraded"
   signature: Upgraded(address)
@@ -1624,23 +1624,23 @@ events:
   contract_sources:
   - address: "0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8"
     verified_at: 2025-10-23T05:44:36.182000Z
-    contract_name: ArtifactFactory
+    contract_name: "ArtifactFactory"
   - address: "0xE4CDBd2Df584bFB96a4dcDe7a384510922981409"
     verified_at: 2025-10-22T11:17:57.273197Z
-    contract_name: ERC1967Proxy
+    contract_name: "ERC1967Proxy"
   - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
     verified_at: 2025-10-22T10:46:22.354266Z
-    contract_name: ArtifactManager
+    contract_name: "ArtifactManager"
   - address: "0xFf075D0E712e771B43861659F3d128bA958f2950"
     verified_at: 2025-10-22T10:45:53.130492Z
-    contract_name: ERC1967Proxy
+    contract_name: "ERC1967Proxy"
   - address: "0x7a7f337d883EE98DF40c4654b3ad4E3aacF304E8"
     verified_at: 2025-10-17T05:23:50.460159Z
-    contract_name: TokenWrappedTransparentProxy
+    contract_name: "TokenWrappedTransparentProxy"
   - address: "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe"
     verified_at: 2025-10-14T19:44:34.321852Z
-    contract_name: TransparentUpgradeableProxy
+    contract_name: "TransparentUpgradeableProxy"
   - address: "0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA"
     verified_at: 2025-10-14T19:23:10.136777Z
-    contract_name: TransparentUpgradeableProxy
+    contract_name: "TransparentUpgradeableProxy"
   signature_file: "./contracts_abi/events/Upgraded_address_.txt"

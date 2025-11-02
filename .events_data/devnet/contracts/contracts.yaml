@@ -1,201 +1,201 @@
 metadata:
-  generated_at: 2025-10-30T04:57:16.951615Z
+  generated_at: 2025-11-02T10:13:17.019988Z
   blockscout_server: https://sentient-devnet2-blockscout.eu-north-2.gateway.fm
   total_verified: 1
   total_unverified: 47
   total_with_abi: 1
   abi_directory: ./contracts/abi
 verified_contracts:
-- name: Treasury
-  address: 0x665553357099aa76b7e63f36365404f1f559cf9b
-  abi_file: Treasury_0x665553357099aa76b7e63f36365404f1f559cf9b.json
+- name: "Treasury"
+  address: "0x665553357099aa76b7e63f36365404f1f559cf9b"
+  abi_file: "Treasury_0x665553357099aa76b7e63f36365404f1f559cf9b.json"
   is_verified: true
 unverified_contracts:
 - name: null
-  address: 0x00ef9db7fd5e5365f42085edb6aa24b9936cee55
+  address: "0x00ef9db7fd5e5365f42085edb6aa24b9936cee55"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x0284a49986b8d20c0823e12a88abcdb99cca3c4f
+  address: "0x0284a49986b8d20c0823e12a88abcdb99cca3c4f"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x0d2f8934da45296a868a6b96853bdb7e4708be09
+  address: "0x0d2f8934da45296a868a6b96853bdb7e4708be09"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x197bef96eaff44989a3d7b08c9a4a8d42847649b
+  address: "0x197bef96eaff44989a3d7b08c9a4a8d42847649b"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x1ac00aeb49567f48f140a3610eba289dcaf54b94
+  address: "0x1ac00aeb49567f48f140a3610eba289dcaf54b94"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x1e758c4fe78b211ace4b0e4eb1810a478b3e317d
+  address: "0x1e758c4fe78b211ace4b0e4eb1810a478b3e317d"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x2607b3f4221469b2d227d286760bc3358171f3f3
+  address: "0x2607b3f4221469b2d227d286760bc3358171f3f3"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x2685ff912c8cd0a4787675e7cdf602e08d9f5dc0
+  address: "0x2685ff912c8cd0a4787675e7cdf602e08d9f5dc0"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x28ea0832d12365db778361e7144d8cd73f90c562
+  address: "0x28ea0832d12365db778361e7144d8cd73f90c562"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x2b696704780f8fe0e8edf569fc66af5a4367c842
+  address: "0x2b696704780f8fe0e8edf569fc66af5a4367c842"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x2d94df9fd2aa78e329edd70bdc8194f3bb4fc7ec
+  address: "0x2d94df9fd2aa78e329edd70bdc8194f3bb4fc7ec"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x2d9c048e8d6fc9283fb80b63a6cbbb4982a6770b
+  address: "0x2d9c048e8d6fc9283fb80b63a6cbbb4982a6770b"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x315af87014c4aeaa669d82d7a3a0afb1e1ecde22
+  address: "0x315af87014c4aeaa669d82d7a3a0afb1e1ecde22"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x33dd3420fcc17aa21856c9082f60ae11af94f2c8
+  address: "0x33dd3420fcc17aa21856c9082f60ae11af94f2c8"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x341c19192a2a951d697ace5b80bbb6308a549fe6
+  address: "0x341c19192a2a951d697ace5b80bbb6308a549fe6"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x382912e8a1e760b698c50b2e0612f96ab9362998
+  address: "0x382912e8a1e760b698c50b2e0612f96ab9362998"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x39e8d0016778c1eb123e5185e5130ac4dcd4dede
+  address: "0x39e8d0016778c1eb123e5185e5130ac4dcd4dede"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x4573d6aa0f36b0967c8e2a8bba75ee42a9693c90
+  address: "0x4573d6aa0f36b0967c8e2a8bba75ee42a9693c90"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x4ba4ea1ce7e6f423c3667d38d148ce8f3560a644
+  address: "0x4ba4ea1ce7e6f423c3667d38d148ce8f3560a644"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x4d36de64f4bea0a70e23f9491b091b6df03472ff
+  address: "0x4d36de64f4bea0a70e23f9491b091b6df03472ff"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x5544d0f04dea2ebb30f4dd4743ea7213bae7a280
+  address: "0x5544d0f04dea2ebb30f4dd4743ea7213bae7a280"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x5909388205d07510877cb7a6378d88b7ec1061e4
+  address: "0x5909388205d07510877cb7a6378d88b7ec1061e4"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x6a56c06563ef2b4ea571f180ead54a763415eb69
+  address: "0x6a56c06563ef2b4ea571f180ead54a763415eb69"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x6cd4c6eb245d736794a1d320c1c1d200a96d3763
+  address: "0x6cd4c6eb245d736794a1d320c1c1d200a96d3763"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x6eefd00130cd006fc5180905352867c3d1547772
+  address: "0x6eefd00130cd006fc5180905352867c3d1547772"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x71ac73716a923d3060ab1fa5bad6617620833448
+  address: "0x71ac73716a923d3060ab1fa5bad6617620833448"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x77c6f7bb4e20cb65cc2767366d5e36476f7a2147
+  address: "0x77c6f7bb4e20cb65cc2767366d5e36476f7a2147"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x7b0c291388dac6423a59134eaa904f7414e03d7f
+  address: "0x7b0c291388dac6423a59134eaa904f7414e03d7f"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x7cf53de56bd822b5cb9a828a96b3ac5dc26a22bc
+  address: "0x7cf53de56bd822b5cb9a828a96b3ac5dc26a22bc"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x81ffb6d4e08116338d0ed6f7d1a5f8daf4373dc8
+  address: "0x81ffb6d4e08116338d0ed6f7d1a5f8daf4373dc8"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x83e1bc5b2bf2b7e4b54c621f74fbc1f8305b0e0a
+  address: "0x83e1bc5b2bf2b7e4b54c621f74fbc1f8305b0e0a"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x89f2bd614282fc164491b3ed49fcf55fe51204ed
+  address: "0x89f2bd614282fc164491b3ed49fcf55fe51204ed"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0x92d42722263c359115eb6552a67f91c5d8489e69
+  address: "0x92d42722263c359115eb6552a67f91c5d8489e69"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xa9ad9ac9d4f7a9022ab1c104e63b328533bc31f1
+  address: "0xa9ad9ac9d4f7a9022ab1c104e63b328533bc31f1"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xb037d5308f96ab78e37eedec946ed5550d1dcb88
+  address: "0xb037d5308f96ab78e37eedec946ed5550d1dcb88"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xb8c3e3ffca073029949d36b473740d9957907441
+  address: "0xb8c3e3ffca073029949d36b473740d9957907441"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xc2346deaab1f41db27621ec0ba26507aca0f2770
+  address: "0xc2346deaab1f41db27621ec0ba26507aca0f2770"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xd36cdaf11c2079347d689dbc5f5241eb2ecd9a4d
+  address: "0xd36cdaf11c2079347d689dbc5f5241eb2ecd9a4d"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xd7171cb7d4698209f276c337e5dc27567c8b886c
+  address: "0xd7171cb7d4698209f276c337e5dc27567c8b886c"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xe1bbff194ae1fdcf4bd887d526f223c52dca486a
+  address: "0xe1bbff194ae1fdcf4bd887d526f223c52dca486a"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xe4c31b1c78661330725ba7fbd6756eacc3fe063b
+  address: "0xe4c31b1c78661330725ba7fbd6756eacc3fe063b"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xe57d1ae23be2bcd41b07edd6852c9f2388d45f67
+  address: "0xe57d1ae23be2bcd41b07edd6852c9f2388d45f67"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xe8da168c68ab1cf022046c313611c29958a09e4c
+  address: "0xe8da168c68ab1cf022046c313611c29958a09e4c"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xefa493abdd04575d229912ecb0f7e2ad4043d91e
+  address: "0xefa493abdd04575d229912ecb0f7e2ad4043d91e"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xf56c85b48417ec31037da09aaf3ee473db4a7cf3
+  address: "0xf56c85b48417ec31037da09aaf3ee473db4a7cf3"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xf639fba19f94f87b46e5b37d2905f26f4e054f22
+  address: "0xf639fba19f94f87b46e5b37d2905f26f4e054f22"
   abi_file: null
   is_verified: false
 - name: null
-  address: 0xfa236b8bd50e7abba18981540025cd5b60ae475e
+  address: "0xfa236b8bd50e7abba18981540025cd5b60ae475e"
   abi_file: null
   is_verified: false

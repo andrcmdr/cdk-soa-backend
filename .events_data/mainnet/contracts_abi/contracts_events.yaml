@@ -1,7 +1,7 @@
 contracts:
-- name: AgglayerBridgeL2
+- name: "AgglayerBridgeL2"
   address:
-  - address: 0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C
+  - address: "0x5ac4182A1dd41AeEf465E40B82fd326BF66AB82C"
     verified_at: 2025-10-14T19:40:39.317370Z
   events:
   - event: AcceptEmergencyBridgePauserRole(address oldEmergencyBridgePauser, address newEmergencyBridgePauser)
@@ -28,9 +28,9 @@ contracts:
   - event: TransferProxiedTokensManagerRole(address currentProxiedTokensManager, address newProxiedTokensManager)
   - event: UpdatedClaimedGlobalIndexHashChain(bytes32 claimedGlobalIndex, bytes32 newClaimedGlobalIndexHashChain)
   - event: UpdatedUnsetGlobalIndexHashChain(bytes32 unsetGlobalIndex, bytes32 newUnsetGlobalIndexHashChain)
-- name: AgglayerGERL2
+- name: "AgglayerGERL2"
   address:
-  - address: 0x0200143Fa295EE4dffEF22eE2616c2E008D81688
+  - address: "0x0200143Fa295EE4dffEF22eE2616c2E008D81688"
     verified_at: 2025-10-14T19:41:27.937222Z
   events:
   - event: AcceptGlobalExitRootRemover(address oldGlobalExitRootRemover, address newGlobalExitRootRemover)
@@ -40,9 +40,9 @@ contracts:
   - event: TransferGlobalExitRootUpdater(address currentGlobalExitRootUpdater, address pendingGlobalExitRootUpdater)
   - event: UpdateHashChainValue(bytes32 indexed newGlobalExitRoot, bytes32 indexed newHashChainValue)
   - event: UpdateRemovalHashChainValue(bytes32 indexed removedGlobalExitRoot, bytes32 indexed newRemovalHashChainValue)
-- name: ArtifactFactory
+- name: "ArtifactFactory"
   address:
-  - address: 0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8
+  - address: "0x2371B2Ef9CCEc1E7952d59c2bB946675Bb7044E8"
     verified_at: 2025-10-23T05:44:36.182000Z
   events:
   - event: ArtifactBeaconChanged(address indexed _artifactBeacon)
@@ -54,9 +54,9 @@ contracts:
   - event: RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
   - event: RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
   - event: Upgraded(address indexed implementation)
-- name: ArtifactManager
+- name: "ArtifactManager"
   address:
-  - address: 0x60a8cDdd7630054169A7a7470078842d32Ba09a4
+  - address: "0x60a8cDdd7630054169A7a7470078842d32Ba09a4"
     verified_at: 2025-10-22T10:46:22.354266Z
   events:
   - event: ArtifactAdded(address indexed artifact, string metadataUri)
@@ -72,17 +72,17 @@ contracts:
   - event: RoleGranted(bytes32 indexed role, address indexed account, address indexed sender)
   - event: RoleRevoked(bytes32 indexed role, address indexed account, address indexed sender)
   - event: Upgraded(address indexed implementation)
-- name: ERC1967Proxy
+- name: "ERC1967Proxy"
   address:
-  - address: 0xE4CDBd2Df584bFB96a4dcDe7a384510922981409
+  - address: "0xE4CDBd2Df584bFB96a4dcDe7a384510922981409"
     verified_at: 2025-10-22T11:17:57.273197Z
-  - address: 0xFf075D0E712e771B43861659F3d128bA958f2950
+  - address: "0xFf075D0E712e771B43861659F3d128bA958f2950"
     verified_at: 2025-10-22T10:45:53.130492Z
   events:
   - event: Upgraded(address indexed implementation)
-- name: GnosisSafe
+- name: "GnosisSafe"
   address:
-  - address: 0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552
+  - address: "0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552"
     verified_at: 2025-10-20T11:55:35.262186Z
   events:
   - event: AddedOwner(address owner)
@@ -100,9 +100,9 @@ contracts:
   - event: SafeReceived(address indexed sender, uint256 value)
   - event: SafeSetup(address indexed initiator, address[] owners, uint256 threshold, address initializer, address fallbackHandler)
   - event: SignMsg(bytes32 indexed msgHash)
-- name: GnosisSafeL2
+- name: "GnosisSafeL2"
   address:
-  - address: 0x3E5c63644E683549055b9Be8653de26E0B4CD36E
+  - address: "0x3E5c63644E683549055b9Be8653de26E0B4CD36E"
     verified_at: 2025-10-20T11:55:27.065869Z
   events:
   - event: AddedOwner(address owner)
@@ -122,23 +122,23 @@ contracts:
   - event: SafeReceived(address indexed sender, uint256 value)
   - event: SafeSetup(address indexed initiator, address[] owners, uint256 threshold, address initializer, address fallbackHandler)
   - event: SignMsg(bytes32 indexed msgHash)
-- name: GnosisSafeProxyFactory
+- name: "GnosisSafeProxyFactory"
   address:
-  - address: 0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2
+  - address: "0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2"
     verified_at: 2025-10-20T11:55:13.816536Z
   events:
   - event: ProxyCreation(address proxy, address singleton)
-- name: LAMBO
+- name: "LAMBO"
   address:
-  - address: 0x680FbBd2851B5d54C2b872317806571a692fD520
+  - address: "0x680FbBd2851B5d54C2b872317806571a692fD520"
     verified_at: 2025-10-22T21:06:45.031914Z
   events:
   - event: Approval(address indexed owner, address indexed spender, uint256 value)
   - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
   - event: Transfer(address indexed from, address indexed to, uint256 value)
-- name: SentientRewardDistributor
+- name: "SentientRewardDistributor"
   address:
-  - address: 0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c
+  - address: "0x77100ba0182042aeA9eC29f9257bcB2efeC94D0c"
     verified_at: 2025-10-22T12:34:06.898232Z
   events:
   - event: LogApproveMerkleRoot(address indexed token, uint256 indexed epoch)
@@ -153,9 +153,9 @@ contracts:
   - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
   - event: Paused(address account)
   - event: Unpaused(address account)
-- name: SentientStakingDepositManager
+- name: "SentientStakingDepositManager"
   address:
-  - address: 0x5354BCD502A06d73C51d2EE7a2052524A1650610
+  - address: "0x5354BCD502A06d73C51d2EE7a2052524A1650610"
     verified_at: 2025-10-22T12:34:23.489422Z
   events:
   - event: LogDeposit(address indexed user, address indexed artifact, address indexed token, uint256 lockedUntil, uint256 amount, uint256 tokenId)
@@ -170,36 +170,36 @@ contracts:
   - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
   - event: Paused(address account)
   - event: Unpaused(address account)
-- name: TokenWrappedBridgeUpgradeable
+- name: "TokenWrappedBridgeUpgradeable"
   address:
-  - address: 0x39511be4eF7b194Cece5af31dEc2D0101d46E008
+  - address: "0x39511be4eF7b194Cece5af31dEc2D0101d46E008"
     verified_at: 2025-10-30T03:16:38.889314Z
   events:
   - event: Approval(address indexed owner, address indexed spender, uint256 value)
   - event: EIP712DomainChanged()
   - event: Initialized(uint64 version)
   - event: Transfer(address indexed from, address indexed to, uint256 value)
-- name: TokenWrappedTransparentProxy
+- name: "TokenWrappedTransparentProxy"
   address:
-  - address: 0x7a7f337d883EE98DF40c4654b3ad4E3aacF304E8
+  - address: "0x7a7f337d883EE98DF40c4654b3ad4E3aacF304E8"
     verified_at: 2025-10-17T05:23:50.460159Z
   events:
   - event: AdminChanged(address previousAdmin, address newAdmin)
   - event: BeaconUpgraded(address indexed beacon)
   - event: Upgraded(address indexed implementation)
-- name: TransparentUpgradeableProxy
+- name: "TransparentUpgradeableProxy"
   address:
-  - address: 0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe
+  - address: "0x2a3DD3EB832aF982ec71669E178424b10Dca2EDe"
     verified_at: 2025-10-14T19:44:34.321852Z
-  - address: 0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA
+  - address: "0xa40D5f56745a118D0906a34E69aeC8C0Db1cB8fA"
     verified_at: 2025-10-14T19:23:10.136777Z
   events:
   - event: AdminChanged(address previousAdmin, address newAdmin)
   - event: BeaconUpgraded(address indexed beacon)
   - event: Upgraded(address indexed implementation)
-- name: WSENT
+- name: "WSENT"
   address:
-  - address: 0x9A5220A853EDE5ab1cfCB6517135F59E8894BDd8
+  - address: "0x9A5220A853EDE5ab1cfCB6517135F59E8894BDd8"
     verified_at: 2025-10-22T12:33:49.326975Z
   events:
   - event: Approval(address indexed owner, address indexed spender, uint256 value)
