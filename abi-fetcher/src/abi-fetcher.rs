@@ -30,6 +30,10 @@ struct BlockscoutConfig {
     max_implementations_per_contract: Option<usize>,
     #[serde(default)]
     max_implementation_nesting_depth: Option<usize>,
+    #[serde(default)]
+    auth_user: Option<String>,
+    #[serde(default)]
+    auth_password: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -246,10 +250,19 @@ struct BlockscoutClient {
     client: reqwest::Client,
     base_url: String,
     max_retries: u32,
+    auth_user: Option<String>,
+    auth_password: Option<String>,
 }
 
 impl BlockscoutClient {
-    fn new(server: &str, api_path: &str, timeout_seconds: u64, max_retries: u32) -> Self {
+    fn new(
+        server: &str,
+        api_path: &str,
+        timeout_seconds: u64,
+        max_retries: u32,
+        auth_user: Option<String>,
+        auth_password: Option<String>,
+    ) -> Self {
         let client = reqwest::Client::builder()
             .timeout(std::time::Duration::from_secs(timeout_seconds))
             .build()
@@ -261,6 +274,8 @@ impl BlockscoutClient {
             client,
             base_url,
             max_retries,
+            auth_user,
+            auth_password,
         }
     }
 
@@ -336,7 +351,14 @@ impl BlockscoutClient {
         let mut last_error = None;
 
         for attempt in 0..=self.max_retries {
-            match self.client.get(url).send().await {
+            let mut request = self.client.get(url);
+
+            // Add Basic Auth if credentials are provided
+            if let (Some(user), Some(password)) = (&self.auth_user, &self.auth_password) {
+                request = request.basic_auth(user, Some(password));
+            }
+
+            match request.send().await {
                 Ok(response) => {
                     if response.status().is_success() {
                         return Ok(response);
@@ -978,8 +1000,19 @@ fn load_config<P: AsRef<Path>>(config_path: P) -> Result<AppConfig> {
     let config_content = fs::read_to_string(&config_path)
         .with_context(|| format!("Failed to read config file: {:?}", config_path.as_ref()))?;
 
-    let config: AppConfig = serde_yaml::from_str(&config_content)
+    let mut config: AppConfig = serde_yaml::from_str(&config_content)
         .context("Failed to parse YAML configuration")?;
+
+    // Override with environment variables if present
+    if let Ok(env_user) = std::env::var("BLOCKSCOUT_AUTH_USER") {
+        info!("Using BLOCKSCOUT_AUTH_USER from environment variable");
+        config.blockscout.auth_user = Some(env_user);
+    }
+
+    if let Ok(env_password) = std::env::var("BLOCKSCOUT_AUTH_PASSWORD") {
+        info!("Using BLOCKSCOUT_AUTH_PASSWORD from environment variable");
+        config.blockscout.auth_password = Some(env_password);
+    }
 
     Ok(config)
 }
@@ -992,6 +1025,10 @@ fn ensure_quoted_yaml(yaml_content: String) -> String {
     for line in lines {
         if line.trim_start().starts_with("name:") ||
            line.trim_start().starts_with("- name:") ||
+           line.trim_start().starts_with("contract_name:") ||
+           line.trim_start().starts_with("- contract_name:") ||
+           line.trim_start().starts_with("event_name:") ||
+           line.trim_start().starts_with("- event_name:") ||
            line.trim_start().starts_with("address:") ||
            line.trim_start().starts_with("- address:") ||
            line.trim_start().starts_with("abi_file:") ||
@@ -1035,7 +1072,7 @@ fn save_contracts_to_yaml<P: AsRef<Path>>(
     let yaml_content = serde_yaml::to_string(contracts_output)
         .context("Failed to serialize contracts to YAML")?;
 
-    // Post-process to ensure proper quoting
+    // Post-process to ensure proper quoting for contracts_file
     let quoted_yaml = ensure_quoted_yaml(yaml_content);
 
     fs::write(&output_path, quoted_yaml)
@@ -1052,7 +1089,7 @@ fn save_events_to_yaml<P: AsRef<Path>>(
     let yaml_content = serde_yaml::to_string(events_output)
         .context("Failed to serialize events to YAML")?;
 
-    // Post-process to ensure proper quoting for signature_file
+    // Post-process to ensure proper quoting for signature_file (events_file)
     let quoted_yaml = ensure_quoted_yaml(yaml_content);
 
     fs::write(&output_path, quoted_yaml)
@@ -1069,7 +1106,10 @@ fn save_contracts_events_to_yaml<P: AsRef<Path>>(
     let yaml_content = serde_yaml::to_string(contracts_events_output)
         .context("Failed to serialize contracts events to YAML")?;
 
-    fs::write(&output_path, yaml_content)
+    // Post-process to ensure proper quoting for contracts_events_file
+    let quoted_yaml = ensure_quoted_yaml(yaml_content);
+
+    fs::write(&output_path, quoted_yaml)
         .with_context(|| format!("Failed to write contracts events to file: {:?}", output_path.as_ref()))?;
 
     info!("Contracts events saved to: {:?}", output_path.as_ref());
@@ -1089,6 +1129,13 @@ async fn main() -> Result<()> {
 
     info!("Loaded configuration from config.yaml");
     info!("Blockscout server: {}", config.blockscout.server);
+
+    // Log authentication status
+    if config.blockscout.auth_user.is_some() && config.blockscout.auth_password.is_some() {
+        info!("HTTP Basic Authentication is enabled");
+    } else {
+        info!("HTTP Basic Authentication is disabled");
+    }
 
     // Log implementation limits if configured
     if let Some(max_impls) = config.blockscout.max_implementations_per_contract {
@@ -1116,6 +1163,8 @@ async fn main() -> Result<()> {
         &config.blockscout.api_path,
         config.blockscout.request_timeout_seconds,
         config.blockscout.max_retries,
+        config.blockscout.auth_user,
+        config.blockscout.auth_password,
     );
 
     // Fetch all verified contracts with pagination

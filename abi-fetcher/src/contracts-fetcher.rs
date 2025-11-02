@@ -30,6 +30,10 @@ struct BlockscoutConfig {
     abi_fetch_attempts: u32,
     #[serde(default = "default_pagination_offset")]
     pagination_offset: u32,
+    #[serde(default)]
+    auth_user: Option<String>,
+    #[serde(default)]
+    auth_password: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -199,10 +203,21 @@ struct BlockscoutClient {
     max_retries: u32,
     abi_fetch_attempts: u32,
     pagination_offset: u32,
+    auth_user: Option<String>,
+    auth_password: Option<String>,
 }
 
 impl BlockscoutClient {
-    fn new(server: &str, api_path: &str, timeout_seconds: u64, max_retries: u32, abi_fetch_attempts: u32, pagination_offset: u32) -> Self {
+    fn new(
+        server: &str,
+        api_path: &str,
+        timeout_seconds: u64,
+        max_retries: u32,
+        abi_fetch_attempts: u32,
+        pagination_offset: u32,
+        auth_user: Option<String>,
+        auth_password: Option<String>,
+    ) -> Self {
         let client = reqwest::Client::builder()
             .timeout(std::time::Duration::from_secs(timeout_seconds))
             .build()
@@ -216,6 +231,8 @@ impl BlockscoutClient {
             max_retries,
             abi_fetch_attempts,
             pagination_offset,
+            auth_user,
+            auth_password,
         }
     }
 
@@ -470,7 +487,14 @@ impl BlockscoutClient {
         let mut last_error = None;
 
         for attempt in 0..=self.max_retries {
-            match self.client.get(url).send().await {
+            let mut request = self.client.get(url);
+
+            // Add Basic Auth if credentials are provided
+            if let (Some(user), Some(password)) = (&self.auth_user, &self.auth_password) {
+                request = request.basic_auth(user, Some(password));
+            }
+
+            match request.send().await {
                 Ok(response) => {
                     if response.status().is_success() {
                         return Ok(response);
@@ -806,10 +830,69 @@ fn load_config<P: AsRef<Path>>(config_path: P) -> Result<AppConfig> {
     let config_content = fs::read_to_string(&config_path)
         .with_context(|| format!("Failed to read config file: {:?}", config_path.as_ref()))?;
 
-    let config: AppConfig = serde_yaml::from_str(&config_content)
+    let mut config: AppConfig = serde_yaml::from_str(&config_content)
         .context("Failed to parse YAML configuration")?;
 
+    // Override with environment variables if present
+    if let Ok(env_user) = std::env::var("BLOCKSCOUT_AUTH_USER") {
+        info!("Using BLOCKSCOUT_AUTH_USER from environment variable");
+        config.blockscout.auth_user = Some(env_user);
+    }
+
+    if let Ok(env_password) = std::env::var("BLOCKSCOUT_AUTH_PASSWORD") {
+        info!("Using BLOCKSCOUT_AUTH_PASSWORD from environment variable");
+        config.blockscout.auth_password = Some(env_password);
+    }
+
     Ok(config)
+}
+
+// Helper function to ensure strings are properly quoted in YAML
+fn ensure_quoted_yaml(yaml_content: String) -> String {
+    let lines: Vec<&str> = yaml_content.lines().collect();
+    let mut result = String::new();
+
+    for line in lines {
+        if line.trim_start().starts_with("name:") ||
+           line.trim_start().starts_with("- name:") ||
+           line.trim_start().starts_with("contract_name:") ||
+           line.trim_start().starts_with("- contract_name:") ||
+           line.trim_start().starts_with("event_name:") ||
+           line.trim_start().starts_with("- event_name:") ||
+           line.trim_start().starts_with("address:") ||
+           line.trim_start().starts_with("- address:") ||
+           line.trim_start().starts_with("abi_file:") ||
+           line.trim_start().starts_with("signature_file:") {
+
+            // Check if the line already has quotes or is null
+            if line.contains("null") || line.contains("~") {
+                result.push_str(line);
+                result.push('\n');
+                continue;
+            } else if let Some(colon_pos) = line.find(':') {
+                let key_part = &line[..=colon_pos];
+                let value_part = line[colon_pos + 1..].trim();
+
+                // Skip if empty value
+                if value_part.is_empty() {
+                    result.push_str(line);
+                    result.push('\n');
+                    continue;
+                }
+
+                // Remove existing quotes if any
+                let clean_value = value_part.trim_matches(|c| c == '"' || c == '\'');
+
+                // Add properly quoted value
+                result.push_str(&format!("{} \"{}\"\n", key_part, clean_value));
+                continue;
+            }
+        }
+        result.push_str(line);
+        result.push('\n');
+    }
+
+    result
 }
 
 fn save_contracts_to_yaml<P: AsRef<Path>>(
@@ -819,7 +902,10 @@ fn save_contracts_to_yaml<P: AsRef<Path>>(
     let yaml_content = serde_yaml::to_string(contracts_output)
         .context("Failed to serialize contracts to YAML")?;
 
-    fs::write(&output_path, yaml_content)
+    // Post-process to ensure proper quoting for contracts_file
+    let quoted_yaml = ensure_quoted_yaml(yaml_content);
+
+    fs::write(&output_path, quoted_yaml)
         .with_context(|| format!("Failed to write contracts to file: {:?}", output_path.as_ref()))?;
 
     info!("Contracts saved to: {:?}", output_path.as_ref());
@@ -833,7 +919,10 @@ fn save_events_to_yaml<P: AsRef<Path>>(
     let yaml_content = serde_yaml::to_string(events_output)
         .context("Failed to serialize events to YAML")?;
 
-    fs::write(&output_path, yaml_content)
+    // Post-process to ensure proper quoting for signature_file (events_file)
+    let quoted_yaml = ensure_quoted_yaml(yaml_content);
+
+    fs::write(&output_path, quoted_yaml)
         .with_context(|| format!("Failed to write events to file: {:?}", output_path.as_ref()))?;
 
     info!("Events saved to: {:?}", output_path.as_ref());
@@ -847,7 +936,10 @@ fn save_contracts_events_to_yaml<P: AsRef<Path>>(
     let yaml_content = serde_yaml::to_string(contracts_events_output)
         .context("Failed to serialize contracts events to YAML")?;
 
-    fs::write(&output_path, yaml_content)
+    // Post-process to ensure proper quoting for contracts_events_file
+    let quoted_yaml = ensure_quoted_yaml(yaml_content);
+
+    fs::write(&output_path, quoted_yaml)
         .with_context(|| format!("Failed to write contracts events to file: {:?}", output_path.as_ref()))?;
 
     info!("Contracts events saved to: {:?}", output_path.as_ref());
@@ -868,6 +960,13 @@ async fn main() -> Result<()> {
     info!("Loaded configuration from config.yaml");
     info!("Blockscout server: {}", config.blockscout.server);
 
+    // Log authentication status
+    if config.blockscout.auth_user.is_some() && config.blockscout.auth_password.is_some() {
+        info!("HTTP Basic Authentication is enabled");
+    } else {
+        info!("HTTP Basic Authentication is disabled");
+    }
+
     // Ensure directories exist
     let abi_dir = Path::new(&config.output.abi_directory);
     let events_dir = Path::new(&config.output.events_directory);
@@ -884,6 +983,8 @@ async fn main() -> Result<()> {
         config.blockscout.max_retries,
         config.blockscout.abi_fetch_attempts,
         config.blockscout.pagination_offset,
+        config.blockscout.auth_user,
+        config.blockscout.auth_password,
     );
 
     // Fetch verified contracts
