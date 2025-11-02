@@ -5,6 +5,12 @@ blockscout:
   max_retries: 10
   abi_fetch_attempts: 3
   pagination_offset: 1000
+  # Optional: HTTP Basic Auth credentials
+  # If not set here, can be provided via environment variables:
+  # export BLOCKSCOUT_AUTH_USER="username"
+  # export BLOCKSCOUT_AUTH_PASSWORD="password"
+  auth_user: null # "username"
+  auth_password: null # "password"
 
 output:
   contracts_file: "./contracts/contracts.yaml"

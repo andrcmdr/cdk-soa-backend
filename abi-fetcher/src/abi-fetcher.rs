@@ -1025,6 +1025,10 @@ fn ensure_quoted_yaml(yaml_content: String) -> String {
     for line in lines {
         if line.trim_start().starts_with("name:") ||
            line.trim_start().starts_with("- name:") ||
+           line.trim_start().starts_with("contract_name:") ||
+           line.trim_start().starts_with("- contract_name:") ||
+           line.trim_start().starts_with("event_name:") ||
+           line.trim_start().starts_with("- event_name:") ||
            line.trim_start().starts_with("address:") ||
            line.trim_start().starts_with("- address:") ||
            line.trim_start().starts_with("abi_file:") ||
@@ -1068,7 +1072,7 @@ fn save_contracts_to_yaml<P: AsRef<Path>>(
     let yaml_content = serde_yaml::to_string(contracts_output)
         .context("Failed to serialize contracts to YAML")?;
 
-    // Post-process to ensure proper quoting
+    // Post-process to ensure proper quoting for contracts_file
     let quoted_yaml = ensure_quoted_yaml(yaml_content);
 
     fs::write(&output_path, quoted_yaml)
@@ -1085,7 +1089,7 @@ fn save_events_to_yaml<P: AsRef<Path>>(
     let yaml_content = serde_yaml::to_string(events_output)
         .context("Failed to serialize events to YAML")?;
 
-    // Post-process to ensure proper quoting for signature_file
+    // Post-process to ensure proper quoting for signature_file (events_file)
     let quoted_yaml = ensure_quoted_yaml(yaml_content);
 
     fs::write(&output_path, quoted_yaml)
@@ -1102,7 +1106,10 @@ fn save_contracts_events_to_yaml<P: AsRef<Path>>(
     let yaml_content = serde_yaml::to_string(contracts_events_output)
         .context("Failed to serialize contracts events to YAML")?;
 
-    fs::write(&output_path, yaml_content)
+    // Post-process to ensure proper quoting for contracts_events_file
+    let quoted_yaml = ensure_quoted_yaml(yaml_content);
+
+    fs::write(&output_path, quoted_yaml)
         .with_context(|| format!("Failed to write contracts events to file: {:?}", output_path.as_ref()))?;
 
     info!("Contracts events saved to: {:?}", output_path.as_ref());
