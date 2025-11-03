@@ -9,7 +9,7 @@ indexing:
   from_block: 0
   to_block:
   historical_logs_processing: 1
-  logs_sync_protocol: http # http or ws - for historical logs
+  logs_sync_protocol: http # http, http_watcher or ws - for historical logs
   new_logs_subscription: 1
   new_logs_subscription_protocol: http # http, http_watcher or ws - for new logs subscription/polling
   http_polling_interval_secs: 5 # Polling interval in seconds (only used when new_logs_subscription_protocol is 'http')

@@ -175,27 +175,52 @@ impl EventProcessor {
                 info!("Starting historical logs processing task");
 
                 let logs_sync_protocol = processor_for_history.config.indexing.logs_sync_protocol.clone();
-                let logs = match logs_sync_protocol {
-                    Some(protocol) if protocol.to_lowercase() == "http" => {
-                        processor_for_history.http_rpc_provider.get_logs(&filter_for_history).await?
-                    },
-                    Some(protocol) if protocol.to_lowercase() == "ws" => {
-                        processor_for_history.ws_rpc_provider.get_logs(&filter_for_history).await?
-                    },
-                    _ => {
-                        error!("Invalid log sync protocol (must be 'http' or 'ws'): {:?}", logs_sync_protocol);
-                        info!("Fallback to 'http' RPC protocol for logs sync");
-                        processor_for_history.http_rpc_provider.get_logs(&filter_for_history).await?
-                    }
-                };
-                debug!("Received {} logs from {} contracts", logs.len(), addresses_for_history.len());
+                if let Some(ref sync_protocol) = logs_sync_protocol && sync_protocol.to_lowercase() == "http_watcher" {
+                    info!("Starting HTTP watch_logs task for historical logs");
 
-                for log in logs.iter() {
-                    debug!("Received historical log from contract: {}", log.address());
-                    debug!("Historical log: {:?}", log);
-                    if let Err(e) = processor_for_history.handle_log(log.clone()).await {
-                        error!("Failed to handle historical log: {:?}", e);
-                        eprintln!("Historical log error: {:?}", e);
+                    // Start historical watching logs using HTTP polling
+                    let poller = processor_for_history.http_rpc_provider
+                        .watch_logs(&filter_for_history)
+                        .await?;
+
+                    // Convert poller to stream
+                    let mut log_stream = poller.into_stream().flat_map(futures::stream::iter);
+
+                    info!("Started historical watching logs via HTTP polling");
+
+                    // Process logs as they arrive
+                    while let Some(log) = log_stream.next().await {
+                        debug!("Received historical watch_logs log from contract: {}", log.address());
+                        if let Err(e) = processor_for_history.handle_log(log).await {
+                            error!("Failed to handle historical watch_logs log: {:?}", e);
+                            eprintln!("Historical watch logs error: {:?}", e);
+                        }
+                    }
+
+                    info!("Historical watch logs task completed");
+                } else {
+                    let logs = match logs_sync_protocol {
+                        Some(protocol) if protocol.to_lowercase() == "http" => {
+                            processor_for_history.http_rpc_provider.get_logs(&filter_for_history).await?
+                        },
+                        Some(protocol) if protocol.to_lowercase() == "ws" => {
+                            processor_for_history.ws_rpc_provider.get_logs(&filter_for_history).await?
+                        },
+                        _ => {
+                            error!("Invalid log sync protocol (must be 'http' or 'ws'): {:?}", logs_sync_protocol);
+                            info!("Fallback to 'http' RPC protocol for logs sync");
+                            processor_for_history.http_rpc_provider.get_logs(&filter_for_history).await?
+                        }
+                    };
+                    debug!("Received {} logs from {} contracts", logs.len(), addresses_for_history.len());
+
+                    for log in logs.iter() {
+                        debug!("Received historical log from contract: {}", log.address());
+                        debug!("Historical log: {:?}", log);
+                        if let Err(e) = processor_for_history.handle_log(log.clone()).await {
+                            error!("Failed to handle historical log: {:?}", e);
+                            eprintln!("Historical log error: {:?}", e);
+                        }
                     }
                 }
 
@@ -316,7 +341,7 @@ impl EventProcessor {
                 });
                 handles.push(subscription_task);
             } else {
-                // WebSocket subscription mode (original implementation)
+                // WebSocket subscription mode (original initial implementation using WS subscribe_logs method)
                 let subscription_task = tokio::spawn(async move {
                     info!("Starting WebSocket subscription task");
 

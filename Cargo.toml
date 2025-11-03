@@ -14,7 +14,7 @@ exclude = [
     "load-tester-cli",
 ]
 
-# edition = "2021"
+edition = "2024"
 resolver = "2"
 overflow-checks = true
 
