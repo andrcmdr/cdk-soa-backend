@@ -1865,6 +1865,7 @@ dependencies = [
  "async-nats",
  "axum",
  "chrono",
+ "futures",
  "futures-util",
  "hex",
  "openssl",

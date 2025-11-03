@@ -282,6 +282,39 @@ impl EventProcessor {
                     }
                 });
                 handles.push(subscription_task);
+            } else if subscription_protocol.to_lowercase() == "http_watcher" {
+                // HTTP polling mode using watch_logs
+                let subscription_task = tokio::spawn(async move {
+                    info!("Starting HTTP watch_logs task for new logs");
+
+                    // Create filter for new logs (from latest block)
+                    let watch_filter = Filter::new()
+                        .address(addresses_for_subscription.clone())
+                        .from_block(BlockNumberOrTag::Latest);
+
+                    // Start watching logs using HTTP polling
+                    let poller = processor_for_subscription.http_rpc_provider
+                        .watch_logs(&watch_filter)
+                        .await?;
+
+                    // Convert poller to stream
+                    let mut log_stream = poller.into_stream().flat_map(futures::stream::iter);
+
+                    info!("Started watching logs via HTTP polling");
+
+                    // Process logs as they arrive
+                    while let Some(log) = log_stream.next().await {
+                        debug!("Received watch_logs log from contract: {}", log.address());
+                        if let Err(e) = processor_for_subscription.handle_log(log).await {
+                            error!("Failed to handle watch_logs log: {:?}", e);
+                            eprintln!("Watch logs error: {:?}", e);
+                        }
+                    }
+
+                    info!("Watch logs task completed");
+                    Ok(())
+                });
+                handles.push(subscription_task);
             } else {
                 // WebSocket subscription mode (original implementation)
                 let subscription_task = tokio::spawn(async move {
