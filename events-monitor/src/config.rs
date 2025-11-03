@@ -14,6 +14,8 @@ pub struct IndexingCfg {
     pub historical_logs_processing: Option<u8>,
     pub logs_sync_protocol: Option<String>,
     pub new_logs_subscription: Option<u8>,
+    pub new_logs_subscription_protocol: Option<String>, // "ws" or "http", if not present in config file or 'null', then "http" by default
+    pub http_polling_interval_secs: Option<u64>, // Polling interval in seconds for HTTP RPC
     pub filter_senders: Option<Vec<String>>,
     pub filter_receivers: Option<Vec<String>>,
 }
