@@ -37,18 +37,21 @@ base64 = "0.22.1"
 bincode = "2.0"
 
 # Alloy (Ethereum) - version 1.0.38
-alloy = { version = "1.0.38", features = ["full", "node-bindings", "rpc-types", "signer-local"] }
+alloy = { version = "1.0.41", features = ["full", "node-bindings", "rpc-types", "signer-local"] }
 alloy-primitives = "1.4.0"
 alloy-sol-types = "1.4.0"
 alloy-dyn-abi = "1.4.0"
 alloy-json-abi = "1.4.0"
-alloy-contract = "1.0.38"
-alloy-signer = "1.0.38"
-alloy-signer-local = "1.0.38"
-alloy-provider = "1.0.38"
-alloy-network = "1.0.38"
-alloy-transport-http = "1.0.38"
-alloy-transport-ws = "1.0.38"
+alloy-contract = "1.0.41"
+alloy-signer = "1.0.41"
+alloy-signer-local = "1.0.41"
+alloy-provider = "1.0.41"
+alloy-network = "1.0.41"
+alloy-transport-http = "1.0.41"
+alloy-transport-ws = "1.0.41"
+
+# Transaction producer library
+tx-producer = { path = "../tx-producer" }
 
 # PostgreSQL Database
 tokio-postgres = { version = "0.7.12", features = ["with-serde_json-1", "with-chrono-0_4", "runtime", "with-uuid-1"] }
