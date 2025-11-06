@@ -148,35 +148,35 @@ impl EventProcessor {
         // build a single filter for all addresses
         let addresses: Vec<Address> = self_arc.addr_abi_map.iter().map(|(addr, _c)| *addr).collect();
 
-        let mut filter = Filter::new()
-            .address(addresses.clone())
-            .select(0u64..);
-
-        if let Some(to_block) = to_block {
-            filter = Filter::new()
-                .address(addresses.clone())
-                .select(BlockRange(from_block..to_block));
-        } else {
-            filter = Filter::new()
-                .address(addresses.clone())
-                .select(BlockRangeFrom(from_block..));
-        }
-
         let mut handles: Vec<JoinHandle<anyhow::Result<()>>> = Vec::new();
 
         // Task 1: Process historical logs, if enabled
         let process_historical_logs = self_arc.config.indexing.historical_logs_processing.is_some_and(|process_logs| process_logs > 0);
         if process_historical_logs {
             let processor_for_history = Arc::clone(&self_arc);
-            let filter_for_history = filter.clone();
             let addresses_for_history = addresses.clone();
 
             let historical_task = tokio::spawn(async move {
                 info!("Starting historical logs processing task");
 
                 let logs_sync_protocol = processor_for_history.config.indexing.logs_sync_protocol.clone();
+
+                // Get chunk size from config, default to 1000 blocks
+                let chunk_size = processor_for_history.config.indexing.logs_chunk_size.unwrap_or(1000);
+
                 if let Some(ref sync_protocol) = logs_sync_protocol && sync_protocol.to_lowercase() == "http_watcher" {
                     info!("Starting HTTP watch_logs task for historical logs");
+
+                    // For http_watcher mode, create filter with full range
+                    let filter_for_history = if let Some(to_block) = to_block {
+                        Filter::new()
+                            .address(addresses_for_history.clone())
+                            .select(BlockRange(from_block..to_block))
+                    } else {
+                        Filter::new()
+                            .address(addresses_for_history.clone())
+                            .select(BlockRangeFrom(from_block..))
+                    };
 
                     // Start historical watching logs using HTTP polling
                     let poller = processor_for_history.http_rpc_provider
@@ -199,32 +199,80 @@ impl EventProcessor {
 
                     info!("Historical watch logs task completed");
                 } else {
-                    let logs = match logs_sync_protocol {
-                        Some(protocol) if protocol.to_lowercase() == "http" => {
-                            processor_for_history.http_rpc_provider.get_logs(&filter_for_history).await?
-                        },
-                        Some(protocol) if protocol.to_lowercase() == "ws" => {
-                            processor_for_history.ws_rpc_provider.get_logs(&filter_for_history).await?
-                        },
-                        _ => {
-                            error!("Invalid log sync protocol (must be 'http' or 'ws'): {:?}", logs_sync_protocol);
-                            info!("Fallback to 'http' RPC protocol for logs sync");
-                            processor_for_history.http_rpc_provider.get_logs(&filter_for_history).await?
+                    // Determine the actual end block for chunking
+                    let end_block = if let Some(to) = to_block {
+                        to
+                    } else {
+                        // Fetch the latest block number if to_block is not specified
+                        match processor_for_history.http_rpc_provider.get_block_number().await {
+                            Ok(latest) => latest,
+                            Err(e) => {
+                                error!("Failed to get latest block number: {:?}", e);
+                                return Err(anyhow!("Failed to get latest block number: {:?}", e));
+                            }
                         }
                     };
-                    debug!("Received {} logs from {} contracts", logs.len(), addresses_for_history.len());
 
-                    for log in logs.iter() {
-                        debug!("Received historical log from contract: {}", log.address());
-                        debug!("Historical log: {:?}", log);
-                        if let Err(e) = processor_for_history.handle_log(log.clone()).await {
-                            error!("Failed to handle historical log: {:?}", e);
-                            eprintln!("Historical log error: {:?}", e);
+                    info!(
+                        "Processing historical logs from block {} to {} with chunk size of {} blocks",
+                        from_block, end_block, chunk_size
+                    );
+
+                    // Process logs in chunks
+                    let mut current_block = from_block;
+                    let mut total_logs_processed = 0usize;
+
+                    while current_block < end_block {
+                        let chunk_end = std::cmp::min(current_block + chunk_size, end_block);
+
+                        info!("Fetching logs for block range {}..{}", current_block, chunk_end);
+
+                        // Create filter for this chunk
+                        let chunk_filter = Filter::new()
+                            .address(addresses_for_history.clone())
+                            .select(BlockRange(current_block..chunk_end));
+
+                        // Fetch logs using the configured protocol
+                        let logs = match logs_sync_protocol {
+                            Some(ref protocol) if protocol.to_lowercase() == "http" => {
+                                processor_for_history.http_rpc_provider.get_logs(&chunk_filter).await?
+                            },
+                            Some(ref protocol) if protocol.to_lowercase() == "ws" => {
+                                processor_for_history.ws_rpc_provider.get_logs(&chunk_filter).await?
+                            },
+                            _ => {
+                                debug!("Invalid or missing log sync protocol, using 'http' as fallback");
+                                processor_for_history.http_rpc_provider.get_logs(&chunk_filter).await?
+                            }
+                        };
+
+                        debug!("Received {} logs from block range {}..{}", logs.len(), current_block, chunk_end);
+                        total_logs_processed += logs.len();
+
+                        // Process each log in the chunk
+                        for log in logs.iter() {
+                            debug!("Received historical log from contract: {}", log.address());
+                            if let Err(e) = processor_for_history.handle_log(log.clone()).await {
+                                error!("Failed to handle historical log: {:?}", e);
+                                eprintln!("Historical log error: {:?}", e);
+                            }
+                        }
+
+                        // Move to the next chunk
+                        current_block = chunk_end;
+
+                        // Optional: Add a small delay between chunks to avoid overwhelming the RPC
+                        if current_block < end_block {
+                            tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
                         }
                     }
+
+                    info!(
+                        "Historical logs processing completed: processed {} total logs from {} to {}",
+                        total_logs_processed, from_block, end_block
+                    );
                 }
 
-                info!("Historical logs processing task completed");
                 Ok(())
             });
             handles.push(historical_task);
@@ -342,6 +390,16 @@ impl EventProcessor {
                 handles.push(subscription_task);
             } else {
                 // WebSocket subscription mode (original initial implementation using WS subscribe_logs method)
+                let filter = if let Some(to_block) = to_block {
+                    Filter::new()
+                        .address(addresses_for_subscription.clone())
+                        .select(BlockRange(from_block..to_block))
+                } else {
+                    Filter::new()
+                        .address(addresses_for_subscription.clone())
+                        .select(BlockRangeFrom(from_block..))
+                };
+
                 let subscription_task = tokio::spawn(async move {
                     info!("Starting WebSocket subscription task");
 

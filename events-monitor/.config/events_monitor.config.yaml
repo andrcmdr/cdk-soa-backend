@@ -7,12 +7,18 @@ chain:
 
 indexing:
   from_block: 0
-  to_block:
+  to_block: null # or specify a block number
+
+  # For historical data
   historical_logs_processing: 1
   logs_sync_protocol: http # http, http_watcher or ws - for historical logs
+  logs_chunk_size: 1000  # Fetch 1000 blocks at a time. Applied to both 'get_logs' AND 'watch_logs'
+
+  # For real-time monitoring (no chunking needed)
   new_logs_subscription: 1
   new_logs_subscription_protocol: http # http, http_watcher or ws - for new logs subscription/polling
   http_polling_interval_secs: 5 # Polling interval in seconds (only used when new_logs_subscription_protocol is 'http')
+
   filter_senders: []
 #  filter_senders:
 #    - "0x742d35Cc6634C0532925a3b8BC342A5b6437AFCD"
