@@ -437,16 +437,12 @@ impl EventProcessor {
                 });
                 handles.push(subscription_task);
             } else {
-                // WebSocket subscription mode (original initial implementation using WS subscribe_logs method)
-                let filter = if let Some(to_block) = to_block {
-                    Filter::new()
-                        .address(addresses_for_subscription.clone())
-                        .select(BlockRange(from_block..to_block))
-                } else {
-                    Filter::new()
-                        .address(addresses_for_subscription.clone())
-                        .select(BlockRangeFrom(from_block..))
-                };
+                // WebSocket subscription mode (original initial implementation using WebSocket 'subscribe_logs' method)
+
+                // Create filter for new logs (from latest block)
+                let filter = Filter::new()
+                    .address(addresses_for_subscription.clone())
+                    .from_block(BlockNumberOrTag::Latest);
 
                 let subscription_task = tokio::spawn(async move {
                     info!("Starting WebSocket subscription task");
