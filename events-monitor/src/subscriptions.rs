@@ -165,39 +165,87 @@ impl EventProcessor {
                 let chunk_size = processor_for_history.config.indexing.logs_chunk_size.unwrap_or(1000);
 
                 if let Some(ref sync_protocol) = logs_sync_protocol && sync_protocol.to_lowercase() == "http_watcher" {
-                    info!("Starting HTTP watch_logs task for historical logs");
+                    info!("Starting HTTP watch_logs task for historical logs with chunking");
 
-                    // For http_watcher mode, create filter with full range
-                    let filter_for_history = if let Some(to_block) = to_block {
-                        Filter::new()
-                            .address(addresses_for_history.clone())
-                            .select(BlockRange(from_block..to_block))
+                    // Determine the actual end block for chunking
+                    let end_block = if let Some(to) = to_block {
+                        to
                     } else {
-                        Filter::new()
-                            .address(addresses_for_history.clone())
-                            .select(BlockRangeFrom(from_block..))
+                        // Fetch the latest block number if to_block is not specified
+                        match processor_for_history.http_rpc_provider.get_block_number().await {
+                            Ok(latest) => latest,
+                            Err(e) => {
+                                error!("Failed to get latest block number: {:?}", e);
+                                return Err(anyhow!("Failed to get latest block number: {:?}", e));
+                            }
+                        }
                     };
 
-                    // Start historical watching logs using HTTP polling
-                    let poller = processor_for_history.http_rpc_provider
-                        .watch_logs(&filter_for_history)
-                        .await?;
+                    info!(
+                        "Processing historical logs via watch_logs from block {} to {} with chunk size of {} blocks",
+                        from_block, end_block, chunk_size
+                    );
 
-                    // Convert poller to stream
-                    let mut log_stream = poller.into_stream().flat_map(futures::stream::iter);
+                    // Process logs in chunks using watch_logs
+                    let mut current_block = from_block;
+                    let mut total_logs_processed = 0usize;
 
-                    info!("Started historical watching logs via HTTP polling");
+                    while current_block < end_block {
+                        let chunk_end = std::cmp::min(current_block + chunk_size, end_block);
 
-                    // Process logs as they arrive
-                    while let Some(log) = log_stream.next().await {
-                        debug!("Received historical watch_logs log from contract: {}", log.address());
-                        if let Err(e) = processor_for_history.handle_log(log).await {
-                            error!("Failed to handle historical watch_logs log: {:?}", e);
-                            eprintln!("Historical watch logs error: {:?}", e);
+                        info!("Starting watch_logs for block range {}..{}", current_block, chunk_end);
+
+                        // Create filter for this chunk
+                        let chunk_filter = Filter::new()
+                            .address(addresses_for_history.clone())
+                            .select(BlockRange(current_block..chunk_end));
+
+                        // Start watching logs using HTTP polling for this chunk
+                        let poller = processor_for_history.http_rpc_provider
+                            .watch_logs(&chunk_filter)
+                            .await?;
+
+                        // Convert poller to stream
+                        let mut log_stream = poller.into_stream().flat_map(futures::stream::iter);
+
+                        info!("Started watching logs for chunk {}..{}", current_block, chunk_end);
+
+                        // Process logs as they arrive from this chunk
+                        let mut chunk_logs_count = 0usize;
+                        while let Some(log) = log_stream.next().await {
+                            // Check if log is within our chunk range (watch_logs might return logs beyond our range)
+                            if let Some(log_block) = log.block_number {
+                                if log_block >= chunk_end {
+                                    debug!("Received log from block {} beyond chunk end {}, stopping chunk processing", log_block, chunk_end);
+                                    break;
+                                }
+                            }
+
+                            debug!("Received historical watch_logs log from contract: {}", log.address());
+                            chunk_logs_count += 1;
+
+                            if let Err(e) = processor_for_history.handle_log(log).await {
+                                error!("Failed to handle historical watch_logs log: {:?}", e);
+                                eprintln!("Historical watch logs error: {:?}", e);
+                            }
+                        }
+
+                        total_logs_processed += chunk_logs_count;
+                        info!("Completed chunk {}..{} with {} logs", current_block, chunk_end, chunk_logs_count);
+
+                        // Move to the next chunk
+                        current_block = chunk_end;
+
+                        // Optional: Add a small delay between chunks to avoid overwhelming the RPC
+                        if current_block < end_block {
+                            tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
                         }
                     }
 
-                    info!("Historical watch logs task completed");
+                    info!(
+                        "Historical watch_logs processing completed: processed {} total logs from {} to {}",
+                        total_logs_processed, from_block, end_block
+                    );
                 } else {
                     // Determine the actual end block for chunking
                     let end_block = if let Some(to) = to_block {
