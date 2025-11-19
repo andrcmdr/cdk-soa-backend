@@ -2,12 +2,12 @@
 
 ## Overview
 
-This crate provides two command-line tools for fetching and managing Ethereum smart contract ABIs and events from Blockscout API:
+This crate provides two specialized command-line tools for fetching and managing Ethereum smart contract ABIs and events from Blockscout API:
 
-1. **`contracts-fetcher`** - Fetches all contracts (verified and unverified), their ABIs, and extracts event definitions
-2. **`abi-fetcher`** - Fetches individual contract details and ABIs from specific addresses
+1. **`abi-fetcher`** - Fetches contracts from Blockscout v2 API with support for proxy implementations and recursive nesting
+2. **`contracts-fetcher`** - Fetches contracts from Blockscout v1 API (compatible with Etherscan-like endpoints)
 
-Both tools interact with Blockscout-compatible blockchain explorers to retrieve contract information, parse ABIs, extract event signatures, and generate structured output files.
+Both tools interact with Blockscout-compatible blockchain explorers to retrieve contract information, parse ABIs, extract event signatures with Keccak256 topic hashes, and generate structured YAML output files.
 
 ---
 
@@ -15,10 +15,7 @@ Both tools interact with Blockscout-compatible blockchain explorers to retrieve 
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
-- [Configuration](#configuration)
 - [Tools Overview](#tools-overview)
-  - [contracts-fetcher](#contracts-fetcher)
-  - [abi-fetcher](#abi-fetcher)
 - [CLI Reference](#cli-reference)
 - [Configuration File Reference](#configuration-file-reference)
 - [Output Files](#output-files)
@@ -38,12 +35,12 @@ cargo build --release
 ```
 
 The compiled binaries will be available at:
-- `./target/release/contracts-fetcher`
 - `./target/release/abi-fetcher`
+- `./target/release/contracts-fetcher`
 
 ### Build for Production
 
-The crate is optimized for small binary sizes with the following profile:
+The crate is optimized for small binary sizes:
 
 ```toml
 [profile.release]
@@ -56,9 +53,45 @@ opt-level = "z"
 
 ## Quick Start
 
-### 1. Create Configuration File
+### For abi-fetcher (Blockscout v2 API)
 
-Create a `config.yaml` file in your project directory:
+#### 1. Create Configuration File
+
+Create `abi_fetcher.config.yaml`:
+
+```yaml
+blockscout:
+  server: "https://blockscout.server"
+  api_path: "/api/v2"
+  request_timeout_seconds: 10
+  max_retries: 10
+  max_implementations_per_contract: null  # unlimited
+  max_implementation_nesting_depth: null  # unlimited (defaults to 10)
+  # Optional authentication
+  # auth_user: "username"
+  # auth_password: "password"
+
+output:
+  contracts_file: "contracts_output.yaml"
+  abi_directory: "./abi"
+  events_directory: "./events"
+  events_file: "events_output.yaml"
+  contracts_events_file: "contracts_events.yaml"
+```
+
+#### 2. Run abi-fetcher
+
+```bash
+./abi-fetcher abi_fetcher.config.yaml
+```
+
+---
+
+### For contracts-fetcher (Blockscout v1/Etherscan-like API)
+
+#### 1. Create Configuration File
+
+Create `contracts_fetcher.config.yaml`:
 
 ```yaml
 blockscout:
@@ -68,9 +101,9 @@ blockscout:
   max_retries: 3
   abi_fetch_attempts: 5
   pagination_offset: 1000
-  # Optional: uncomment for authenticated access
-  # auth_user: "your_username"
-  # auth_password: "your_password"
+  # Optional authentication
+  # auth_user: "username"
+  # auth_password: "password"
 
 output:
   contracts_file: "./output/contracts.yaml"
@@ -80,150 +113,89 @@ output:
   contracts_events_file: "./output/contracts-events.yaml"
 ```
 
-### 2. Run contracts-fetcher
+#### 2. Run contracts-fetcher
 
 ```bash
-./contracts-fetcher config.yaml
-```
-
-### 3. Run abi-fetcher
-
-```bash
-./abi-fetcher config.yaml
-```
-
----
-
-## Configuration
-
-### Configuration File Location
-
-Both tools accept a configuration file path as the first command-line argument:
-
-```bash
-./contracts-fetcher /path/to/config.yaml
-./abi-fetcher /path/to/custom-config.yaml
-```
-
-**Default:** If no argument is provided, both tools look for `./config.yaml` in the current directory.
-
-### Environment Variables
-
-Authentication credentials can be provided via environment variables (overrides config file):
-
-```bash
-export BLOCKSCOUT_AUTH_USER="your_username"
-export BLOCKSCOUT_AUTH_PASSWORD="your_password"
+./contracts-fetcher contracts_fetcher.config.yaml
 ```
 
 ---
 
 ## Tools Overview
 
-### contracts-fetcher
+### abi-fetcher
 
-**Purpose:** Comprehensive contract and event data extraction from a Blockscout instance.
+**Purpose:** Fetch contracts from Blockscout v2 API with comprehensive proxy implementation support.
+
+**API Compatibility:** Blockscout v2 API (`/api/v2/smart-contracts`)
 
 **Key Features:**
-- Fetches all verified contracts from Blockscout API
-- Fetches all unverified contracts from Blockscout API
-- Attempts to retrieve ABIs for unverified contracts
-- Extracts and parses event definitions from all ABIs
-- Generates Keccak256 topic hashes for non-anonymous events
-- Creates individual signature files for each unique event
-- Outputs structured YAML files with metadata
-- Groups contracts by name in contracts-events output
+- ✅ Fetches all verified contracts from Blockscout v2 API
+- ✅ Recursively processes proxy implementation contracts
+- ✅ Configurable implementation nesting depth limits
+- ✅ Configurable maximum implementations per contract
+- ✅ Tracks verification timestamps (`verified_at`)
+- ✅ Extracts and parses event definitions with Keccak256 topic hashes
+- ✅ Generates individual signature files for each unique event
+- ✅ Supports HTTP Basic Authentication
+- ✅ Automatic pagination handling
 
 **Workflow:**
-1. Connects to Blockscout API with configured settings
-2. Paginates through all verified contracts (using `listcontracts` endpoint)
-3. Paginates through all unverified contracts
-4. Saves each contract's ABI as a separate JSON file
-5. Parses events from ABIs and extracts signatures
-6. Generates Keccak256 topic hashes for event signatures
-7. Creates individual `.txt` files for each unique event signature
-8. Outputs three YAML files:
-   - `contracts.yaml` - All contracts with metadata
-   - `events.yaml` - All unique events with sources
-   - `contracts-events.yaml` - Contract-to-events mapping
+1. Connects to Blockscout v2 API
+2. Paginates through all smart contracts
+3. Fetches detailed contract information including implementations
+4. Recursively processes proxy implementations up to configured depth
+5. Saves ABIs with parent-child relationships preserved
+6. Extracts events from all ABIs
+7. Generates Keccak256 topic hashes for events
+8. Outputs structured YAML files with metadata
 
 **Output:**
-- `contracts.yaml` - Complete contract list with verification status
-- `events.yaml` - Unique event definitions with topic hashes
-- `contracts-events.yaml` - Contract-event relationships
-- `abis/*.json` - Individual ABI files for each contract
+- `contracts_output.yaml` - All contracts sorted by verification time
+- `events_output.yaml` - Unique events with topic hashes and sources
+- `contracts_events.yaml` - Contract-to-events mapping
+- `abi/*.json` - Individual ABI files (including implementations)
 - `events/*.txt` - Event signature details
 
 ---
 
-### abi-fetcher
+### contracts-fetcher
 
-**Purpose:** Fetch detailed contract information for specific addresses from a database list or API.
+**Purpose:** Fetch contracts from Blockscout v1/Etherscan-compatible API.
+
+**API Compatibility:** Blockscout v1 API / Etherscan-like API (`/api?module=contract&action=...`)
 
 **Key Features:**
-- Fetches contract details from Blockscout smart-contracts endpoint
-- Retrieves comprehensive contract metadata
-- Saves contract ABIs individually
-- Designed for targeted contract analysis
-- Supports batch processing from address lists
+- ✅ Fetches verified contracts via `listcontracts` endpoint
+- ✅ Fetches unverified contracts via `listcontracts` endpoint
+- ✅ Attempts to retrieve ABIs for unverified contracts via `getabi` endpoint
+- ✅ Configurable retry attempts for ABI fetching
+- ✅ Configurable pagination size
+- ✅ Extracts and parses event definitions with Keccak256 topic hashes
+- ✅ Generates individual signature files for each unique event
+- ✅ Supports HTTP Basic Authentication
+- ✅ Automatic pagination with verification
 
 **Workflow:**
-1. Reads contract addresses from a configured source
-2. Fetches detailed contract information via `/smart-contracts/{address}` endpoint
-3. Retrieves and saves ABIs
-4. Processes contract metadata
+1. Connects to Blockscout v1 API
+2. Paginates through all verified contracts
+3. Paginates through all unverified contracts
+4. Attempts ABI retrieval for unverified contracts
+5. Saves each contract's ABI as a separate JSON file
+6. Extracts events from all ABIs
+7. Generates Keccak256 topic hashes for events
+8. Outputs structured YAML files with metadata
 
 **Output:**
-- Individual contract detail files
-- ABI JSON files
-- Structured metadata output
+- `contracts.yaml` - All contracts with verification status
+- `events.yaml` - Unique events with topic hashes and sources
+- `contracts-events.yaml` - Contract-to-events mapping
+- `abis/*.json` - Individual ABI files
+- `events/*.txt` - Event signature details
 
 ---
 
 ## CLI Reference
-
-### contracts-fetcher
-
-#### Syntax
-
-```bash
-contracts-fetcher [CONFIG_FILE]
-```
-
-#### Arguments
-
-| Argument | Type | Required | Default | Description |
-|----------|------|----------|---------|-------------|
-| `CONFIG_FILE` | String (path) | No | `./config.yaml` | Path to YAML configuration file |
-
-#### Exit Codes
-
-| Code | Meaning |
-|------|---------|
-| 0 | Success - All contracts and events processed successfully |
-| 1 | Error - Configuration loading failed, API errors, or I/O errors |
-
-#### Examples
-
-```bash
-# Use default config.yaml
-./contracts-fetcher
-
-# Specify custom config
-./contracts-fetcher /etc/myapp/blockscout-config.yaml
-
-# With authentication via environment
-export BLOCKSCOUT_AUTH_USER="admin"
-export BLOCKSCOUT_AUTH_PASSWORD="secret123"
-./contracts-fetcher production-config.yaml
-
-# With custom logging level
-RUST_LOG=info ./contracts-fetcher config.yaml
-RUST_LOG=debug ./contracts-fetcher config.yaml
-RUST_LOG=trace ./contracts-fetcher config.yaml
-```
-
----
 
 ### abi-fetcher
 
@@ -243,39 +215,132 @@ abi-fetcher [CONFIG_FILE]
 
 | Code | Meaning |
 |------|---------|
-| 0 | Success - All contract details fetched successfully |
+| 0 | Success - All contracts and implementations processed |
 | 1 | Error - Configuration loading failed, API errors, or I/O errors |
 
 #### Examples
 
 ```bash
-# Use default config.yaml
-./abi-fetcher
+# Use custom config
+./abi-fetcher abi_fetcher.config.yaml
 
-# Specify custom config
-./abi-fetcher /opt/configs/abi-config.yaml
+# With authentication via environment
+export BLOCKSCOUT_AUTH_USER="admin"
+export BLOCKSCOUT_AUTH_PASSWORD="secret123"
+./abi-fetcher abi_fetcher.config.yaml
 
-# With authentication and debug logging
+# With debug logging
+RUST_LOG=debug ./abi-fetcher abi_fetcher.config.yaml
+```
+
+---
+
+### contracts-fetcher
+
+#### Syntax
+
+```bash
+contracts-fetcher [CONFIG_FILE]
+```
+
+#### Arguments
+
+| Argument | Type | Required | Default | Description |
+|----------|------|----------|---------|-------------|
+| `CONFIG_FILE` | String (path) | No | `./config.yaml` | Path to YAML configuration file |
+
+#### Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success - All contracts processed successfully |
+| 1 | Error - Configuration loading failed, API errors, or I/O errors |
+
+#### Examples
+
+```bash
+# Use custom config
+./contracts-fetcher contracts_fetcher.config.yaml
+
+# With authentication and info logging
 export BLOCKSCOUT_AUTH_USER="viewer"
 export BLOCKSCOUT_AUTH_PASSWORD="pass456"
-RUST_LOG=debug ./abi-fetcher config.yaml
+RUST_LOG=info ./contracts-fetcher contracts_fetcher.config.yaml
 
-# Production mode with minimal logging
-RUST_LOG=warn ./abi-fetcher production.yaml
+# Production mode
+RUST_LOG=warn ./contracts-fetcher production.yaml
 ```
 
 ---
 
 ## Configuration File Reference
 
-### Complete Configuration Structure
+### abi-fetcher Configuration
+
+```yaml
+blockscout:
+  # Required: Base URL of Blockscout instance (without trailing slash)
+  server: "https://blockscout.server"
+
+  # Required: API path for v2 API
+  api_path: "/api/v2"
+
+  # Optional: HTTP request timeout in seconds (default: 30)
+  request_timeout_seconds: 10
+
+  # Optional: Maximum retry attempts for failed requests (default: 3)
+  max_retries: 10
+
+  # Optional: Maximum implementations per contract (null = unlimited)
+  max_implementations_per_contract: null
+
+  # Optional: Maximum implementation nesting depth (null = unlimited, defaults to 10)
+  max_implementation_nesting_depth: null
+
+  # Optional: HTTP Basic Authentication
+  auth_user: null
+  auth_password: null
+
+output:
+  # Required: Path to output contracts YAML file
+  contracts_file: "contracts_output.yaml"
+
+  # Required: Directory for storing individual ABI JSON files
+  abi_directory: "./abi"
+
+  # Required: Directory for storing individual event signature files
+  events_directory: "./events"
+
+  # Required: Path to output events YAML file
+  events_file: "events_output.yaml"
+
+  # Required: Path to output contracts-events mapping YAML file
+  contracts_events_file: "contracts_events.yaml"
+```
+
+#### abi-fetcher Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `server` | String (URL) | **Yes** | - | Blockscout v2 server base URL |
+| `api_path` | String (path) | **Yes** | - | API endpoint path (typically `/api/v2`) |
+| `request_timeout_seconds` | Integer | No | `30` | HTTP request timeout in seconds |
+| `max_retries` | Integer | No | `3` | Maximum retry attempts for failed requests |
+| `max_implementations_per_contract` | Integer or null | No | `null` | Limit implementations processed per contract |
+| `max_implementation_nesting_depth` | Integer or null | No | `null` | Maximum depth for recursive implementation processing (defaults to 10 if null) |
+| `auth_user` | String or null | No | `null` | HTTP Basic Authentication username |
+| `auth_password` | String or null | No | `null` | HTTP Basic Authentication password |
+
+---
+
+### contracts-fetcher Configuration
 
 ```yaml
 blockscout:
   # Required: Base URL of Blockscout instance (without trailing slash)
   server: "https://explorer.example.com"
 
-  # Required: API path (with or without leading slash)
+  # Required: API path for v1/Etherscan-like API
   api_path: "/api"
 
   # Optional: HTTP request timeout in seconds (default: 30)
@@ -290,11 +355,9 @@ blockscout:
   # Optional: Pagination size for contract list endpoints (default: 1000)
   pagination_offset: 1000
 
-  # Optional: HTTP Basic Authentication username
-  auth_user: "your_username"
-
-  # Optional: HTTP Basic Authentication password
-  auth_password: "your_password"
+  # Optional: HTTP Basic Authentication
+  auth_user: null
+  auth_password: null
 
 output:
   # Required: Path to output contracts YAML file
@@ -313,50 +376,157 @@ output:
   contracts_events_file: "./output/contracts-events.yaml"
 ```
 
-### Configuration Parameters
-
-#### `blockscout` Section
+#### contracts-fetcher Parameters
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `server` | String (URL) | **Yes** | - | Blockscout server base URL (e.g., `https://explorer.polygon.com`) |
+| `server` | String (URL) | **Yes** | - | Blockscout v1 server base URL |
 | `api_path` | String (path) | **Yes** | - | API endpoint path (typically `/api`) |
 | `request_timeout_seconds` | Integer | No | `30` | HTTP request timeout in seconds |
-| `max_retries` | Integer | No | `3` | Maximum retry attempts for failed HTTP requests |
+| `max_retries` | Integer | No | `3` | Maximum retry attempts for failed requests |
 | `abi_fetch_attempts` | Integer | No | `5` | Specific retry attempts for ABI fetching operations |
 | `pagination_offset` | Integer | No | `1000` | Number of items per page for contract list pagination |
-| `auth_user` | String | No | - | HTTP Basic Authentication username (can be set via `BLOCKSCOUT_AUTH_USER` env var) |
-| `auth_password` | String | No | - | HTTP Basic Authentication password (can be set via `BLOCKSCOUT_AUTH_PASSWORD` env var) |
-
-**Notes:**
-- `abi_fetch_attempts` is separate from `max_retries` to allow more aggressive retrying for ABI operations
-- Pagination automatically continues until no more results are returned
-- Environment variables `BLOCKSCOUT_AUTH_USER` and `BLOCKSCOUT_AUTH_PASSWORD` override config file values
-
-#### `output` Section
-
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `contracts_file` | String (path) | **Yes** | - | Output file path for contracts YAML |
-| `abi_directory` | String (path) | **Yes** | - | Directory where individual ABI JSON files will be saved |
-| `events_directory` | String (path) | **Yes** | - | Directory where individual event signature text files will be saved |
-| `events_file` | String (path) | **Yes** | - | Output file path for events YAML |
-| `contracts_events_file` | String (path) | **Yes** | - | Output file path for contracts-events mapping YAML |
-
-**Notes:**
-- Directories are created automatically if they don't exist
-- ABI files are named: `{ContractName}_{Address}.json`
-- Event files are named: `{EventSignature}.txt` (sanitized)
+| `auth_user` | String or null | No | `null` | HTTP Basic Authentication username |
+| `auth_password` | String or null | No | `null` | HTTP Basic Authentication password |
 
 ---
 
 ## Output Files
 
-### 1. contracts.yaml
+### abi-fetcher Output Files
 
-Contains all fetched contracts with metadata.
+#### 1. contracts_output.yaml
 
-**Structure:**
+Contains all contracts with implementations, sorted by verification time (most recent first).
+
+```yaml
+metadata:
+  generated_at: "2025-11-08T12:34:56.789012Z"
+  blockscout_server: "https://blockscout.server"
+  total_verified: 150
+  total_unverified: 50
+  total_verified_with_abi: 145
+  total_unverified_with_abi: 5
+  total_verified_implementations_with_abi: 89
+  total_unverified_implementations_with_abi: 2
+  abi_directory: "./abi"
+
+verified_contracts:
+  - name: "MyToken"
+    address: "0x1234567890123456789012345678901234567890"
+    abi_file: "./abi/MyToken_0x1234567890123456789012345678901234567890.json"
+    is_verified: true
+    is_fully_verified: true
+    verified_at: "2025-11-08T10:30:45Z"
+    implementations:
+      - name: "TokenImplementation"
+        address: "0xabcd...1234"
+        abi_file: "./abi/TokenImplementation_0xabcd...1234_parent_0x1234...7890.json"
+        is_verified: true
+        is_fully_verified: true
+        verified_at: "2025-11-07T15:20:30Z"
+        implementations: null
+
+unverified_contracts:
+  - name: null
+    address: "0x9876543210987654321098765432109876543210"
+    abi_file: null
+    is_verified: false
+    is_fully_verified: null
+    verified_at: null
+    implementations: null
+```
+
+#### 2. events_output.yaml
+
+Contains all unique event signatures with sources sorted by verification time.
+
+```yaml
+metadata:
+  generated_at: "2025-11-08T12:34:56.789012Z"
+  blockscout_server: "https://blockscout.server"
+  total_events: 45
+  total_unique_signatures: 45
+  events_directory: "./events"
+
+events:
+  - name: "Transfer"
+    signature: "Transfer(address,address,uint256)"
+    topic_hash: "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+    anonymous: false
+    inputs:
+      - name: "from"
+        input_type: "address"
+        indexed: true
+      - name: "to"
+        input_type: "address"
+        indexed: true
+      - name: "value"
+        input_type: "uint256"
+        indexed: false
+    contract_sources:
+      - address: "0x1234567890123456789012345678901234567890"
+        verified_at: "2025-11-08T10:30:45Z"
+        contract_name: "MyToken"
+      - address: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd"
+        verified_at: "2025-11-07T15:20:30Z"
+        contract_name: "AnotherToken"
+    signature_file: "./events/Transfer_address_address_uint256_.txt"
+```
+
+#### 3. contracts_events.yaml
+
+Maps contracts to their events, with addresses sorted by verification time (most recent first).
+
+```yaml
+contracts:
+  - name: "MyToken"
+    address:
+      - address: "0x1234567890123456789012345678901234567890"
+        verified_at: "2025-11-08T10:30:45Z"
+      - address: "0x2222222222222222222222222222222222222222"
+        verified_at: "2025-11-06T08:15:20Z"
+    events:
+      - event: "Transfer(address indexed from, address indexed to, uint256 value)"
+      - event: "Approval(address indexed owner, address indexed spender, uint256 value)"
+```
+
+#### 4. Individual ABI Files (abi/)
+
+**Filename format:**
+- Main contracts: `{ContractName}_{Address}.json`
+- Implementations: `{ContractName}_{Address}_parent_{ParentAddress}.json`
+
+**Example:** `TokenImplementation_0xabcd1234_parent_0x12345678.json`
+
+#### 5. Individual Event Signature Files (events/)
+
+**Filename:** `{SanitizedSignature}.txt`
+
+```
+Event Name: Transfer
+Signature: Transfer(address,address,uint256)
+Topic Hash: 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
+Anonymous: false
+
+Inputs:
+  0: from address (indexed)
+  1: to address (indexed)
+  2: value uint256 (not indexed)
+
+Contract Sources (sorted by verification time, most recent first):
+  - 0x1234567890123456789012345678901234567890 (contract_name: MyToken, verified_at: 2025-11-08T10:30:45Z)
+  - 0xabcdefabcdefabcdefabcdefabcdefabcdefabcd (contract_name: AnotherToken, verified_at: 2025-11-07T15:20:30Z)
+```
+
+---
+
+### contracts-fetcher Output Files
+
+#### 1. contracts.yaml
+
+Contains all fetched contracts with verification status.
+
 ```yaml
 metadata:
   generated_at: "2025-11-08T12:34:56.789012Z"
@@ -371,10 +541,6 @@ verified_contracts:
     address: "0x1234567890123456789012345678901234567890"
     abi_file: "MyToken_0x1234567890123456789012345678901234567890.json"
     is_verified: true
-  - name: "AnotherContract"
-    address: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd"
-    abi_file: "AnotherContract_0xabcdefabcdefabcdefabcdefabcdefabcdefabcd.json"
-    is_verified: true
 
 unverified_contracts:
   - name: null
@@ -383,11 +549,10 @@ unverified_contracts:
     is_verified: false
 ```
 
-### 2. events.yaml
+#### 2. events.yaml
 
-Contains all unique event signatures with their sources.
+Contains all unique event signatures.
 
-**Structure:**
 ```yaml
 metadata:
   generated_at: "2025-11-08T12:34:56.789012Z"
@@ -414,76 +579,30 @@ events:
     contract_sources:
       - address: "0x1234567890123456789012345678901234567890"
         contract_name: "MyToken"
-      - address: "0xabcdefabcdefabcdefabcdefabcdefabcdefabcd"
-        contract_name: "AnotherToken"
     signature_file: "Transfer_address_address_uint256_.txt"
 ```
 
-### 3. contracts-events.yaml
+#### 3. contracts-events.yaml
 
-Maps contracts to their events (grouped by contract name).
+Maps contracts to their events.
 
-**Structure:**
 ```yaml
 contracts:
   - name: "MyToken"
     address:
       - address: "0x1234567890123456789012345678901234567890"
-      - address: "0x2222222222222222222222222222222222222222"
     events:
       - event: "Transfer(address indexed from, address indexed to, uint256 value)"
       - event: "Approval(address indexed owner, address indexed spender, uint256 value)"
-
-  - name: "MyNFT"
-    address:
-      - address: "0x3333333333333333333333333333333333333333"
-    events:
-      - event: "Transfer(address indexed from, address indexed to, uint256 indexed tokenId)"
-      - event: "Approval(address indexed owner, address indexed approved, uint256 indexed tokenId)"
 ```
 
-### 4. Individual ABI Files (abis/)
-
-Each contract's ABI is saved as a separate JSON file:
+#### 4. Individual ABI Files (abis/)
 
 **Filename:** `{ContractName}_{Address}.json`
 
-**Example:** `MyToken_0x1234567890123456789012345678901234567890.json`
-
-```json
-[
-  {
-    "type": "event",
-    "name": "Transfer",
-    "inputs": [
-      {
-        "name": "from",
-        "type": "address",
-        "indexed": true
-      },
-      {
-        "name": "to",
-        "type": "address",
-        "indexed": true
-      },
-      {
-        "name": "value",
-        "type": "uint256",
-        "indexed": false
-      }
-    ],
-    "anonymous": false
-  }
-]
-```
-
-### 5. Individual Event Signature Files (events/)
-
-Each unique event signature is saved with details:
+#### 5. Individual Event Signature Files (events/)
 
 **Filename:** `{SanitizedSignature}.txt`
-
-**Example:** `Transfer_address_address_uint256_.txt`
 
 ```
 Event Name: Transfer
@@ -498,18 +617,15 @@ Inputs:
 
 Contract Sources:
   - 0x1234567890123456789012345678901234567890 (contract_name: MyToken)
-  - 0xabcdefabcdefabcdefabcdefabcdefabcdefabcd (contract_name: AnotherToken)
 ```
 
 ---
 
 ## Authentication
 
-### HTTP Basic Authentication
-
 Both tools support HTTP Basic Authentication for protected Blockscout instances.
 
-#### Method 1: Configuration File
+### Method 1: Configuration File
 
 ```yaml
 blockscout:
@@ -517,140 +633,97 @@ blockscout:
   auth_password: "your_password"
 ```
 
-#### Method 2: Environment Variables (Recommended for Production)
+### Method 2: Environment Variables (Recommended)
 
 ```bash
 export BLOCKSCOUT_AUTH_USER="your_username"
 export BLOCKSCOUT_AUTH_PASSWORD="your_password"
+./abi-fetcher config.yaml
+# or
 ./contracts-fetcher config.yaml
 ```
 
-**Security Note:** Environment variables override config file values and are more secure for production deployments.
+**Security Note:** Environment variables override config file values.
 
 ---
 
 ## Logging
 
-Both tools use the `tracing` framework with environment-based log level control.
+Both tools use the `tracing` framework with `RUST_LOG` environment variable control.
 
 ### Log Levels
 
-Set the `RUST_LOG` environment variable:
-
 ```bash
-# Error only (minimal output)
-RUST_LOG=error ./contracts-fetcher
+# Error only
+RUST_LOG=error ./abi-fetcher config.yaml
 
 # Warnings and errors
-RUST_LOG=warn ./contracts-fetcher
+RUST_LOG=warn ./abi-fetcher config.yaml
 
-# Info, warnings, and errors (recommended)
-RUST_LOG=info ./contracts-fetcher
+# Info (recommended)
+RUST_LOG=info ./abi-fetcher config.yaml
 
-# Debug output (verbose)
-RUST_LOG=debug ./contracts-fetcher
+# Debug (verbose)
+RUST_LOG=debug ./abi-fetcher config.yaml
 
-# Trace output (very verbose, for troubleshooting)
-RUST_LOG=trace ./contracts-fetcher
+# Trace (very verbose)
+RUST_LOG=trace ./abi-fetcher config.yaml
 ```
 
-**Default:** If `RUST_LOG` is not set, the default level is `debug`.
-
-### Log Output Examples
-
-**Info Level:**
-```
-2025-11-08T12:34:56.789Z INFO  Loaded configuration from config.yaml
-2025-11-08T12:34:56.790Z INFO  Blockscout server: https://explorer.example.com
-2025-11-08T12:34:56.791Z INFO  HTTP Basic Authentication is enabled
-2025-11-08T12:34:57.123Z INFO  Fetching verified contracts from: https://explorer.example.com/api?module=contract&action=listcontracts&filter=verified&offset=1000&page=1 (page 1)
-2025-11-08T12:34:58.456Z INFO  Fetched 1000 verified contracts on page 1
-```
-
-**Debug Level:**
-```
-2025-11-08T12:34:59.789Z DEBUG Fetching ABI for contract 0x1234... (attempt 1/5)
-2025-11-08T12:35:00.123Z DEBUG Successfully fetched ABI for contract 0x1234... on attempt 1
-```
+**Default:** If not set, default level is `debug`.
 
 ---
 
 ## Examples
 
-### Example 1: Basic Usage with Default Config
-
-```bash
-# Create config.yaml
-cat > config.yaml << EOF
-blockscout:
-  server: "https://polygon-explorer.example.com"
-  api_path: "/api"
-output:
-  contracts_file: "./contracts.yaml"
-  abi_directory: "./abis"
-  events_directory: "./events"
-  events_file: "./events.yaml"
-  contracts_events_file: "./contracts-events.yaml"
-EOF
-
-# Run contracts-fetcher
-./contracts-fetcher
-```
-
-### Example 2: Production Setup with Authentication
-
-```bash
-# Set credentials via environment
-export BLOCKSCOUT_AUTH_USER="prod_user"
-export BLOCKSCOUT_AUTH_PASSWORD="SecurePassword123"
-
-# Run with custom config and info logging
-RUST_LOG=info ./contracts-fetcher /etc/blockchain/prod-config.yaml
-```
-
-### Example 3: Testing with Custom Retry Settings
+### Example 1: abi-fetcher with Implementation Limits
 
 ```yaml
 blockscout:
-  server: "https://testnet.example.com"
+  server: "https://blockscout.mainnet.com"
+  api_path: "/api/v2"
+  max_implementations_per_contract: 3
+  max_implementation_nesting_depth: 2
+output:
+  contracts_file: "contracts.yaml"
+  abi_directory: "./abi"
+  events_directory: "./events"
+  events_file: "events.yaml"
+  contracts_events_file: "contracts_events.yaml"
+```
+
+```bash
+RUST_LOG=info ./abi-fetcher config.yaml
+```
+
+### Example 2: contracts-fetcher with Custom Retry Settings
+
+```yaml
+blockscout:
+  server: "https://testnet.explorer.com"
   api_path: "/api"
   request_timeout_seconds: 60
   max_retries: 5
   abi_fetch_attempts: 10
   pagination_offset: 500
 output:
-  contracts_file: "./test-output/contracts.yaml"
-  abi_directory: "./test-output/abis"
-  events_directory: "./test-output/events"
-  events_file: "./test-output/events.yaml"
-  contracts_events_file: "./test-output/contracts-events.yaml"
+  contracts_file: "./output/contracts.yaml"
+  abi_directory: "./output/abis"
+  events_directory: "./output/events"
+  events_file: "./output/events.yaml"
+  contracts_events_file: "./output/contracts-events.yaml"
 ```
 
-### Example 4: Processing Specific Network
-
 ```bash
-# Polygon Mainnet
-cat > polygon-config.yaml << EOF
-blockscout:
-  server: "https://polygon.blockscout.com"
-  api_path: "/api"
-  pagination_offset: 1000
-output:
-  contracts_file: "./polygon-contracts.yaml"
-  abi_directory: "./polygon-abis"
-  events_directory: "./polygon-events"
-  events_file: "./polygon-events.yaml"
-  contracts_events_file: "./polygon-contracts-events.yaml"
-EOF
-
-RUST_LOG=info ./contracts-fetcher polygon-config.yaml
+RUST_LOG=debug ./contracts-fetcher testnet-config.yaml
 ```
 
-### Example 5: Using abi-fetcher for Targeted Analysis
+### Example 3: Production with Authentication
 
 ```bash
-# Configure for specific contract details
-./abi-fetcher config.yaml
+export BLOCKSCOUT_AUTH_USER="prod_user"
+export BLOCKSCOUT_AUTH_PASSWORD="SecurePass123"
+RUST_LOG=info ./abi-fetcher production.yaml
 ```
 
 ---
@@ -663,137 +736,76 @@ RUST_LOG=info ./contracts-fetcher polygon-config.yaml
 
 **Error:**
 ```
-Failed to load application configuration: Failed to read config file: "./config.yaml"
+Failed to read config file: "./config.yaml"
 ```
 
 **Solution:**
-- Ensure `config.yaml` exists in the current directory, or
-- Specify the full path: `./contracts-fetcher /path/to/config.yaml`
+- Specify full path: `./abi-fetcher /path/to/config.yaml`
 
-#### 2. Authentication Failures
+#### 2. API Version Mismatch
 
-**Error:**
-```
-HTTP error: 401 Unauthorized
-```
+**abi-fetcher** requires Blockscout v2 API (`/api/v2/smart-contracts`)
+**contracts-fetcher** requires Blockscout v1 API (`/api?module=contract`)
 
-**Solution:**
-- Verify credentials in config file or environment variables
-- Check that `BLOCKSCOUT_AUTH_USER` and `BLOCKSCOUT_AUTH_PASSWORD` are correctly set
-- Ensure the Blockscout instance requires authentication
+**Solution:** Use the correct tool for your API version.
 
-#### 3. API Rate Limiting
-
-**Symptoms:**
-```
-Request failed with status 429, retrying... (attempt 1/3)
-```
-
-**Solution:**
-- Increase `request_timeout_seconds` in config
-- Reduce `pagination_offset` to make smaller requests
-- Increase `max_retries` and `abi_fetch_attempts`
-
-#### 4. Network Timeouts
-
-**Error:**
-```
-HTTP request failed for contract 0x1234...: operation timed out
-```
-
-**Solution:**
-- Increase `request_timeout_seconds` (default: 30)
-- Check network connectivity to Blockscout server
-- Verify the server URL in configuration
-
-#### 5. Invalid ABI Format
+#### 3. Implementation Recursion Limits
 
 **Warning:**
 ```
-Failed to parse ABI response for contract 0x1234...: expected value at line 1 column 1
+Maximum implementation nesting depth (2) reached
+```
+
+**Solution:** Increase `max_implementation_nesting_depth` in config or set to `null` for unlimited.
+
+#### 4. Rate Limiting
+
+**Symptoms:**
+```
+Request failed with status 429, retrying...
 ```
 
 **Solution:**
-- This is expected for unverified contracts
-- Tool automatically retries based on `abi_fetch_attempts`
-- Check Blockscout API response manually if persistent
-
-#### 6. Output Directory Permissions
-
-**Error:**
-```
-Failed to create directory: "./output/abis": Permission denied
-```
-
-**Solution:**
-- Ensure write permissions for output directories
-- Create directories manually: `mkdir -p output/{abis,events}`
-- Check file system permissions
+- Increase `request_timeout_seconds`
+- Increase `max_retries`
+- For contracts-fetcher: reduce `pagination_offset`
 
 ### Debug Mode
 
-For detailed troubleshooting, enable trace-level logging:
-
 ```bash
-RUST_LOG=trace ./contracts-fetcher config.yaml 2>&1 | tee debug.log
+RUST_LOG=trace ./abi-fetcher config.yaml 2>&1 | tee debug.log
 ```
-
-This captures all HTTP requests, responses, and internal processing details.
 
 ---
 
 ## API Endpoints Used
 
-### contracts-fetcher
+### abi-fetcher (Blockscout v2)
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /api/v2/smart-contracts` | List all smart contracts with pagination |
+| `GET /api/v2/smart-contracts/{address}` | Fetch contract details and implementations |
+
+### contracts-fetcher (Blockscout v1)
 
 | Endpoint | Purpose | Parameters |
 |----------|---------|------------|
-| `GET /api?module=contract&action=listcontracts` | List contracts | `filter=verified/unverified`, `offset={pagination_offset}`, `page={page_number}` |
-| `GET /api?module=contract&action=getabi` | Fetch contract ABI | `address={contract_address}` |
-
-### abi-fetcher
-
-| Endpoint | Purpose | Parameters |
-|----------|---------|------------|
-| `GET /api/smart-contracts/{address}` | Fetch contract details | Address in URL path |
+| `GET /api?module=contract&action=listcontracts` | List contracts | `filter=verified/unverified`, `offset`, `page` |
+| `GET /api?module=contract&action=getabi` | Fetch ABI | `address` |
 
 ---
 
 ## Performance Considerations
 
-### Optimization Tips
-
-1. **Pagination Size**: Larger `pagination_offset` values (e.g., 1000) reduce the number of API calls but may hit server limits
-2. **Retry Strategy**: Balance `max_retries` and `abi_fetch_attempts` for reliability vs. speed
-3. **Timeout Values**: Increase `request_timeout_seconds` for slower networks or large responses
-4. **Parallel Processing**: Both tools currently process sequentially; consider running multiple instances with different filters if needed
-
-### Expected Runtime
-
-- **Small networks** (<1000 contracts): 5-15 minutes
-- **Medium networks** (1000-10000 contracts): 30-120 minutes
-- **Large networks** (>10000 contracts): 2+ hours
-
-Runtime depends on:
-- Network latency to Blockscout server
-- Number of contracts
-- API rate limits
-- Number of unverified contracts requiring ABI fetching
+- **abi-fetcher**: Processing time depends on implementation depth and count
+- **contracts-fetcher**: Large pagination values (1000) reduce API calls
+- Expected runtime: 5 minutes to 2+ hours depending on network size
 
 ---
 
 ## License
 
 This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE-APACHE) file for details.
-
----
-
-## Support
-
-For issues or questions:
-1. Check the [Troubleshooting](#troubleshooting) section
-2. Enable debug logging: `RUST_LOG=debug`
-3. Review Blockscout API documentation for your specific instance
-4. Verify network connectivity and authentication
 
 ---
