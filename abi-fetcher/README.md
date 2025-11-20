@@ -281,22 +281,22 @@ RUST_LOG=warn ./contracts-fetcher production.yaml
 blockscout:
   # Required: Base URL of Blockscout instance (without trailing slash)
   server: "https://blockscout.server"
-
+  
   # Required: API path for v2 API
   api_path: "/api/v2"
-
+  
   # Optional: HTTP request timeout in seconds (default: 30)
   request_timeout_seconds: 10
-
+  
   # Optional: Maximum retry attempts for failed requests (default: 3)
   max_retries: 10
-
+  
   # Optional: Maximum implementations per contract (null = unlimited)
   max_implementations_per_contract: null
-
+  
   # Optional: Maximum implementation nesting depth (null = unlimited, defaults to 10)
   max_implementation_nesting_depth: null
-
+  
   # Optional: HTTP Basic Authentication
   auth_user: null
   auth_password: null
@@ -304,16 +304,16 @@ blockscout:
 output:
   # Required: Path to output contracts YAML file
   contracts_file: "contracts_output.yaml"
-
+  
   # Required: Directory for storing individual ABI JSON files
   abi_directory: "./abi"
-
+  
   # Required: Directory for storing individual event signature files
   events_directory: "./events"
-
+  
   # Required: Path to output events YAML file
   events_file: "events_output.yaml"
-
+  
   # Required: Path to output contracts-events mapping YAML file
   contracts_events_file: "contracts_events.yaml"
 ```
@@ -339,22 +339,22 @@ output:
 blockscout:
   # Required: Base URL of Blockscout instance (without trailing slash)
   server: "https://explorer.example.com"
-
+  
   # Required: API path for v1/Etherscan-like API
   api_path: "/api"
-
+  
   # Optional: HTTP request timeout in seconds (default: 30)
   request_timeout_seconds: 30
-
+  
   # Optional: Maximum retry attempts for failed requests (default: 3)
   max_retries: 3
-
+  
   # Optional: Retry attempts specifically for ABI fetching (default: 5)
   abi_fetch_attempts: 5
-
+  
   # Optional: Pagination size for contract list endpoints (default: 1000)
   pagination_offset: 1000
-
+  
   # Optional: HTTP Basic Authentication
   auth_user: null
   auth_password: null
@@ -362,16 +362,16 @@ blockscout:
 output:
   # Required: Path to output contracts YAML file
   contracts_file: "./output/contracts.yaml"
-
+  
   # Required: Directory for storing individual ABI JSON files
   abi_directory: "./output/abis"
-
+  
   # Required: Directory for storing individual event signature files
   events_directory: "./output/events"
-
+  
   # Required: Path to output events YAML file
   events_file: "./output/events.yaml"
-
+  
   # Required: Path to output contracts-events mapping YAML file
   contracts_events_file: "./output/contracts-events.yaml"
 ```
@@ -627,50 +627,96 @@ Both tools support HTTP Basic Authentication for protected Blockscout instances.
 
 ### Method 1: Configuration File
 
+**For abi-fetcher:**
 ```yaml
 blockscout:
   auth_user: "your_username"
   auth_password: "your_password"
 ```
 
-### Method 2: Environment Variables (Recommended)
+**For contracts-fetcher:**
+```yaml
+blockscout:
+  auth_user: "your_username"
+  auth_password: "your_password"
+```
+
+### Method 2: Environment Variables (Recommended for Production)
 
 ```bash
 export BLOCKSCOUT_AUTH_USER="your_username"
 export BLOCKSCOUT_AUTH_PASSWORD="your_password"
+
+# For abi-fetcher
 ./abi-fetcher config.yaml
-# or
+
+# For contracts-fetcher
 ./contracts-fetcher config.yaml
 ```
 
-**Security Note:** Environment variables override config file values.
+**Security Note:** Environment variables override config file values and are more secure for production deployments.
 
 ---
 
 ## Logging
 
-Both tools use the `tracing` framework with `RUST_LOG` environment variable control.
+Both tools use the `tracing` framework with environment-based log level control.
 
 ### Log Levels
 
+Set the `RUST_LOG` environment variable:
+
 ```bash
-# Error only
+# Error only (minimal output)
 RUST_LOG=error ./abi-fetcher config.yaml
+RUST_LOG=error ./contracts-fetcher config.yaml
 
 # Warnings and errors
 RUST_LOG=warn ./abi-fetcher config.yaml
+RUST_LOG=warn ./contracts-fetcher config.yaml
 
-# Info (recommended)
+# Info, warnings, and errors (recommended)
 RUST_LOG=info ./abi-fetcher config.yaml
+RUST_LOG=info ./contracts-fetcher config.yaml
 
-# Debug (verbose)
+# Debug output (verbose)
 RUST_LOG=debug ./abi-fetcher config.yaml
+RUST_LOG=debug ./contracts-fetcher config.yaml
 
-# Trace (very verbose)
+# Trace output (very verbose, for troubleshooting)
 RUST_LOG=trace ./abi-fetcher config.yaml
+RUST_LOG=trace ./contracts-fetcher config.yaml
 ```
 
-**Default:** If not set, default level is `debug`.
+**Default:** If `RUST_LOG` is not set, the default level is `debug`.
+
+### Log Output Examples
+
+**Info Level (abi-fetcher):**
+```
+2025-11-08T12:34:56.789Z INFO  Loaded configuration from config.yaml
+2025-11-08T12:34:56.790Z INFO  Blockscout server: https://blockscout.server
+2025-11-08T12:34:56.791Z INFO  HTTP Basic Authentication is enabled
+2025-11-08T12:34:56.792Z INFO  Max implementations per contract: unlimited
+2025-11-08T12:34:56.793Z INFO  Max implementation nesting depth: unlimited (fallback to 10)
+2025-11-08T12:34:57.123Z INFO  Fetching contracts from: https://blockscout.server/api/v2/smart-contracts
+2025-11-08T12:34:58.456Z INFO  Fetched 50 contracts in this page
+```
+
+**Info Level (contracts-fetcher):**
+```
+2025-11-08T12:34:56.789Z INFO  Loaded configuration from config.yaml
+2025-11-08T12:34:56.790Z INFO  Blockscout server: https://explorer.example.com
+2025-11-08T12:34:56.791Z INFO  HTTP Basic Authentication is disabled
+2025-11-08T12:34:57.123Z INFO  Fetching verified contracts from: https://explorer.example.com/api?module=contract&action=listcontracts&filter=verified&offset=1000&page=1 (page 1)
+2025-11-08T12:34:58.456Z INFO  Fetched 1000 verified contracts on page 1
+```
+
+**Debug Level:**
+```
+2025-11-08T12:34:59.789Z DEBUG Fetching ABI for contract 0x1234... (attempt 1/5)
+2025-11-08T12:35:00.123Z DEBUG Successfully fetched ABI for contract 0x1234... on attempt 1
+```
 
 ---
 
@@ -696,7 +742,15 @@ output:
 RUST_LOG=info ./abi-fetcher config.yaml
 ```
 
-### Example 2: contracts-fetcher with Custom Retry Settings
+### Example 2: abi-fetcher with Authentication
+
+```bash
+export BLOCKSCOUT_AUTH_USER="admin"
+export BLOCKSCOUT_AUTH_PASSWORD="SecurePass123"
+RUST_LOG=info ./abi-fetcher abi_fetcher.config.yaml
+```
+
+### Example 3: contracts-fetcher with Custom Retry Settings
 
 ```yaml
 blockscout:
@@ -718,12 +772,60 @@ output:
 RUST_LOG=debug ./contracts-fetcher testnet-config.yaml
 ```
 
-### Example 3: Production with Authentication
+### Example 4: contracts-fetcher with Authentication
 
 ```bash
-export BLOCKSCOUT_AUTH_USER="prod_user"
-export BLOCKSCOUT_AUTH_PASSWORD="SecurePass123"
-RUST_LOG=info ./abi-fetcher production.yaml
+export BLOCKSCOUT_AUTH_USER="viewer"
+export BLOCKSCOUT_AUTH_PASSWORD="ViewPass456"
+RUST_LOG=info ./contracts-fetcher production.yaml
+```
+
+### Example 5: Processing Specific Network (Polygon)
+
+**For abi-fetcher:**
+```bash
+cat > polygon-abi-config.yaml << EOF
+blockscout:
+  server: "https://polygon.blockscout.com"
+  api_path: "/api/v2"
+  pagination_offset: 1000
+output:
+  contracts_file: "./polygon-contracts.yaml"
+  abi_directory: "./polygon-abis"
+  events_directory: "./polygon-events"
+  events_file: "./polygon-events.yaml"
+  contracts_events_file: "./polygon-contracts-events.yaml"
+EOF
+
+RUST_LOG=info ./abi-fetcher polygon-abi-config.yaml
+```
+
+**For contracts-fetcher:**
+```bash
+cat > polygon-contracts-config.yaml << EOF
+blockscout:
+  server: "https://polygon-explorer.example.com"
+  api_path: "/api"
+  pagination_offset: 1000
+output:
+  contracts_file: "./polygon-contracts.yaml"
+  abi_directory: "./polygon-abis"
+  events_directory: "./polygon-events"
+  events_file: "./polygon-events.yaml"
+  contracts_events_file: "./polygon-contracts-events.yaml"
+EOF
+
+RUST_LOG=info ./contracts-fetcher polygon-contracts-config.yaml
+```
+
+### Example 6: Both Tools with Different APIs
+
+```bash
+# Using abi-fetcher for Blockscout v2
+RUST_LOG=info ./abi-fetcher abi_fetcher.config.yaml
+
+# Using contracts-fetcher for Blockscout v1/Etherscan-like
+RUST_LOG=info ./contracts-fetcher contracts_fetcher.config.yaml
 ```
 
 ---
@@ -736,45 +838,112 @@ RUST_LOG=info ./abi-fetcher production.yaml
 
 **Error:**
 ```
-Failed to read config file: "./config.yaml"
+Failed to load application configuration: Failed to read config file: "./config.yaml"
 ```
 
 **Solution:**
-- Specify full path: `./abi-fetcher /path/to/config.yaml`
+- Ensure config file exists in the current directory, or
+- Specify the full path: `./abi-fetcher /path/to/config.yaml` or `./contracts-fetcher /path/to/config.yaml`
 
-#### 2. API Version Mismatch
+#### 2. Authentication Failures
 
-**abi-fetcher** requires Blockscout v2 API (`/api/v2/smart-contracts`)
-**contracts-fetcher** requires Blockscout v1 API (`/api?module=contract`)
-
-**Solution:** Use the correct tool for your API version.
-
-#### 3. Implementation Recursion Limits
-
-**Warning:**
+**Error:**
 ```
-Maximum implementation nesting depth (2) reached
+HTTP error: 401 Unauthorized
 ```
 
-**Solution:** Increase `max_implementation_nesting_depth` in config or set to `null` for unlimited.
+**Solution:**
+- Verify credentials in config file or environment variables
+- Check that `BLOCKSCOUT_AUTH_USER` and `BLOCKSCOUT_AUTH_PASSWORD` are correctly set
+- Ensure the Blockscout instance requires authentication
 
-#### 4. Rate Limiting
+#### 3. API Version Mismatch
+
+**Symptoms:**
+- `abi-fetcher` fails with 404 errors
+- `contracts-fetcher` returns unexpected JSON structure
+
+**Solution:**
+- **abi-fetcher** requires Blockscout v2 API (`/api/v2/smart-contracts`)
+- **contracts-fetcher** requires Blockscout v1 API (`/api?module=contract&action=...`)
+- Verify the API version of your Blockscout instance
+- Use the correct tool for your API version
+
+#### 4. API Rate Limiting
 
 **Symptoms:**
 ```
-Request failed with status 429, retrying...
+Request failed with status 429, retrying... (attempt 1/3)
 ```
 
 **Solution:**
-- Increase `request_timeout_seconds`
+- Increase `request_timeout_seconds` in config
 - Increase `max_retries`
-- For contracts-fetcher: reduce `pagination_offset`
+- For **contracts-fetcher**: reduce `pagination_offset` to make smaller requests
+- For **contracts-fetcher**: increase `abi_fetch_attempts` for better retry handling
+
+#### 5. Network Timeouts
+
+**Error:**
+```
+HTTP request failed for contract 0x1234...: operation timed out
+```
+
+**Solution:**
+- Increase `request_timeout_seconds` (default: 30)
+- Check network connectivity to Blockscout server
+- Verify the server URL in configuration
+
+#### 6. Invalid ABI Format (contracts-fetcher)
+
+**Warning:**
+```
+Failed to parse ABI response for contract 0x1234...: expected value at line 1 column 1
+```
+
+**Solution:**
+- This is expected for unverified contracts
+- Tool automatically retries based on `abi_fetch_attempts`
+- Check Blockscout API response manually if persistent
+
+#### 7. Implementation Recursion Limits (abi-fetcher)
+
+**Warning:**
+```
+Maximum implementation nesting depth (2) reached, stopping implementation processing
+```
+
+**Solution:**
+- Increase `max_implementation_nesting_depth` in config
+- Set to `null` for unlimited (defaults to hardcoded limit of 10)
+
+#### 8. Output Directory Permissions
+
+**Error:**
+```
+Failed to create directory: "./output/abis": Permission denied
+```
+
+**Solution:**
+- Ensure write permissions for output directories
+- Create directories manually: `mkdir -p output/{abis,events}` or `mkdir -p abi events`
+- Check file system permissions
 
 ### Debug Mode
 
+For detailed troubleshooting of both tools, enable trace-level logging:
+
+**abi-fetcher:**
 ```bash
-RUST_LOG=trace ./abi-fetcher config.yaml 2>&1 | tee debug.log
+RUST_LOG=trace ./abi-fetcher config.yaml 2>&1 | tee abi-fetcher-debug.log
 ```
+
+**contracts-fetcher:**
+```bash
+RUST_LOG=trace ./contracts-fetcher config.yaml 2>&1 | tee contracts-fetcher-debug.log
+```
+
+This captures all HTTP requests, responses, and internal processing details.
 
 ---
 
@@ -782,30 +951,69 @@ RUST_LOG=trace ./abi-fetcher config.yaml 2>&1 | tee debug.log
 
 ### abi-fetcher (Blockscout v2)
 
-| Endpoint | Purpose |
-|----------|---------|
-| `GET /api/v2/smart-contracts` | List all smart contracts with pagination |
-| `GET /api/v2/smart-contracts/{address}` | Fetch contract details and implementations |
+| Endpoint | Purpose | Parameters |
+|----------|---------|------------|
+| `GET /api/v2/smart-contracts` | List all smart contracts with pagination | `items_count`, `hash` |
+| `GET /api/v2/smart-contracts/{address}` | Fetch contract details and implementations | Address in URL path |
 
 ### contracts-fetcher (Blockscout v1)
 
 | Endpoint | Purpose | Parameters |
 |----------|---------|------------|
-| `GET /api?module=contract&action=listcontracts` | List contracts | `filter=verified/unverified`, `offset`, `page` |
-| `GET /api?module=contract&action=getabi` | Fetch ABI | `address` |
+| `GET /api?module=contract&action=listcontracts` | List contracts | `filter=verified/unverified`, `offset={pagination_offset}`, `page={page_number}` |
+| `GET /api?module=contract&action=getabi` | Fetch contract ABI | `address={contract_address}` |
 
 ---
 
 ## Performance Considerations
 
-- **abi-fetcher**: Processing time depends on implementation depth and count
-- **contracts-fetcher**: Large pagination values (1000) reduce API calls
-- Expected runtime: 5 minutes to 2+ hours depending on network size
+### Optimization Tips
+
+1. **Pagination Size (contracts-fetcher)**: Larger `pagination_offset` values (e.g., 1000) reduce the number of API calls but may hit server limits
+2. **Retry Strategy**: Balance `max_retries` and `abi_fetch_attempts` for reliability vs. speed
+3. **Timeout Values**: Increase `request_timeout_seconds` for slower networks or large responses
+4. **Implementation Limits (abi-fetcher)**: Use `max_implementations_per_contract` and `max_implementation_nesting_depth` to control processing time
+5. **Parallel Processing**: Both tools currently process sequentially; consider running multiple instances with different filters if needed
+
+### Expected Runtime
+
+#### abi-fetcher
+- **Small networks** (<1000 contracts): 10-30 minutes
+- **Medium networks** (1000-10000 contracts): 1-3 hours
+- **Large networks** (>10000 contracts): 3+ hours
+
+Runtime depends on:
+- Network latency to Blockscout server
+- Number of contracts and their implementations
+- Implementation nesting depth
+- API rate limits
+
+#### contracts-fetcher
+- **Small networks** (<1000 contracts): 5-15 minutes
+- **Medium networks** (1000-10000 contracts): 30-120 minutes
+- **Large networks** (>10000 contracts): 2+ hours
+
+Runtime depends on:
+- Network latency to Blockscout server
+- Number of contracts
+- API rate limits
+- Number of unverified contracts requiring ABI fetching
 
 ---
 
 ## License
 
 This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE-APACHE) file for details.
+
+---
+
+## Support
+
+For issues or questions:
+1. Check the [Troubleshooting](#troubleshooting) section
+2. Enable debug logging: `RUST_LOG=debug` or `RUST_LOG=trace`
+3. Review Blockscout API documentation for your specific instance
+4. Verify network connectivity and authentication
+5. Ensure you're using the correct tool for your API version
 
 ---
