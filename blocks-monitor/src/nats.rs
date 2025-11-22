@@ -1,7 +1,7 @@
 use async_nats::{jetstream, jetstream::Context, Client};
 use jetstream::object_store::ObjectStore;
 
-use crate::types::{EventPayload, BlockPayload};
+use crate::types::BlockPayload;
 
 use std::io::Cursor;
 use std::time::Duration;
@@ -45,30 +45,6 @@ pub async fn connect(url: &str, bucket: &str) -> anyhow::Result<Nats> {
     info!(bucket, "NATS Object Store ready");
 
     Ok(Nats { client, js, object_store })
-}
-
-pub async fn publish_event(
-    object_store: &ObjectStore,
-    payload: &EventPayload,
-) -> anyhow::Result<()> {
-    let key = format!(
-        "event:{}::{}::{:?}::{:?}::{}::{}::{}::{}::{}::{}",
-        payload.contract_name,
-        payload.contract_address,
-        payload.implementation_name,
-        payload.implementation_address,
-        payload.chain_id,
-        payload.transaction_hash,
-        payload.transaction_sender,
-        payload.transaction_receiver,
-        payload.event_name,
-        payload.event_signature,
-    );
-
-    let bytes = serde_json::to_vec(&serde_json::to_value(payload)?)?;
-    let mut cursor = Cursor::new(bytes);
-    let _obj = object_store.put(key.as_str(), &mut cursor).await?;
-    Ok(())
 }
 
 pub async fn publish_block(

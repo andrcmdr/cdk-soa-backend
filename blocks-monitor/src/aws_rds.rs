@@ -1,17 +1,13 @@
 use tokio_postgres::{Client, NoTls};
 use tracing::{info, error};
 use crate::config::AwsRdsCfg;
-use crate::types::{EventPayload, BlockPayload};
+use crate::types::BlockPayload;
 
 pub struct AwsRdsClient {
     client: Client,
 }
 
 impl AwsRdsClient {
-    pub async fn insert_event(&self, payload: &EventPayload) -> anyhow::Result<()> {
-        crate::db::insert_event(&self.client, payload).await
-    }
-
     pub async fn insert_block(&self, payload: &BlockPayload) -> anyhow::Result<()> {
         crate::db::insert_block(&self.client, payload).await
     }
