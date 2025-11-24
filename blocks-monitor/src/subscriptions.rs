@@ -9,8 +9,8 @@ use alloy::{
     primitives::Address,
 };
 use alloy::providers::fillers::{BlobGasFiller, ChainIdFiller, FillProvider, GasFiller, JoinFill, NonceFiller};
-use alloy::providers::{Identity, RootProvider};
-use alloy::consensus::Transaction;
+use alloy::providers::{Identity, RootProvider, WatchBlocks};
+use alloy::consensus::{BlockBody, Transaction};
 use alloy::network::TransactionResponse;
 
 use crate::{db::{self, DatabaseClients}, nats::{self, Nats}};
@@ -20,6 +20,8 @@ use crate::types::BlockPayload;
 use std::ops::{Range, RangeFrom};
 use std::str::FromStr;
 use std::sync::Arc;
+use alloy::eips::RpcBlockHash;
+use alloy::rpc::types::TransactionTrait;
 use anyhow::anyhow;
 use tokio::task::JoinHandle;
 
@@ -158,22 +160,22 @@ impl BlockProcessor {
                             Some(ref protocol) if protocol.to_lowercase() == "http" => {
                                 if full_blocks {
                                     processor_for_history.http_rpc_provider
-                                        .get_block(block_id, BlockTransactionsKind::Full)
+                                        .get_block(block_id).full()
                                         .await?
                                 } else {
                                     processor_for_history.http_rpc_provider
-                                        .get_block(block_id, BlockTransactionsKind::Hashes)
+                                        .get_block(block_id)
                                         .await?
                                 }
                             },
                             Some(ref protocol) if protocol.to_lowercase() == "ws" => {
                                 if full_blocks {
                                     processor_for_history.ws_rpc_provider
-                                        .get_block(block_id, BlockTransactionsKind::Full)
+                                        .get_block(block_id).full()
                                         .await?
                                 } else {
                                     processor_for_history.ws_rpc_provider
-                                        .get_block(block_id, BlockTransactionsKind::Hashes)
+                                        .get_block(block_id)
                                         .await?
                                 }
                             },
@@ -181,18 +183,18 @@ impl BlockProcessor {
                                 debug!("Invalid or missing block sync protocol, using 'http' as fallback");
                                 if full_blocks {
                                     processor_for_history.http_rpc_provider
-                                        .get_block(block_id, BlockTransactionsKind::Full)
+                                        .get_block(block_id).full()
                                         .await?
                                 } else {
                                     processor_for_history.http_rpc_provider
-                                        .get_block(block_id, BlockTransactionsKind::Hashes)
+                                        .get_block(block_id)
                                         .await?
                                 }
                             }
                         };
 
                         if let Some(block) = block {
-                            debug!("Received historical block: {}", block.header.number.unwrap_or_default());
+                            debug!("Received historical block: {}", block.header.number.to_string());
                             total_blocks_processed += 1;
 
                             if let Err(e) = processor_for_history.handle_block(block).await {
@@ -236,30 +238,108 @@ impl BlockProcessor {
             if subscription_protocol.to_lowercase() == "http" {
                 // HTTP polling mode for watching blocks
                 let polling_interval_secs = processor_for_subscription.config.indexing.http_polling_interval_secs.unwrap_or(5);
+                let http_subscription_method = processor_for_subscription.config.indexing.http_subscription_method
+                    .clone()
+                    .unwrap_or_else(|| "watch_full_blocks".to_string());
 
                 let subscription_task = tokio::spawn(async move {
-                    info!("Starting HTTP watch_blocks task for new blocks (interval: {}s, {})",
+                    info!("Starting HTTP watch blocks task for new blocks (interval: {}s, {}, method: {})",
                         polling_interval_secs,
-                        if full_blocks { "full blocks" } else { "headers only" }
+                        if full_blocks { "full blocks" } else { "headers only" },
+                        http_subscription_method,
                     );
 
-                    let poller = if full_blocks {
-                        processor_for_subscription.http_rpc_provider.watch_full_blocks().await?
-                    } else {
-                        processor_for_subscription.http_rpc_provider.watch_blocks().await?
-                    };
+                    if full_blocks {
+                        if http_subscription_method.to_lowercase() == "watch_full_blocks" {
+                            let poller = processor_for_subscription.http_rpc_provider.watch_full_blocks().await?;
 
-                    let mut block_stream = poller.into_stream();
+                            let mut block_stream = poller.into_stream().flat_map(futures::stream::iter);
 
-                    info!("Started watching blocks via HTTP polling");
+                            info!("Started watching blocks (watch_full_blocks) via HTTP polling");
 
-                    while let Some(block) = block_stream.next().await {
-                        debug!("Received watch_blocks block: {}", block.header.number.unwrap_or_default());
-                        if let Err(e) = processor_for_subscription.handle_block(block).await {
-                            error!("Failed to handle watch_blocks block: {:?}", e);
-                            eprintln!("Watch blocks error: {:?}", e);
+                            while let Some(block) = block_stream.next().await {
+                                debug!("Received (watch_full_blocks) block: {}", block.header.number.to_string());
+                                if let Err(e) = processor_for_subscription.handle_block(block).await {
+                                    error!("Failed to handle (watch_full_blocks) block: {:?}", e);
+                                    eprintln!("Failed to handle (watch_full_blocks) block: {:?}", e);
+                                }
+                            }
+                        } else if http_subscription_method.to_lowercase() == "watch_blocks" {
+                            let poller = processor_for_subscription.http_rpc_provider.watch_blocks().await?;
+
+                            let mut block_stream = poller.into_stream().flat_map(futures::stream::iter);
+
+                            info!("Started watching blocks (watch_blocks) via HTTP polling");
+
+                            while let Some(new_block_hash_bytes) = block_stream.next().await {
+                                let block_hash = format!("0x{}", hex::encode(new_block_hash_bytes.0.as_slice()));
+                                debug!("Received (watch_blocks) block hash: {}", block_hash);
+                                let block = processor_for_subscription.http_rpc_provider.get_block(BlockId::Hash(RpcBlockHash::from_hash(new_block_hash_bytes, Some(false)))).await?;
+                                if let Some(block) = block {
+                                    debug!("Received (watch_blocks + get_block) block: {}", block.header.number.to_string());
+                                    if let Err(e) = processor_for_subscription.handle_block(block).await {
+                                        error!("Failed to handle (watch_blocks + get_block) block: {:?}", e);
+                                        eprintln!("Failed to handle (watch_blocks + get_block) block: {:?}", e);
+                                    }
+                                } else {
+                                    error!("Failed to get block for hash {}", block_hash);
+                                    eprintln!("Failed to get block for hash {}", block_hash);
+                                };
+                            }
                         }
-                    }
+                    } else {
+                        if http_subscription_method.to_lowercase() == "watch_full_blocks" {
+                            let poller = processor_for_subscription.http_rpc_provider.watch_full_blocks().await?;
+
+                            let mut block_stream = poller.into_stream().flat_map(futures::stream::iter);
+
+                            info!("Started watching blocks (watch_full_blocks) via HTTP polling");
+
+                            while let Some(block) = block_stream.next().await {
+                                debug!("Received (watch_full_blocks) block: {}", block.header.number.to_string());
+                                // Create and reconstruct block from the header to match the expected Block type (w/o transactions w/ txs hashes only)
+                                let block = alloy::rpc::types::Block {
+                                    header: block.header.clone(),
+                                    uncles: block.uncles.clone(),
+                                    transactions: alloy::rpc::types::BlockTransactions::<_>::Hashes(block.transactions.as_hashes().unwrap_or(vec![].as_ref()).to_vec()),
+                                    withdrawals: block.withdrawals.clone(),
+                                };
+                                if let Err(e) = processor_for_subscription.handle_block(block).await {
+                                    error!("Failed to handle (watch_full_blocks) block: {:?}", e);
+                                    eprintln!("Failed to handle (watch_full_blocks) block: {:?}", e);
+                                }
+                            }
+                        } else if http_subscription_method.to_lowercase() == "watch_blocks" {
+                            let poller = processor_for_subscription.http_rpc_provider.watch_blocks().await?;
+
+                            let mut block_stream = poller.into_stream().flat_map(futures::stream::iter);
+
+                            info!("Started watching blocks (watch_blocks) via HTTP polling");
+
+                            while let Some(new_block_hash_bytes) = block_stream.next().await {
+                                let block_hash = format!("0x{}", hex::encode(new_block_hash_bytes.0.as_slice()));
+                                debug!("Received (watch_blocks) block hash: {}", block_hash);
+                                let block = processor_for_subscription.http_rpc_provider.get_block(BlockId::Hash(RpcBlockHash::from_hash(new_block_hash_bytes, Some(false)))).await?;
+                                if let Some(block) = block {
+                                    debug!("Received (watch_blocks + get_block) block: {}", block.header.number.to_string());
+                                    // Create and reconstruct block from the header to match the expected Block type (w/o transactions w/ txs hashes only)
+                                    let block = alloy::rpc::types::Block {
+                                        header: block.header.clone(),
+                                        uncles: block.uncles.clone(),
+                                        transactions: alloy::rpc::types::BlockTransactions::<_>::Hashes(block.transactions.as_hashes().unwrap_or(vec![].as_ref()).to_vec()),
+                                        withdrawals: block.withdrawals.clone(),
+                                    };
+                                    if let Err(e) = processor_for_subscription.handle_block(block).await {
+                                        error!("Failed to handle (watch_blocks + get_block) block: {:?}", e);
+                                        eprintln!("Failed to handle (watch_blocks + get_block) block: {:?}", e);
+                                    }
+                                } else {
+                                    error!("Failed to get block for hash {}", block_hash);
+                                    eprintln!("Failed to get block for hash {}", block_hash);
+                                };
+                            }
+                        }
+                    };
 
                     info!("Watch blocks task completed");
                     Ok(())
@@ -267,26 +347,81 @@ impl BlockProcessor {
                 handles.push(subscription_task);
             } else {
                 // WebSocket subscription mode
+                let ws_subscription_channel_size = processor_for_subscription.config.indexing.ws_subscription_channel_size.unwrap_or(10);
+                let ws_subscription_method = processor_for_subscription.config.indexing.ws_subscription_method
+                    .clone()
+                    .unwrap_or_else(|| "subscribe_full_blocks".to_string());
+
                 let subscription_task = tokio::spawn(async move {
-                    info!("Starting WebSocket subscription task for blocks ({})",
-                        if full_blocks { "full blocks" } else { "headers only" }
+                    info!("Starting WebSocket subscription task for blocks ({}, method: {}, channel size: {})",
+                        if full_blocks { "full blocks" } else { "headers only" },
+                        ws_subscription_method,
+                        ws_subscription_channel_size
                     );
 
                     let provider = processor_for_subscription.ws_rpc_provider.clone();
-                    let sub = if full_blocks {
-                        provider.subscribe_full_blocks().await?
-                    } else {
-                        provider.subscribe_blocks().await?
-                    };
 
-                    info!("Subscribed to new blocks via WebSocket");
+                    if ws_subscription_method.to_lowercase() == "subscribe_full_blocks" {
+                        let sub = if full_blocks {
+                            provider.subscribe_full_blocks().full().channel_size(ws_subscription_channel_size as usize)
+                        } else {
+                            provider.subscribe_full_blocks().hashes().channel_size(ws_subscription_channel_size as usize)
+                        };
 
-                    let mut sub_stream = sub.into_stream();
-                    while let Some(block) = sub_stream.next().await {
-                        debug!("Received subscription block: {}", block.header.number.unwrap_or_default());
-                        if let Err(e) = processor_for_subscription.handle_block(block).await {
-                            error!("Failed to handle subscription block: {:?}", e);
-                            eprintln!("Subscription block error: {:?}", e);
+                        info!("Subscribed to new blocks (subscribe_full_blocks) via WebSocket");
+
+                        let mut sub_stream = sub.into_stream().await?;
+
+                        while let Some(block) = sub_stream.next().await.transpose()? {
+                            debug!("Received subscription block: {}", block.header.number.to_string());
+                            if let Err(e) = processor_for_subscription.handle_block(block).await {
+                                error!("Failed to handle subscription block: {:?}", e);
+                                eprintln!("Failed to handle subscription block: {:?}", e);
+                            }
+                        }
+                    } else if ws_subscription_method.to_lowercase() == "subscribe_blocks" {
+                        let sub = provider.subscribe_blocks().channel_size(ws_subscription_channel_size as usize).await?;
+
+                        info!("Subscribed to new blocks (subscribe_blocks) via WebSocket");
+
+                        let mut sub_stream = sub.into_stream();
+
+                        while let Some(block_header) = sub_stream.next().await {
+                            debug!("Received subscription block header of block number: {}", block_header.number.to_string());
+                            if full_blocks {
+                                let block_hash = block_header.hash.clone();
+                                let block = provider.get_block(BlockId::Hash(RpcBlockHash::from_hash(block_hash, Some(false)))).await?;
+                                if let Some(block) = block {
+                                    debug!("Received (subscribe_blocks + get_block) block: {}", block.header.number.to_string());
+                                    if let Err(e) = processor_for_subscription.handle_block(block).await {
+                                        error!("Failed to handle subscription block: {:?}", e);
+                                        eprintln!("Failed to handle subscription block: {:?}", e);
+                                    }
+                                } else {
+                                    error!("Failed to get block for hash {}", block_hash);
+                                    eprintln!("Failed to get block for hash {}", block_hash);
+                                }
+                            } else {
+                                let block_hash = block_header.hash.clone();
+                                let block = provider.get_block(BlockId::Hash(RpcBlockHash::from_hash(block_hash, Some(false)))).await?;
+                                if let Some(block) = block {
+                                    debug!("Received (subscribe_blocks + get_block) block: {}", block.header.number.to_string());
+                                    // Create and reconstruct block from the header to match the expected Block type (w/o transactions w/ txs hashes only)
+                                    let block_txless = alloy::rpc::types::Block {
+                                        header: block.header.clone(),
+                                        uncles: block.uncles.clone(),
+                                        transactions: alloy::rpc::types::BlockTransactions::<_>::Hashes(block.transactions.as_hashes().unwrap_or(vec![].as_ref()).to_vec()),
+                                        withdrawals: block.withdrawals.clone(),
+                                    };
+                                    if let Err(e) = processor_for_subscription.handle_block(block_txless).await {
+                                        error!("Failed to handle subscription block (constructed block from the header and txs hashes taken by get_block): {:?}", e);
+                                        eprintln!("Failed to handle subscription block (constructed block from the header and txs hashes taken by get_block): {:?}", e);
+                                    }
+                                } else {
+                                    error!("Failed to get block for hash {}", block_hash);
+                                    eprintln!("Failed to get block for hash {}", block_hash);
+                                }
+                            }
                         }
                     }
 
@@ -316,17 +451,17 @@ impl BlockProcessor {
     }
 
     async fn handle_block(&self, block: alloy::rpc::types::Block) -> anyhow::Result<()> {
-        let block_number = block.header.number.unwrap_or_default();
+        let block_number = block.header.number;
         debug!("Received block number: {}", block_number);
 
-        let block_hash = format!("0x{}", hex::encode(block.header.hash.unwrap_or_default().0.as_slice()));
+        let block_hash = format!("0x{}", hex::encode(block.header.hash.0.as_slice()));
         let block_timestamp = block.header.timestamp;
         let block_time = chrono::DateTime::from_timestamp(block_timestamp as i64, 0)
             .unwrap_or_default()
             .to_rfc3339_opts(chrono::SecondsFormat::Millis, true);
 
         // Process transactions if full block
-        let transactions = match &block.transactions {
+        let transactions = match block.transactions {
             alloy::rpc::types::BlockTransactions::Full(txs) => {
                 let mut filtered_txs = Vec::new();
 
@@ -363,7 +498,7 @@ impl BlockProcessor {
                     let tx_sender_str = tx_sender.to_string();
                     let tx_receiver_str = tx_receiver.map(|addr| addr.to_string()).unwrap_or_default();
                     let tx_value = tx.value().to_string();
-                    let tx_gas_price = tx.gas_price().map(|p| p.to_string()).unwrap_or_default();
+                    let tx_gas_price = TransactionTrait::gas_price(&tx).map(|p| p.to_string()).unwrap_or_default();
                     let tx_gas = tx.gas_limit().to_string();
 
                     filtered_txs.push(serde_json::json!({

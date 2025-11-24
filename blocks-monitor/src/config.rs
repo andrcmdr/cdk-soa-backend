@@ -9,20 +9,24 @@ pub struct ChainCfg {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct IndexingCfg {
+    // Block range to process
     pub from_block: Option<u64>,
     pub to_block: Option<u64>,
 
     // Historical blocks processing
-    pub historical_blocks_processing: Option<u8>,
-    pub blocks_sync_protocol: Option<String>, // "http" or "ws"
+    pub historical_blocks_processing: Option<u8>, // Enabled (1) or disabled (0)
+    pub blocks_sync_protocol: Option<String>, // "http" or "ws" - for historical blocks fetching
     pub blocks_chunk_size: Option<u64>, // Number of blocks to fetch in each chunk. Defaults to 100 if not specified.
-    pub full_blocks_historical: Option<bool>, // true for full blocks, false for headers only
+    pub full_blocks_historical: Option<bool>, // 'true' for full blocks, 'false' for headers only
 
     // New blocks subscription
-    pub new_blocks_subscription: Option<u8>,
-    pub new_blocks_subscription_protocol: Option<String>, // "ws" or "http"
-    pub http_polling_interval_secs: Option<u64>, // Polling interval in seconds for HTTP RPC
-    pub full_blocks_subscription: Option<bool>, // true for full blocks, false for headers only
+    pub new_blocks_subscription: Option<u8>, // Enabled (1) or disabled (0)
+    pub new_blocks_subscription_protocol: Option<String>, // "http" or "ws" - for new blocks subscription/polling, if not present in config file or "null", then "http" by default
+    pub full_blocks_subscription: Option<bool>, // 'true' for full blocks, 'false' for headers only
+    pub http_polling_interval_secs: Option<u64>, // Polling interval in seconds, for HTTP RPC only (i.e. only used when 'new_blocks_subscription_protocol' is 'http')
+    pub http_subscription_method: Option<String>, // "watch_full_blocks" or "watch_blocks" - for new blocks subscription/polling, this parameter covers underlying Alloy API, if not present in config file or "null", then "watch_full_blocks" used by default
+    pub ws_subscription_method: Option<String>, // "subscribe_full_blocks" or "subscribe_blocks" - for new blocks subscription/polling, this parameter covers underlying Alloy API, if not present in config file or "null", then "subscribe_full_blocks" used by default
+    pub ws_subscription_channel_size: Option<u64>, // Size of the channel for new blocks subscription, for WebSocket RPC only (i.e. only used when 'new_blocks_subscription_protocol' is 'ws')
 
     // Transaction filtering
     pub filter_senders: Option<Vec<String>>,
