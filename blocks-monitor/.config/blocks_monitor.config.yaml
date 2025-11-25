@@ -1,0 +1,59 @@
+name: "testnet-blocks-monitor"
+
+chain:
+  http_rpc_url: "https://rpc.polygon-cdk-chain.example"
+  ws_rpc_url:   "wss://rpc.polygon-cdk-chain.example/ws"
+  chain_id:  1101
+
+indexing:
+  from_block: 0
+  to_block: null # or specify a block number
+
+  # For historical data
+  historical_blocks_processing: 1
+  blocks_sync_protocol: http # http or ws - for historical blocks fetching
+  blocks_chunk_size: 100  # Fetch 100 blocks at a time
+  full_blocks_historical: true # true for full blocks with transactions, false for headers only
+
+  # For real-time monitoring
+  new_blocks_subscription: 1
+  new_blocks_subscription_protocol: http # http or ws - for new blocks subscription/polling
+  full_blocks_subscription: true # true for full blocks with transactions, false for headers only
+  http_polling_interval_secs: 5 # Polling interval in seconds (only used when 'new_blocks_subscription_protocol' is 'http')
+  http_subscription_method: "watch_full_blocks" # "watch_full_blocks" or "watch_blocks" - for new blocks subscription/polling, this parameter covers underlying Alloy API, if not present in config file or "null", then "watch_full_blocks" used by default
+  ws_subscription_method: "subscribe_full_blocks" # "subscribe_full_blocks" or "subscribe_blocks" - for new blocks subscription/polling, this parameter covers underlying Alloy API, if not present in config file or "null", then "subscribe_full_blocks" used by default
+  ws_subscription_channel_size: 10 # Size of the channel for new blocks subscription, for WebSocket RPC only (i.e. only used when 'new_blocks_subscription_protocol' is 'ws')
+
+  # Transaction filtering (only applies when using full blocks)
+  filter_senders: []
+#  filter_senders:
+#    - "0x742d35Cc6634C0532925a3b8BC342A5b6437AFCD"
+#    - "0x742d35Cc6634C0532925a3b8BC342A5b6437AFCE"
+  filter_receivers: []
+#  filter_receivers:
+#    - "0x1234567890123456789012345678901234567890"
+
+postgres:
+  # Local PostgreSQL connection (primary)
+  # libpq connection string format
+  dsn: "host=localhost user=blocks_monitor password=passwd dbname=blocks_monitor_db port=5432"
+  schema: "./init_blocks_table.sql"
+
+# AWS RDS configuration (optional additional data layer)
+aws_rds:
+  enabled: 0  # Set to 0 to disable or set to 1 to enable AWS RDS support
+  endpoint: "your-rds-instance.abcd1234.us-west-2.rds.amazonaws.com"
+  port: 5432
+  database_name: "blocks_monitor_rds"
+  username: "blocks_monitor_user"
+  password: "your-secure-password"
+  region: "us-west-2"  # AWS region (optional)
+  ssl_mode: "require"  # SSL configuration (disable, prefer, require, verify-ca, verify-full)
+  connection_timeout: 30  # Connection timeout in seconds (optional)
+  max_connections: 10  # Maximum connections (optional)
+  schema: "./init_aws_rds_blocks_monitor_data_table_schema.sql"  # Schema file for AWS RDS (optional)
+
+nats:
+  nats_enabled: 1
+  url: "nats://localhost:4222"
+  object_store_bucket: "blocks_bucket"
