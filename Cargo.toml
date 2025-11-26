@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "events-monitor",
+    "blocks-monitor",
     "abi-fetcher",
     "abi2sol",
 ]

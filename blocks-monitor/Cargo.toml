@@ -4,7 +4,11 @@ version = "0.14.0"
 edition = "2024"
 
 [[bin]]
-name = "api-client"
+name = "blocks-monitor"
+path = "src/main.rs"
+
+[[bin]]
+name = "blocks-monitor-api-client"
 path = "client/api_client.rs"
 
 [dependencies]
@@ -61,5 +65,3 @@ lto = true
 panic = "abort"
 codegen-units = 1
 opt-level = "z"
-
-[workspace]
