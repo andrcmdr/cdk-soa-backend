@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS events_monitor_data (
     event_name TEXT NOT NULL,
     event_signature TEXT NOT NULL,
     event_data JSONB NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (chain_id, log_hash, event_name, event_signature)
 );
 
 CREATE INDEX IF NOT EXISTS idx_contract_name ON events_monitor_data (contract_name);

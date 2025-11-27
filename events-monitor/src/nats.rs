@@ -52,7 +52,7 @@ pub async fn publish_event(
     payload: &EventPayload,
 ) -> anyhow::Result<()> {
     let key = format!(
-        "{}::{}::{:?}::{:?}::{}::{}::{}::{}::{}::{}",
+        "event::{}::{}::{:?}::{:?}::{}::{}::{}::{}::{}::{}",
         payload.contract_name,
         payload.contract_address,
         payload.implementation_name,

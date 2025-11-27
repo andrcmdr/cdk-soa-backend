@@ -9,14 +9,21 @@ pub struct ChainCfg {
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct IndexingCfg {
+    // Block range to process
     pub from_block: Option<u64>,
     pub to_block: Option<u64>,
-    pub historical_logs_processing: Option<u8>,
-    pub logs_sync_protocol: Option<String>,
-    pub logs_chunk_size: Option<u64>, // Number of blocks to fetch logs for in each request (chunk size). Defaults to 1000 if not specified.
-    pub new_logs_subscription: Option<u8>,
-    pub new_logs_subscription_protocol: Option<String>, // "ws" or "http", if not present in config file or 'null', then "http" by default
-    pub http_polling_interval_secs: Option<u64>, // Polling interval in seconds for HTTP RPC
+
+    // Historical logs processing
+    pub historical_logs_processing: Option<u8>, // Enabled (1) or disabled (0)
+    pub logs_sync_protocol: Option<String>, // "http", "http_watcher" or "ws" - for historical logs fetching
+    pub logs_chunk_size: Option<u64>, // Fetch 1000 blocks at a time. Number of blocks to fetch logs for in each request (chunk size). Defaults to 1000 if not specified. Applied to both 'get_logs' AND 'watch_logs' fetching methods.
+
+    // New logs subscription
+    pub new_logs_subscription: Option<u8>, // Enabled (1) or disabled (0)
+    pub new_logs_subscription_protocol: Option<String>, // "http", "http_watcher" or "ws" - for new logs subscription/polling, if not present in config file or "null", then "http" by default
+    pub http_polling_interval_secs: Option<u64>, // Polling interval in seconds, for HTTP RPC only (i.e. only used when 'new_logs_subscription_protocol' is 'http')
+
+    // Transaction filtering
     pub filter_senders: Option<Vec<String>>,
     pub filter_receivers: Option<Vec<String>>,
 }

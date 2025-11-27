@@ -497,7 +497,7 @@ def create_task(name, config_yaml, db_schema=None):
     }
     if db_schema:
         files['db_schema'] = (None, db_schema)
-    
+
     response = requests.post(f"{API_BASE}/api/tasks", files=files)
     return response.json()
 

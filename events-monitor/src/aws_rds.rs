@@ -7,7 +7,7 @@ use crate::config::AwsRdsCfg;
 
 pub struct AwsRdsClient {
     client: Client,
-    _config: AwsRdsCfg,
+    config: AwsRdsCfg,
 }
 
 impl AwsRdsClient {
@@ -32,15 +32,15 @@ impl AwsRdsClient {
             "disable" => {},
             "prefer" | "require" | "verify-ca" | "verify-full" => {
                 // For AWS RDS, we typically use SSL
-                debug!("Using SSL mode: {}", ssl_mode);
+                debug!("Using SSL mode: {:?}", ssl_mode);
             },
             _ => {
-                warn!("Unknown SSL mode: {}, using default", ssl_mode);
+                warn!("Unknown SSL mode: {:?}, using default", ssl_mode);
             }
         }
 
         let (client, connection) = pg_config.connect(NoTls).await
-            .map_err(|e| anyhow::anyhow!("Failed to connect to AWS RDS: {}", e))?;
+            .map_err(|e| anyhow::anyhow!("Failed to connect to AWS RDS: {:?}", e))?;
 
         // Spawn connection handler
         tokio::spawn(async move {
@@ -53,14 +53,14 @@ impl AwsRdsClient {
         if let Some(schema_content) = &config.schema {
             debug!("Setting up AWS RDS schema");
             client.batch_execute(schema_content).await
-                .map_err(|e| anyhow::anyhow!("Failed to setup AWS RDS schema: {}", e))?;
+                .map_err(|e| anyhow::anyhow!("Failed to setup AWS RDS schema: {:?}", e))?;
         }
 
         info!("Successfully connected to AWS RDS");
 
         Ok(Self {
             client,
-            _config: config.clone(),
+            config: config.clone(),
         })
     }
 
@@ -90,7 +90,7 @@ impl AwsRdsClient {
                 updated_at = CURRENT_TIMESTAMP
         "#;
 
-        let event_data_jsonb = serde_json::to_string_pretty(&payload.event_data)?;
+        let event_data_jsonb = serde_json::to_value(&payload.event_data)?;
 
         match self.client
             .execute(
@@ -119,12 +119,12 @@ impl AwsRdsClient {
             .await
         {
             Ok(_) => {
-                debug!("Event inserted to AWS RDS: {}", payload.log_hash);
+                debug!("Event inserted to AWS RDS: {:?}", payload.log_hash);
                 Ok(())
             },
             Err(e) => {
                 error!("Failed to insert event to AWS RDS: {:?}", e);
-                Err(anyhow::anyhow!("AWS RDS insertion failed: {}", e))
+                Err(anyhow::anyhow!("AWS RDS insertion failed: {:?}", e))
             }
         }
     }
@@ -137,7 +137,7 @@ impl AwsRdsClient {
             },
             Err(e) => {
                 error!("AWS RDS connection test failed: {:?}", e);
-                Err(anyhow::anyhow!("AWS RDS connection test failed: {}", e))
+                Err(anyhow::anyhow!("AWS RDS connection test failed: {:?}", e))
             }
         }
     }

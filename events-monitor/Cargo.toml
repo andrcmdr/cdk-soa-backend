@@ -1,10 +1,14 @@
 [package]
 name = "events-monitor"
-version = "0.13.0"
+version = "0.14.0"
 edition = "2024"
 
 [[bin]]
-name = "api-client"
+name = "events-monitor"
+path = "src/main.rs"
+
+[[bin]]
+name = "events-monitor-api-client"
 path = "client/api_client.rs"
 
 [dependencies]

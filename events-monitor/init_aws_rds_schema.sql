@@ -17,12 +17,13 @@ CREATE TABLE IF NOT EXISTS events_monitor_data (
     transaction_receiver TEXT NOT NULL,
     transaction_index TEXT NOT NULL,
     log_index TEXT NOT NULL,
-    log_hash TEXT NOT NULL UNIQUE, -- Add UNIQUE constraint for deduplication
+    log_hash TEXT NOT NULL,
     event_name TEXT NOT NULL,
     event_signature TEXT NOT NULL,
     event_data JSONB NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (chain_id, log_hash, event_name, event_signature) -- Add UNIQUE constraint for deduplication
 );
 
 -- Create indexes for efficient querying
