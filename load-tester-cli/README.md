@@ -285,8 +285,8 @@ load-tester-cli custom -f config.examples/basic-load.json
 
 ```
 ╔══════════════════════════════════════════════════════╗
-║      🔥 BLOCKCHAIN LOAD TESTER 🔥                   ║
-║      Network Benchmarking & Stress Testing          ║
+║      🔥 BLOCKCHAIN LOAD TESTER 🔥                    ║
+║      Network Benchmarking & Stress Testing           ║
 ╚══════════════════════════════════════════════════════╝
 
 Configuration:
