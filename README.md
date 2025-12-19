@@ -304,6 +304,5 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE-APACHE]
 <p align="center">
   Built with 🦀 by the Sentient Enclaves&CDK Dev Team
 </p>
-```
 
 ---
