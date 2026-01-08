@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  payment-service:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - RUST_LOG=info
+      - X402_API_KEY=${X402_API_KEY}
+      - AP2_API_KEY=${AP2_API_KEY}
+      - WEB3_RPC_URL=${WEB3_RPC_URL}
+      - WEB2_API_KEY=${WEB2_API_KEY}
+      - WEB2_WEBHOOK_SECRET=${WEB2_WEBHOOK_SECRET}
+      - JWT_SECRET=${JWT_SECRET}
+    volumes:
+      - ./config.yaml:/etc/agentic-payment/config.yaml:ro
+      - ./models:/app/models:ro
+    restart: unless-stopped
+    networks:
+      - payment-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: PostgreSQL for persistence
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=payment_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=payment_service
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - payment-network
+    restart: unless-stopped
+
+  # Optional: Redis for caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - payment-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+  # Optional: Prometheus for metrics
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - payment-network
+    restart: unless-stopped
+
+  # Optional: Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - payment-network
+    restart: unless-stopped
+
+networks:
+  payment-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:

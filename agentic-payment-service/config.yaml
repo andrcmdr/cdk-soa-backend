@@ -1,0 +1,78 @@
+# Agentic Payment Service Configuration
+
+server:
+  host: "0.0.0.0"
+  port: 8080
+  max_connections: 100
+
+# Protocol Configuration
+protocols:
+  enabled:
+    - x402
+    - ap2
+  
+  x402:
+    enabled: true
+    version: "1.0"
+    endpoint: "https://x402.payment.network"
+    api_key: "${X402_API_KEY}"
+    timeout_seconds: 30
+    max_retries: 3
+  
+  ap2:
+    enabled: true
+    version: "2.0"
+    endpoint: "https://ap2.payment.network"
+    api_key: "${AP2_API_KEY}"
+    timeout_seconds: 30
+    max_retries: 3
+
+# Agent Configuration
+agent:
+  model_path: "./models/payment-agent.gguf"
+  model_type: "llama"  # llama, gpt2, etc.
+  context_size: 4096
+  temperature: 0.7
+  top_p: 0.9
+  max_tokens: 512
+  inference:
+    threads: 4
+    batch_size: 8
+    gpu_layers: 0  # Set > 0 for GPU acceleration
+
+# Payment Gateway Configuration
+payment_gateways:
+  web3:
+    enabled: true
+    blockchain: "ethereum"
+    rpc_url: "${WEB3_RPC_URL}"
+    chain_id: 1
+    gas_limit: 21000
+    
+  web2:
+    enabled: true
+    provider: "stripe"  # stripe, paypal, etc.
+    api_key: "${WEB2_API_KEY}"
+    webhook_secret: "${WEB2_WEBHOOK_SECRET}"
+
+# Middleware Configuration
+middleware:
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 60
+  
+  authentication:
+    enabled: true
+    jwt_secret: "${JWT_SECRET}"
+  
+  logging:
+    level: "info"  # trace, debug, info, warn, error
+    format: "json"
+
+# Security
+security:
+  max_payment_amount: 10000.0
+  require_confirmation: true
+  allowed_origins:
+    - "http://localhost:3000"
+    - "https://app.example.com"

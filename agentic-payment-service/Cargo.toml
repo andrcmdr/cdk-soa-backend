@@ -1,0 +1,78 @@
+[package]
+name = "agentic-payment-service"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+async-trait = "0.1"
+
+# Web framework
+axum = "0.7"
+tower = "0.4"
+tower-http = { version = "0.5", features = ["trace", "cors"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+
+# Configuration
+config = "0.14"
+
+# LLM Inference
+llm = "0.2"  # Rust LLM inference library
+llm-base = "0.2"
+
+# HTTP client
+reqwest = { version = "0.11", features = ["json"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# UUID
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Validation
+validator = { version = "0.18", features = ["derive"] }
+
+[dev-dependencies]
+mockall = "0.12"
+
+# Add this to Cargo.toml for the rate limiter
+[dependencies.lazy_static]
+version = "1.4"
+
+# If using actual LLM inference (uncomment when model is available):
+# [dependencies.llama-cpp-rs]
+# version = "0.3"
+# features = ["cuda"]  # Optional: for GPU support
+
+# Alternative LLM library options:
+# [dependencies.candle-core]
+# version = "0.3"
+# [dependencies.tokenizers]
+# version = "0.13"
+
+# For production JWT authentication:
+# [dependencies.jsonwebtoken]
+# version = "9.2"
+
+# For database persistence (optional):
+# [dependencies.sqlx]
+# version = "0.7"
+# features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono"]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
