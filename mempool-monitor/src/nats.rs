@@ -1,0 +1,68 @@
+use async_nats::{jetstream, jetstream::Context, Client};
+use jetstream::object_store::ObjectStore;
+
+use crate::types::TransactionPayload;
+
+use std::io::Cursor;
+use std::time::Duration;
+use async_nats::jetstream::object_store::Object;
+use tracing::{error, info};
+
+#[derive(Clone)]
+pub struct Nats {
+    pub client: Client,
+    pub js: Context,
+    pub object_store: ObjectStore,
+}
+
+pub async fn connect(url: &str, bucket: &str) -> anyhow::Result<Nats> {
+    // Create NATS Client with NATS connection, connect to NATS
+    let client = loop {
+        match async_nats::connect(url).await {
+            Ok(conn) => break conn,
+            Err(e) => {
+                error!("[NATS] Connection failed: {}, retrying...", e);
+                tokio::time::sleep(Duration::from_secs(3)).await;
+            }
+        }
+    };
+    info!("[NATS] Connected to NATS at {}", url);
+
+    let js = jetstream::new(client.clone());
+
+    // ensure bucket exists; if already exists, get; otherwise, create
+    let object_store = match js.get_object_store(bucket).await {
+        Ok(store) => store,
+        Err(_) => {
+            info!("[NATS] Creating object store bucket '{}'", bucket);
+            js.create_object_store(jetstream::object_store::Config {
+                bucket: bucket.to_string(),
+                ..Default::default()
+            })
+            .await?
+        },
+    };
+    info!(bucket, "NATS Object Store ready");
+
+    Ok(Nats { client, js, object_store })
+}
+
+pub async fn publish_transaction(
+    object_store: &ObjectStore,
+    payload: &TransactionPayload,
+) -> anyhow::Result<()> {
+    let key = format!(
+        "tx::{}::{}::{}::{}::{}::{}",
+        payload.chain_id,
+        payload.transaction_hash,
+        payload.transaction_sender,
+        payload.transaction_receiver.clone().unwrap_or("None".to_string()),
+        payload.nonce,
+        payload.timestamp,
+    );
+
+    let bytes = serde_json::to_vec(&serde_json::to_value(payload)?)?;
+    let mut cursor = Cursor::new(bytes);
+    let _obj = object_store.put(key.as_str(), &mut cursor).await?;
+    Ok(())
+}
