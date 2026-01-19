@@ -7,7 +7,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let base_url = "http://localhost:8080";
 
     // Read the configuration file
-    let config_content = std::fs::read_to_string("./events_monitor.config.yaml")?;
+    let config_content = std::fs::read_to_string("./blocks_monitor.config.yaml")?;
 
     // Create a task
     let form = multipart::Form::new()

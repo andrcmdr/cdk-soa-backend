@@ -3,7 +3,7 @@ name: "testnet-blocks-monitor"
 chain:
   http_rpc_url: "https://rpc.polygon-cdk-chain.example"
   ws_rpc_url:   "wss://rpc.polygon-cdk-chain.example/ws"
-  chain_id:  1101
+  chain_id: 1101
 
 indexing:
   from_block: 0
@@ -37,11 +37,11 @@ postgres:
   # Local PostgreSQL connection (primary)
   # libpq connection string format
   dsn: "host=localhost user=blocks_monitor password=passwd dbname=blocks_monitor_db port=5432"
-  schema: "./init_blocks_table.sql"
+  schema: "./init_table.sql"
 
 # AWS RDS configuration (optional additional data layer)
 aws_rds:
-  enabled: 0  # Set to 0 to disable or set to 1 to enable AWS RDS support
+  enabled: 0 # Set to 0 to disable or set to 1 to enable AWS RDS support
   endpoint: "your-rds-instance.abcd1234.us-west-2.rds.amazonaws.com"
   port: 5432
   database_name: "blocks_monitor_rds"
@@ -51,9 +51,10 @@ aws_rds:
   ssl_mode: "require"  # SSL configuration (disable, prefer, require, verify-ca, verify-full)
   connection_timeout: 30  # Connection timeout in seconds (optional)
   max_connections: 10  # Maximum connections (optional)
-  schema: "./init_aws_rds_blocks_monitor_data_table_schema.sql"  # Schema file for AWS RDS (optional)
+  schema: "./init_aws_rds_schema.sql"  # Schema file for AWS RDS (optional)
 
 nats:
-  nats_enabled: 1
+  nats_enabled: 1 # Set to 1 to enable NATS object storage and events bus support
   url: "nats://localhost:4222"
+  # JetStream object store bucket for persisted block payloads
   object_store_bucket: "blocks_bucket"
