@@ -27,37 +27,37 @@ CREATE TABLE IF NOT EXISTS events_monitor_data (
 );
 
 -- Create indexes for efficient querying
-CREATE INDEX IF NOT EXISTS idx_aws_contract_name ON events_monitor_data (contract_name);
-CREATE INDEX IF NOT EXISTS idx_aws_contract_address ON events_monitor_data (contract_address);
-CREATE INDEX IF NOT EXISTS idx_aws_impl_name ON events_monitor_data (implementation_name);
-CREATE INDEX IF NOT EXISTS idx_aws_impl_address ON events_monitor_data (implementation_address);
-CREATE INDEX IF NOT EXISTS idx_aws_contract_impl_compound ON events_monitor_data (contract_name, contract_address, implementation_name, implementation_address);
+CREATE INDEX IF NOT EXISTS idx_events_contract_name ON events_monitor_data(contract_name);
+CREATE INDEX IF NOT EXISTS idx_events_contract_address ON events_monitor_data(contract_address);
+CREATE INDEX IF NOT EXISTS idx_events_impl_name ON events_monitor_data(implementation_name);
+CREATE INDEX IF NOT EXISTS idx_events_impl_address ON events_monitor_data(implementation_address);
+CREATE INDEX IF NOT EXISTS idx_events_contract_impl_compound ON events_monitor_data(contract_name, contract_address, implementation_name, implementation_address);
 
-CREATE INDEX IF NOT EXISTS idx_aws_chain_id ON events_monitor_data (chain_id);
-CREATE INDEX IF NOT EXISTS idx_aws_block_number ON events_monitor_data (block_number);
-CREATE INDEX IF NOT EXISTS idx_aws_block_hash ON events_monitor_data (block_hash);
-CREATE INDEX IF NOT EXISTS idx_aws_block_timestamp ON events_monitor_data (block_timestamp);
-CREATE INDEX IF NOT EXISTS idx_aws_block_time ON events_monitor_data (block_time);
-CREATE INDEX IF NOT EXISTS idx_aws_chain_block_compound ON events_monitor_data (chain_id, block_number, block_hash, block_timestamp);
+CREATE INDEX IF NOT EXISTS idx_events_chain_id ON events_monitor_data(chain_id);
+CREATE INDEX IF NOT EXISTS idx_events_block_number ON events_monitor_data(block_number);
+CREATE INDEX IF NOT EXISTS idx_events_block_hash ON events_monitor_data(block_hash);
+CREATE INDEX IF NOT EXISTS idx_events_block_timestamp ON events_monitor_data(block_timestamp);
+CREATE INDEX IF NOT EXISTS idx_events_block_time ON events_monitor_data(block_time);
+CREATE INDEX IF NOT EXISTS idx_events_chain_block_compound ON events_monitor_data(chain_id, block_number, block_hash, block_timestamp);
 
-CREATE INDEX IF NOT EXISTS idx_aws_transaction_hash ON events_monitor_data (transaction_hash);
-CREATE INDEX IF NOT EXISTS idx_aws_transaction_sender ON events_monitor_data (transaction_sender);
-CREATE INDEX IF NOT EXISTS idx_aws_transaction_receiver ON events_monitor_data (transaction_receiver);
-CREATE INDEX IF NOT EXISTS idx_aws_transaction_index ON events_monitor_data (transaction_index);
-CREATE INDEX IF NOT EXISTS idx_aws_log_index ON events_monitor_data (log_index);
-CREATE INDEX IF NOT EXISTS idx_aws_log_hash ON events_monitor_data (log_hash); -- Primary deduplication index
-CREATE INDEX IF NOT EXISTS idx_aws_transaction_log_compound ON events_monitor_data (transaction_hash, transaction_sender, transaction_receiver, transaction_index, log_index, log_hash);
+CREATE INDEX IF NOT EXISTS idx_events_transaction_hash ON events_monitor_data(transaction_hash);
+CREATE INDEX IF NOT EXISTS idx_events_transaction_sender ON events_monitor_data(transaction_sender);
+CREATE INDEX IF NOT EXISTS idx_events_transaction_receiver ON events_monitor_data(transaction_receiver);
+CREATE INDEX IF NOT EXISTS idx_events_transaction_index ON events_monitor_data(transaction_index);
+CREATE INDEX IF NOT EXISTS idx_events_log_index ON events_monitor_data(log_index);
+CREATE INDEX IF NOT EXISTS idx_events_log_hash ON events_monitor_data(log_hash); -- Primary deduplication index
+CREATE INDEX IF NOT EXISTS idx_events_transaction_log_compound ON events_monitor_data(transaction_hash, transaction_sender, transaction_receiver, transaction_index, log_index, log_hash);
 
-CREATE INDEX IF NOT EXISTS idx_aws_event_name ON events_monitor_data (event_name);
-CREATE INDEX IF NOT EXISTS idx_aws_event_signature ON events_monitor_data (event_signature);
-CREATE INDEX IF NOT EXISTS idx_aws_event_data_jsonb ON events_monitor_data USING gin (event_data);
-CREATE INDEX IF NOT EXISTS idx_aws_event_compound ON events_monitor_data (event_name, event_signature);
-
-CREATE INDEX IF NOT EXISTS idx_aws_created_at ON events_monitor_data (created_at);
-CREATE INDEX IF NOT EXISTS idx_aws_updated_at ON events_monitor_data (updated_at);
+CREATE INDEX IF NOT EXISTS idx_events_event_name ON events_monitor_data(event_name);
+CREATE INDEX IF NOT EXISTS idx_events_event_signature ON events_monitor_data(event_signature);
+CREATE INDEX IF NOT EXISTS idx_events_event_data_jsonb ON events_monitor_data USING gin (event_data);
+CREATE INDEX IF NOT EXISTS idx_events_event_compound ON events_monitor_data(event_name, event_signature);
 
 -- Comprehensive compound index for complex queries
-CREATE INDEX IF NOT EXISTS idx_aws_comprehensive ON events_monitor_data (contract_name, contract_address, implementation_name, implementation_address, chain_id, block_number, block_hash, block_timestamp, transaction_hash, transaction_sender, transaction_receiver, transaction_index, log_index, log_hash, event_name, event_signature);
+CREATE INDEX IF NOT EXISTS idx_events_comprehensive ON events_monitor_data(contract_name, contract_address, implementation_name, implementation_address, chain_id, block_number, block_hash, block_timestamp, transaction_hash, transaction_sender, transaction_receiver, transaction_index, log_index, log_hash, event_name, event_signature);
+
+CREATE INDEX IF NOT EXISTS idx_events_created_at ON events_monitor_data(created_at);
+CREATE INDEX IF NOT EXISTS idx_events_updated_at ON events_monitor_data(updated_at);
 
 -- Create a function to update the updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()

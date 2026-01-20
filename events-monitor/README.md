@@ -734,3 +734,10 @@ RUST_LOG=debug cargo run -- --api
 - Since `tokio_postgres::Client` is not clonable, each task creates its own connection
 - Proper connection lifecycle management
 - Error handling for database connection failures
+
+---
+
+## License
+
+This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE-APACHE) file for details.
+
