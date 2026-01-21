@@ -29,3 +29,5 @@ alloy-json-abi = "1.0.30"
 alloy-dyn-abi = "1.0.30"
 reqwest = "0.12.23"
 dotenv = "0.15"
+
+[workspace]

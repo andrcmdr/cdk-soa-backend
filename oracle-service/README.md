@@ -100,3 +100,10 @@ Key configuration parameters in `config.toml`:
 1. Check the working end-to-end with actual API with Sentient Chat data.
 2. Integrate nats-based indexer as another mining method.
 3. Implement API functions.
+
+---
+
+## License
+
+This project is licensed under the **Apache 2.0 License**. See the [`LICENSE-APACHE`](LICENSE-APACHE) file for the details.
+
