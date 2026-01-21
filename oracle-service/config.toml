@@ -1,0 +1,39 @@
+# Oracle Service Configuration
+
+[database]
+# Placeholder configuration. Should be changed for deployment
+# For docker compose based deployment. Default for now.
+host = "db"
+# For local testing
+# host = "localhost"
+port = 5432
+name = "oracle_service"
+user = "oracle_user"
+password = "oracle_password"
+
+[service]
+host = "0.0.0.0"
+port = 8080
+log_level = "info"
+
+[blockchain]
+# Sensitive data loaded from environment variables: RPC_URL, PRIVATE_KEY, CONTRACT_ADDRESS, CHAIN_ID
+
+[mining]
+# Sensitive data loaded from environment variables: API_URL, API_KEY
+mining_interval_seconds = 300
+# Delay before mining recent data to avoid race conditions with API provider's DB
+# This ensures data has had time to settle in the provider's system
+# To be clear of weird edge cases make sure this mining_delay_seconds < mining_interval_seconds
+mining_delay_seconds = 120
+# On first run, how far back to start mining (in seconds)
+# Default: 1 day = 1 * 24 * 3600 = 604800 seconds
+bootstrap_lookback_seconds = 86400
+# Pagination configuration for API requests
+page_size = 100
+max_pages = 10
+
+[contract]
+# Contract interaction configuration
+batch_size = 40
+batch_interval_seconds = 600
